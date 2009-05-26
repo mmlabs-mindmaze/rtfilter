@@ -1,0 +1,383 @@
+#include "filter.h"
+#include "common-filters.h"
+#include <memory.h>
+#include <stdlib.h>
+#include <math.h>
+
+#define PId	3.1415926535897932384626433832795L
+#define PIf	3.1415926535897932384626433832795f
+
+// TODO change the data type used for filter function (use double) to improve stability of recursive filters
+
+void apply_window(float *fir, unsigned int length, KernelWindow window)
+{
+	unsigned int i;
+	float M = length - 1;
+
+	switch (window) {
+	case HAMMING_WINDOW:
+		for (i = 0; i < length; i++)
+			fir[i] *=
+			    0.54 +
+			    0.46 * cos(2.0 * PIf * ((float) i / M - 0.5));
+		break;
+
+	case BLACKMAN_WINDOW:
+		for (i = 0; i < length; i++)
+			fir[i] *=
+			    0.42 +
+			    0.5 * cos(2.0 * PIf * ((float) i / M - 0.5)) +
+			    0.08 * cos(4.0 * PIf * ((float) i / M - 0.5));
+		break;
+
+	case RECT_WINDOW:
+		break;
+	}
+}
+
+
+
+
+void normalize_fir(float *fir, unsigned int length)
+{
+	unsigned int i;
+	double sum = 0.0;
+
+	for (i = 0; i < length; i++)
+		sum += fir[i];
+
+	for (i = 0; i < length; i++)
+		fir[i] /= sum;
+}
+
+void compute_convolution(float *product, float *sig1, unsigned int len1,
+			 float *sig2, unsigned int len2)
+{
+	unsigned int i, j;
+
+	memset(product, 0, (len1 + len2 - 1) * sizeof(*product));
+
+	for (i = 0; i < len1; i++)
+		for (j = 0; j < len2; j++)
+			product[i + j] += sig1[i] * sig2[j];
+}
+
+
+void compute_fir_lowpass(float *fir, unsigned int length, float fc)
+{
+	unsigned int i;
+	float half_len = (float) ((unsigned int) (length / 2));
+
+	for (i = 0; i < length; i++)
+		if (i != length / 2)
+			fir[i] =
+			    sin(2.0 * PIf * (float) fc *
+				((float) i - half_len)) / ((float) i -
+							   half_len);
+		else
+			fir[i] = 2.0 * PIf * fc;
+}
+
+void reverse_fir(float *fir, unsigned int length)
+{
+	unsigned int i;
+
+	// compute delay minus lowpass fir
+	for (i = 0; i < length; i++)
+		fir[i] = -1.0 * fir[i];
+	fir[length - 1] += 1.0;
+}
+
+// inspired by DSP guide ch33
+int compute_cheby_iir(float *num, float *den, unsigned int num_pole,
+		      int highpass, float ripple, float cutoff_freq)
+{
+	double *a, *b, *ta, *tb;
+	double a0, a1, a2, b1, b2;
+	double rp, ip, es, vx, kx, t, w, m, d, x0, x1, x2, y1, y2, k;
+	double sa, sb, gain;
+	double np = num_pole;
+	unsigned int i, p;
+	double fc = cutoff_freq, r = ripple;
+	int retval = 1;
+
+	// Allocate temporary arrays
+	a = malloc((num_pole + 3) * sizeof(*a));
+	b = malloc((num_pole + 3) * sizeof(*b));
+	ta = malloc((num_pole + 3) * sizeof(*ta));
+	tb = malloc((num_pole + 3) * sizeof(*tb));
+	if (!a || !b || !ta || !tb) {
+		retval = 0;
+		goto exit;
+	}
+	memset(a, 0, (num_pole + 3) * sizeof(*a));
+	memset(b, 0, (num_pole + 3) * sizeof(*b));
+
+	a[2] = 1.0;
+	b[2] = 1.0;
+
+	for (p = 1; p <= num_pole / 2; p++) {
+		// calculate pole locate on the unit circle
+		rp = -cos(PId / (np * 2.0) +
+			  ((double) (p - 1)) * PId / np);
+		ip = sin(PId / (np * 2.0) + ((double) (p - 1)) * PId / np);
+
+		// Warp from a circle to an ellipse
+		if (r != 0.0) {
+			es = sqrt(pow(1.0 / (1.0 - r), 2) - 1.0);
+			vx = (1.0 / np) * log((1.0 / es) +
+					      sqrt((1.0 / (es * es)) +
+						   1.0));
+			kx = (1.0 / np) * log((1.0 / es) +
+					      sqrt((1.0 / (es * es)) -
+						   1.0));
+			kx = (exp(kx) + exp(-kx)) / 2.0;
+			rp = rp * ((exp(vx) - exp(-vx)) / 2.0) / kx;
+			ip = ip * ((exp(vx) + exp(-vx)) / 2.0) / kx;
+		}
+		// s to z domains conversion
+		t = 2.0 * tan(0.5);
+		w = 2.0 * PId * fc;
+		m = rp * rp + ip * ip;
+		d = 4.0 - 4.0 * rp * t + m * t * t;
+		x0 = t * t / d;
+		x1 = 2.0 * t * t / d;
+		x2 = t * t / d;
+		y1 = (8.0 - 2.0 * m * t * t) / d;
+		y2 = (-4.0 - 4.0 * rp * t - m * t * t) / d;
+
+		// LP(s) to LP(z) or LP(s) to HP(z)
+		if (highpass)
+			k = -cos(w / 2.0 + 0.5) / cos(w / 2.0 - 0.5);
+		else
+			k = sin(0.5 - w / 2.0) / sin(0.5 + w / 2.0);
+		d = 1.0 + y1 * k - y2 * k * k;
+		a0 = (x0 - x1 * k + x2 * k * k) / d;
+		a1 = (-2.0 * x0 * k + x1 + x1 * k * k - 2.0 * x2 * k) / d;
+		a2 = (x0 * k * k - x1 * k + x2) / d;
+		b1 = (2.0 * k + y1 + y1 * k * k - 2.0 * y2 * k) / d;
+		b2 = (-k * k - y1 * k + y2) / d;
+		if (highpass) {
+			a1 *= -1.0;
+			b1 *= -1.0;
+		}
+		// Add coefficients to the cascade
+		memcpy(ta, a, (num_pole + 3) * sizeof(*a));
+		memcpy(tb, b, (num_pole + 3) * sizeof(*b));
+		for (i = 2; i <= num_pole + 2; i++) {
+			a[i] =
+			    a0 * ta[i] + a1 * ta[i - 1] + a2 * ta[i - 2];
+			b[i] = tb[i] + b1 * tb[i - 1] + b2 * tb[i - 2];
+		}
+	}
+
+	// Finish combining coefficients
+	b[2] = 0;
+	for (i = 0; i <= num_pole; i++) {
+		a[i] = a[i + 2];
+		b[i] = b[i + 2];
+	}
+
+	// Normalize the gain
+	sa = sb = 0.0;
+	for (i = 0; i <= num_pole; i++) {
+		sa += a[i] * ((highpass && i % 2) ? -1.0 : 1.0);
+		sb += b[i] * ((highpass && i % 2) ? -1.0 : 1.0);
+	}
+	gain = sa / (1.0 - sb);
+	for (i = 0; i <= num_pole; i++)
+		a[i] /= gain;
+
+
+	// Copy the results to the num and den
+	num[0] = a[0];
+	for (i = 1; i <= num_pole; i++) {
+		num[i] = a[i];
+		den[i - 1] = b[i];
+	}
+
+      exit:
+	free(a);
+	free(b);
+	free(ta);
+	free(tb);
+	return retval;
+}
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//                      Create particular filters
+//
+///////////////////////////////////////////////////////////////////////////////
+dfilter *create_fir_filter_mean(unsigned int fir_length,
+				unsigned int nchann)
+{
+	unsigned int i;
+	float* fir= NULL;
+	dfilter *filt;
+
+	// Alloc temporary fir
+	fir = malloc(fir_length*sizeof(*fir));
+	if (!fir)
+		return NULL;
+
+	// prepare the finite impulse response
+	for (i = 0; i < fir_length; i++)
+		fir[i] = 1.0f / (float) fir_length;
+	
+	filt = create_dfilter(nchann, fir_length, fir, 0, NULL);
+
+	free(fir);
+	return filt;
+}
+
+dfilter *create_fir_filter_lowpass(float fc, unsigned int half_length,
+				   unsigned int nchann,
+				   KernelWindow window)
+{
+	float *fir = NULL;
+	dfilter *filt;
+	unsigned int fir_length = 2 * half_length + 1;
+
+	// Alloc temporary fir
+	fir = malloc(fir_length*sizeof(*fir));
+	if (!fir)
+		return NULL;
+
+	// prepare the finite impulse response
+	compute_fir_lowpass(fir, fir_length, fc);
+	apply_window(fir, fir_length, window);
+	normalize_fir(fir, fir_length);
+
+	filt = create_dfilter(nchann, fir_length, fir, 0, NULL);
+
+	free(fir);
+	return filt;
+}
+
+
+dfilter *create_fir_filter_highpass(float fc, unsigned int half_length,
+				    unsigned int nchann,
+				    KernelWindow window)
+{
+	float *fir = NULL;
+	dfilter *filt;
+	unsigned int fir_length = 2 * half_length + 1;
+	
+	// Alloc temporary fir
+	fir = malloc(fir_length*sizeof(*fir));
+	if (!fir)
+		return NULL;
+
+	// prepare the finite impulse response
+	compute_fir_lowpass(fir, fir_length, fc);
+	apply_window(fir, fir_length, window);
+	normalize_fir(fir, fir_length);
+	reverse_fir(fir, fir_length);
+
+	filt = create_dfilter(nchann, fir_length, fir, 0, NULL);
+	if (!filt)
+		return NULL;
+
+	free(fir);
+	return filt;
+}
+
+
+dfilter *create_fir_filter_bandpass(float fc_low, float fc_high,
+				    unsigned int half_length,
+				    unsigned int nchann,
+				    KernelWindow window)
+{
+	unsigned int len = 2 * (half_length / 2) + 1;
+	float fir_low[len], fir_high[len];
+	float *fir = NULL;
+	dfilter *filt;
+	unsigned int fir_length = 2 * half_length + 1;
+
+
+	// Alloc temporary fir
+	fir = malloc(fir_length*sizeof(*fir));
+	if (!fir)
+		return NULL;
+
+	// Create the lowpass finite impulse response
+	compute_fir_lowpass(fir_low, len, fc_low);
+	apply_window(fir_low, len, window);
+	normalize_fir(fir_low, len);
+
+	// Create the highpass finite impulse response
+	compute_fir_lowpass(fir_high, len, fc_high);
+	apply_window(fir_high, len, window);
+	normalize_fir(fir_high, len);
+	reverse_fir(fir_high, len);
+
+	// compute the convolution product of the two FIR
+	compute_convolution(fir, fir_low, len, fir_high, len);
+
+
+	filt = create_dfilter(nchann, fir_length, fir, 0, NULL);
+
+	free(fir);
+	return filt;
+}
+
+
+dfilter *create_chebychev_filter(float fc, unsigned int num_pole,
+				 unsigned int nchann, int highpass,
+				 float ripple)
+{
+	float *a = NULL, *b = NULL;
+	dfilter *filt;
+
+	if (num_pole % 2 != 0)
+		return NULL;
+
+	a = malloc( (num_pole+1)*sizeof(*a));
+	b = malloc( (num_pole)*sizeof(*b));
+	if (!a || !b) {
+		free(a);
+		free(b);
+		return NULL;
+	}
+
+	// prepare the filter
+	if (!compute_cheby_iir(a, b, num_pole, highpass, ripple, fc)) {
+		free(a);
+		free(b);
+		return NULL;
+	}
+
+
+	filt = create_dfilter(nchann, num_pole + 1, a, num_pole, b);
+	if (!filt)
+		return NULL;
+
+	free(a);
+	free(b);
+	return filt;
+}
+
+dfilter *create_butterworth_filter(float fc, unsigned int num_pole,
+				   unsigned int num_chann, int highpass)
+{
+	return create_chebychev_filter(fc, num_pole, num_chann, highpass,
+				       0.0);
+}
+
+dfilter *create_integrate_filter(unsigned int nchann)
+{
+	float a = 1.0f, b = 1.0f;
+	dfilter *filt;
+
+	filt = create_dfilter(nchann, 1, &a, 1, &b);
+	if (!filt)
+		return NULL;
+
+
+	return filt;
+}
+
