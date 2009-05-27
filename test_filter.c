@@ -5,70 +5,144 @@
 #include <memory.h>
 #include <xmmintrin.h>
 #include <limits.h>
+#include <unistd.h>
 
-#define NCHANN	256
+#define NCHANN	64
 #define NSAMPLE	4
 #define NITER 10000
+#define FILTORDER 4
 
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
-	int i, j, k;
+	unsigned int nchann, nsample, niter, filtorder, nvchann;
+	int i, j, k, opt;
 	struct timespec start, stop;
-	struct timeval startv, stopv;
 	long long delay = 0, delayv = 0;
-	long long tc, dt;
-	dfilter *filt1, *filt2;
-	float buff1[NCHANN*NSAMPLE], buff2[NCHANN*NSAMPLE];
-	__m128 vbuff1[NCHANN/4*NSAMPLE], vbuff2[NCHANN/4*NSAMPLE];
+	long long tc, dt, timing, mintime, mintimev;
+	const dfilter *filt1 = NULL, *filt2 = NULL;
+	typereal *buff1, *buff2;
+	typereal_a *vbuff1, *vbuff2;
 
-	// set signals
-	for (i=0; i<NCHANN; i++)
-		for (j=0; j<NSAMPLE; j++)
-			buff1[j*NCHANN+i] = j;
-	memcpy(vbuff1, buff1, sizeof(buff1));
+
+	// Process command-line options
+	nchann = NCHANN;
+	nsample = NSAMPLE;
+	niter = NITER;
+	filtorder = FILTORDER;
+	while ((opt = getopt(argc, argv, "c:s:i:o:")) != -1) {
+		switch (opt) {
+		case 'c':
+			nchann = atoi(optarg);
+			break;
+		case 's':
+			nsample = atoi(optarg);
+			break;
+		case 'i':
+			niter = atoi(optarg);
+			break;
+		case 'o':
+			filtorder = atoi(optarg);
+			break;
+		default:	/* '?' */
+			fprintf(stderr, "Usage: %s [-c numchannel] [-s numsample] [-i numiteration] [-o filterorder]\n",
+				argv[0]);
+			exit(EXIT_FAILURE);
+		}
+	}
+	printf("filter order: %i \tnumber of channels: %i \t\tlength of batch: %i\n",filtorder, nchann, nsample);
+
+
+
+	// Allocate buffers
+#ifdef	USE_DOUBLE
+	nvchann = (nchann+1)/2;
+#else
+	nvchann = (nchann+3)/4;
+#endif
+	printf("nvchann=%i\n",nvchann);
+	buff1 = malloc(sizeof(*buff1) * nchann * nsample);
+	buff2 = malloc(sizeof(*buff1) * nchann * nsample);
+	if (posix_memalign
+	    ((void **) &vbuff1, 16, sizeof(*vbuff1) * nvchann * nsample))
+		vbuff1 = NULL;
+	if (posix_memalign
+	    ((void **) &vbuff2, 16, sizeof(*vbuff2) * nvchann * nsample))
+		vbuff2 = NULL;
+	if (!buff1 || !buff2 || !vbuff1 || !vbuff2) {
+		fprintf(stderr, "buffer allocation failed\n");
+		goto out;
+	}
+	// set signals (ramps)
+//	for (i = 0; i < nchann; i++)
+//		for (j = 0; j < nsample; j++)
+//			buff1[j * nchann + i] = j;
+//	for (j=0; i<nsample; j++) 
+//		memcpy(vbuff1+j*nvchann, buff1+j*nchann, sizeof(*buff1) * nchann);
+
 
 
 	// Estimate timecall of clockgettime
 	tc = LONG_MAX;
-	for (k=0; k<100; k++) {
+	for (k=0; k<1000; k++) {
 		clock_gettime(CLOCK_MONOTONIC, &start);
 		clock_gettime(CLOCK_MONOTONIC, &stop);
 		delay = ((stop.tv_sec - start.tv_sec)*1000000000 + (stop.tv_nsec - start.tv_nsec));
 		tc = delay >= tc ? tc : delay;
 	}
 
+	// create filters
+	filt1 = create_butterworth_filter(0.02, filtorder, nchann, 0);
+	filt2 = create_butterworth_filter(0.02, filtorder, nchann, 0);
+	if (!filt1 || !filt2) {
+		fprintf(stderr,"Creation of filters failed (filt1:%i filt2:%i)\n",
+			filt1 ? 1 : 0,
+			filt2 ? 1 : 0);
+		goto out;
+	}
 
-	filt1 = create_butterworth_filter(0.02, 8, NCHANN, 0);
-	filt2 = create_butterworth_filter(0.02, 8, NCHANN, 0);
-	for (k=0; k<NITER; k++) {
+	delay = delayv = 0;
+	mintime = mintimev = LONG_MAX;
+	for (k=0; k<niter; k++) {
 		// Test normal version
 		clock_gettime(CLOCK_MONOTONIC, &start);
-		filter(filt1, buff1, buff2, NSAMPLE);
+		filter(filt1, buff1, buff2, nsample);
 		clock_gettime(CLOCK_MONOTONIC, &stop);
-		delay += ((stop.tv_sec - start.tv_sec)*1000000000 + (stop.tv_nsec - start.tv_nsec)) - tc;
+		timing = ((stop.tv_sec - start.tv_sec)*1000000000 + (stop.tv_nsec - start.tv_nsec)) - tc;
+		delay += timing;
+		mintime = mintime > timing ? timing : mintime;
 
 		// Test vectorized version
 		clock_gettime(CLOCK_MONOTONIC, &start);
-		filtera(filt2, vbuff1, vbuff2, NSAMPLE);
+		filtera(filt2, vbuff1, vbuff2, nsample);
 		clock_gettime(CLOCK_MONOTONIC, &stop);
-		delayv += ((stop.tv_sec - start.tv_sec)*1000000000 + (stop.tv_nsec - start.tv_nsec)) - tc;
+		timing = ((stop.tv_sec - start.tv_sec)*1000000000 + (stop.tv_nsec - start.tv_nsec)) - tc;
+		delayv += timing;
+		mintimev = mintimev > timing ? timing : mintimev;
 	}
 
 	printf("normal version:\n");
-	dt = delay / NITER;
+	dt = delay / niter;
 	printf("mean time per call: %i nsec\n",(int)dt);
-	printf("mean time per sample: %i nsec\n",(int)(dt/(NSAMPLE*NCHANN)));
+	printf("mean time per sample: %i nsec\n",(int)(dt/(nsample*nchann)));
+	dt = mintime;
+	printf("min time per call: %i nsec\n",(int)dt);
+	printf("min time per sample: %i nsec\n",(int)(dt/(nsample*nchann)));
 	printf("vector version:\n");
-	dt = delayv / NITER;
+	dt = delayv / niter;
 	printf("mean time per call: %i nsec\n",(int)dt);
-	printf("mean time per sample: %i nsec\n",(int)(dt/(NSAMPLE*NCHANN)));
+	printf("mean time per sample: %i nsec\n",(int)(dt/(nsample*nchann)));
+	dt = mintimev;
+	printf("min time per call: %i nsec\n",(int)dt);
+	printf("min time per sample: %i nsec\n",(int)(dt/(nsample*nchann)));
 
-/*	printf("gettimeofday\n");
-	dt = delayv / NITER;
-	printf("mean time per call: %i nsec\n",(int)dt);
-	printf("mean time per sample: %i nsec\n",(int)(dt/(NSAMPLE*NCHANN)));
-*/
+out:
+	destroy_filter(filt1);
+	destroy_filter(filt2);
+	free(buff1);
+	free(buff2);
+	free(vbuff1);
+	free(vbuff2);
 
 	return 0;
 }

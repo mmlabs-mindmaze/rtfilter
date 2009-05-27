@@ -3,21 +3,21 @@
 
 #include <xmmintrin.h>
 
-typedef struct _dfilter
-{
-	unsigned int num_chann;
-	unsigned int a_len;
-	const float* a;
-	unsigned int b_len;
-	const float* b;
-	float* xoff;
-	float* yoff;
-} dfilter;
+#ifdef USE_DOUBLE
+typedef double	typereal;
+typedef __m128d typereal_a;
+#else
+typedef float	typereal;
+typedef __m128  typereal_a;
+#endif
 
-dfilter* create_dfilter(unsigned int nchann, unsigned int alen, const float *a, unsigned int blen, const float *b);
-void filter(dfilter* filt, const float* x, float* y, int num_samples);
-void filtera(dfilter* filt, const __m128* x, __m128* y, int num_samples);
-void reset_filter(dfilter* filt);
-void destroy_filter(dfilter* filt);
+
+typedef struct _dfilter dfilter;
+
+const dfilter* create_dfilter(unsigned int nchann, unsigned int alen, const typereal *a, unsigned int blen, const typereal *b);
+void filter(const dfilter* filt, const typereal* x, typereal* y, int num_samples);
+void filtera(const dfilter* filt, const typereal_a* x, typereal_a* y, unsigned int num_samples);
+void reset_filter(const dfilter* filt);
+void destroy_filter(const dfilter* filt);
 
 #endif //FILTER_H

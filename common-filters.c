@@ -9,25 +9,25 @@
 
 // TODO change the data type used for filter function (use double) to improve stability of recursive filters
 
-void apply_window(float *fir, unsigned int length, KernelWindow window)
+void apply_window(typereal *fir, unsigned int length, KernelWindow window)
 {
 	unsigned int i;
-	float M = length - 1;
+	typereal M = length - 1;
 
 	switch (window) {
 	case HAMMING_WINDOW:
 		for (i = 0; i < length; i++)
 			fir[i] *=
 			    0.54 +
-			    0.46 * cos(2.0 * PIf * ((float) i / M - 0.5));
+			    0.46 * cos(2.0 * PIf * ((typereal) i / M - 0.5));
 		break;
 
 	case BLACKMAN_WINDOW:
 		for (i = 0; i < length; i++)
 			fir[i] *=
 			    0.42 +
-			    0.5 * cos(2.0 * PIf * ((float) i / M - 0.5)) +
-			    0.08 * cos(4.0 * PIf * ((float) i / M - 0.5));
+			    0.5 * cos(2.0 * PIf * ((typereal) i / M - 0.5)) +
+			    0.08 * cos(4.0 * PIf * ((typereal) i / M - 0.5));
 		break;
 
 	case RECT_WINDOW:
@@ -38,7 +38,7 @@ void apply_window(float *fir, unsigned int length, KernelWindow window)
 
 
 
-void normalize_fir(float *fir, unsigned int length)
+void normalize_fir(typereal *fir, unsigned int length)
 {
 	unsigned int i;
 	double sum = 0.0;
@@ -50,8 +50,8 @@ void normalize_fir(float *fir, unsigned int length)
 		fir[i] /= sum;
 }
 
-void compute_convolution(float *product, float *sig1, unsigned int len1,
-			 float *sig2, unsigned int len2)
+void compute_convolution(typereal *product, typereal *sig1, unsigned int len1,
+			 typereal *sig2, unsigned int len2)
 {
 	unsigned int i, j;
 
@@ -63,22 +63,22 @@ void compute_convolution(float *product, float *sig1, unsigned int len1,
 }
 
 
-void compute_fir_lowpass(float *fir, unsigned int length, float fc)
+void compute_fir_lowpass(typereal *fir, unsigned int length, typereal fc)
 {
 	unsigned int i;
-	float half_len = (float) ((unsigned int) (length / 2));
+	typereal half_len = (typereal) ((unsigned int) (length / 2));
 
 	for (i = 0; i < length; i++)
 		if (i != length / 2)
 			fir[i] =
-			    sin(2.0 * PIf * (float) fc *
-				((float) i - half_len)) / ((float) i -
+			    sin(2.0 * PIf * (typereal) fc *
+				((typereal) i - half_len)) / ((typereal) i -
 							   half_len);
 		else
 			fir[i] = 2.0 * PIf * fc;
 }
 
-void reverse_fir(float *fir, unsigned int length)
+void reverse_fir(typereal *fir, unsigned int length)
 {
 	unsigned int i;
 
@@ -89,8 +89,8 @@ void reverse_fir(float *fir, unsigned int length)
 }
 
 // inspired by DSP guide ch33
-int compute_cheby_iir(float *num, float *den, unsigned int num_pole,
-		      int highpass, float ripple, float cutoff_freq)
+int compute_cheby_iir(typereal *num, typereal *den, unsigned int num_pole,
+		      int highpass, typereal ripple, typereal cutoff_freq)
 {
 	double *a, *b, *ta, *tb;
 	double a0, a1, a2, b1, b2;
@@ -212,12 +212,12 @@ int compute_cheby_iir(float *num, float *den, unsigned int num_pole,
 //                      Create particular filters
 //
 ///////////////////////////////////////////////////////////////////////////////
-dfilter *create_fir_filter_mean(unsigned int fir_length,
+const dfilter *create_fir_filter_mean(unsigned int fir_length,
 				unsigned int nchann)
 {
 	unsigned int i;
-	float* fir= NULL;
-	dfilter *filt;
+	typereal* fir= NULL;
+	const dfilter *filt;
 
 	// Alloc temporary fir
 	fir = malloc(fir_length*sizeof(*fir));
@@ -226,7 +226,7 @@ dfilter *create_fir_filter_mean(unsigned int fir_length,
 
 	// prepare the finite impulse response
 	for (i = 0; i < fir_length; i++)
-		fir[i] = 1.0f / (float) fir_length;
+		fir[i] = 1.0f / (typereal) fir_length;
 	
 	filt = create_dfilter(nchann, fir_length, fir, 0, NULL);
 
@@ -234,12 +234,12 @@ dfilter *create_fir_filter_mean(unsigned int fir_length,
 	return filt;
 }
 
-dfilter *create_fir_filter_lowpass(float fc, unsigned int half_length,
+const dfilter *create_fir_filter_lowpass(typereal fc, unsigned int half_length,
 				   unsigned int nchann,
 				   KernelWindow window)
 {
-	float *fir = NULL;
-	dfilter *filt;
+	typereal *fir = NULL;
+	const dfilter *filt;
 	unsigned int fir_length = 2 * half_length + 1;
 
 	// Alloc temporary fir
@@ -259,12 +259,12 @@ dfilter *create_fir_filter_lowpass(float fc, unsigned int half_length,
 }
 
 
-dfilter *create_fir_filter_highpass(float fc, unsigned int half_length,
+const dfilter *create_fir_filter_highpass(typereal fc, unsigned int half_length,
 				    unsigned int nchann,
 				    KernelWindow window)
 {
-	float *fir = NULL;
-	dfilter *filt;
+	typereal *fir = NULL;
+	const dfilter *filt;
 	unsigned int fir_length = 2 * half_length + 1;
 	
 	// Alloc temporary fir
@@ -287,15 +287,15 @@ dfilter *create_fir_filter_highpass(float fc, unsigned int half_length,
 }
 
 
-dfilter *create_fir_filter_bandpass(float fc_low, float fc_high,
+const dfilter *create_fir_filter_bandpass(typereal fc_low, typereal fc_high,
 				    unsigned int half_length,
 				    unsigned int nchann,
 				    KernelWindow window)
 {
 	unsigned int len = 2 * (half_length / 2) + 1;
-	float fir_low[len], fir_high[len];
-	float *fir = NULL;
-	dfilter *filt;
+	typereal fir_low[len], fir_high[len];
+	typereal *fir = NULL;
+	const dfilter *filt;
 	unsigned int fir_length = 2 * half_length + 1;
 
 
@@ -326,12 +326,12 @@ dfilter *create_fir_filter_bandpass(float fc_low, float fc_high,
 }
 
 
-dfilter *create_chebychev_filter(float fc, unsigned int num_pole,
+const dfilter *create_chebychev_filter(typereal fc, unsigned int num_pole,
 				 unsigned int nchann, int highpass,
-				 float ripple)
+				 typereal ripple)
 {
-	float *a = NULL, *b = NULL;
-	dfilter *filt;
+	typereal *a = NULL, *b = NULL;
+	const dfilter *filt;
 
 	if (num_pole % 2 != 0)
 		return NULL;
@@ -361,17 +361,17 @@ dfilter *create_chebychev_filter(float fc, unsigned int num_pole,
 	return filt;
 }
 
-dfilter *create_butterworth_filter(float fc, unsigned int num_pole,
+const dfilter *create_butterworth_filter(typereal fc, unsigned int num_pole,
 				   unsigned int num_chann, int highpass)
 {
 	return create_chebychev_filter(fc, num_pole, num_chann, highpass,
 				       0.0);
 }
 
-dfilter *create_integrate_filter(unsigned int nchann)
+const dfilter *create_integrate_filter(unsigned int nchann)
 {
-	float a = 1.0f, b = 1.0f;
-	dfilter *filt;
+	typereal a = 1.0f, b = 1.0f;
+	const dfilter *filt;
 
 	filt = create_dfilter(nchann, 1, &a, 1, &b);
 	if (!filt)

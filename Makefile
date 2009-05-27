@@ -1,7 +1,7 @@
 CC=gcc
 LD=gcc
 LDFLAGS=-lm -lrt
-CFLAGS=-march=native -msse2 -mfpmath=sse -O3 -I. -W -Wall -save-temps
+CFLAGS=-march=native -msse2 -mfpmath=sse -O3 -I. -W -Wall -DUSE_DOUBLE -g3
 
 all: filsse
 	
