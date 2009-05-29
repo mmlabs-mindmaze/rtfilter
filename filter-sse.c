@@ -14,6 +14,7 @@
 # define mul_vec(v1,v2)			_mm_mul_pd(v1,v2)
 # define zero_vec()			_mm_setzero_pd()
 # define set1_vec(data)			_mm_set1_pd(data)
+typedef __m128d  typereal_a;
 
 #else
 
@@ -23,6 +24,7 @@
 # define mul_vec(v1,v2)			_mm_mul_ps(v1,v2)
 #define zero_vec()			_mm_setzero_ps()
 # define set1_vec(data)			_mm_set1_ps(data)
+typedef __m128  typereal_a;
 
 #endif
 
@@ -54,9 +56,9 @@ void  align_free(void* memptr)
 }
 
 
-const dfilter* create_dfilter(unsigned int nchann, unsigned int a_len, const typereal *num, unsigned int b_len, const typereal *denum)
+hfilter create_dfilter(unsigned int nchann, unsigned int a_len, const typereal *num, unsigned int b_len, const typereal *denum)
 {
-	dfilter *filt = NULL;
+	struct _dfilter *filt = NULL;
 	typereal *a = NULL;
 	typereal *xoff = NULL;
 	typereal *b = NULL;
@@ -110,7 +112,7 @@ const dfilter* create_dfilter(unsigned int nchann, unsigned int a_len, const typ
 }
 
 
-void destroy_filter(const dfilter * filt)
+void destroy_filter(hfilter filt)
 {
 	if (!filt)
 		return;
@@ -123,7 +125,7 @@ void destroy_filter(const dfilter * filt)
 }
 
 
-void reset_filter(const dfilter * filt)
+void reset_filter(hfilter filt)
 {
 	memset(filt->xoff, 0,
 	       (filt->a_len -
@@ -133,7 +135,7 @@ void reset_filter(const dfilter * filt)
 }
 
 
-void filter(const dfilter* filt, const typereal* in, typereal* out, int nsamples)
+void filter(hfilter filt, const typereal* in, typereal* out, int nsamples)
 {
 	int i, k, ichann, io, ii, num;
 	const typereal* x;
@@ -204,7 +206,7 @@ void filter(const dfilter* filt, const typereal* in, typereal* out, int nsamples
 
 
 
-void filtera(const dfilter * filt, const typereal_a *in, typereal_a *out, unsigned int nsamples)
+void filtera(hfilter filt, const typereal *xaligned, typereal *yaligned, unsigned int nsamples)
 {
 	int i, k, ichann, ii, len, midlen;
 	const typereal_a *x, *y;
@@ -218,6 +220,9 @@ void filtera(const dfilter * filt, const typereal_a *in, typereal_a *out, unsign
 	const typereal_a *yprev = (typereal_a*)(filt->yoff) + b_len * nchann;
 	typereal_a coef, *currout, *dest;
 	const typereal_a* src;
+
+	const typereal_a *in = (typereal_a*)xaligned;
+	typereal_a *out = (typereal_a*)yaligned;
 
 
 	if (!nchann)

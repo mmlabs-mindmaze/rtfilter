@@ -13,6 +13,7 @@
 #define FILTORDER 4
 
 
+
 int main(int argc, char *argv[])
 {
 	unsigned int nchann, nsample, niter, filtorder, nvchann;
@@ -20,9 +21,9 @@ int main(int argc, char *argv[])
 	struct timespec start, stop;
 	long long delay = 0, delayv = 0;
 	long long tc, dt, timing, mintime, mintimev;
-	const dfilter *filt1 = NULL, *filt2 = NULL;
+	hfilter filt1 = NULL, filt2 = NULL;
 	typereal *buff1, *buff2;
-	typereal_a *vbuff1, *vbuff2;
+	typereal *vbuff1, *vbuff2;
 
 
 	// Process command-line options
@@ -56,9 +57,9 @@ int main(int argc, char *argv[])
 
 	// Allocate buffers
 #ifdef	USE_DOUBLE
-	nvchann = (nchann+1)/2;
+	nvchann = (nchann+1)&~1;
 #else
-	nvchann = (nchann+3)/4;
+	nvchann = (nchann+3)&~3;
 #endif
 	printf("nvchann=%i\n",nvchann);
 	buff1 = malloc(sizeof(*buff1) * nchann * nsample);

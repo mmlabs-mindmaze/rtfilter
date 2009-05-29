@@ -212,12 +212,12 @@ int compute_cheby_iir(typereal *num, typereal *den, unsigned int num_pole,
 //                      Create particular filters
 //
 ///////////////////////////////////////////////////////////////////////////////
-const dfilter *create_fir_filter_mean(unsigned int fir_length,
+hfilter create_fir_filter_mean(unsigned int fir_length,
 				unsigned int nchann)
 {
 	unsigned int i;
 	typereal* fir= NULL;
-	const dfilter *filt;
+	hfilter filt;
 
 	// Alloc temporary fir
 	fir = malloc(fir_length*sizeof(*fir));
@@ -234,12 +234,12 @@ const dfilter *create_fir_filter_mean(unsigned int fir_length,
 	return filt;
 }
 
-const dfilter *create_fir_filter_lowpass(typereal fc, unsigned int half_length,
+hfilter create_fir_filter_lowpass(typereal fc, unsigned int half_length,
 				   unsigned int nchann,
 				   KernelWindow window)
 {
 	typereal *fir = NULL;
-	const dfilter *filt;
+	hfilter filt;
 	unsigned int fir_length = 2 * half_length + 1;
 
 	// Alloc temporary fir
@@ -259,12 +259,12 @@ const dfilter *create_fir_filter_lowpass(typereal fc, unsigned int half_length,
 }
 
 
-const dfilter *create_fir_filter_highpass(typereal fc, unsigned int half_length,
+hfilter create_fir_filter_highpass(typereal fc, unsigned int half_length,
 				    unsigned int nchann,
 				    KernelWindow window)
 {
 	typereal *fir = NULL;
-	const dfilter *filt;
+	hfilter filt;
 	unsigned int fir_length = 2 * half_length + 1;
 	
 	// Alloc temporary fir
@@ -287,7 +287,7 @@ const dfilter *create_fir_filter_highpass(typereal fc, unsigned int half_length,
 }
 
 
-const dfilter *create_fir_filter_bandpass(typereal fc_low, typereal fc_high,
+hfilter create_fir_filter_bandpass(typereal fc_low, typereal fc_high,
 				    unsigned int half_length,
 				    unsigned int nchann,
 				    KernelWindow window)
@@ -295,7 +295,7 @@ const dfilter *create_fir_filter_bandpass(typereal fc_low, typereal fc_high,
 	unsigned int len = 2 * (half_length / 2) + 1;
 	typereal fir_low[len], fir_high[len];
 	typereal *fir = NULL;
-	const dfilter *filt;
+	hfilter filt;
 	unsigned int fir_length = 2 * half_length + 1;
 
 
@@ -326,12 +326,12 @@ const dfilter *create_fir_filter_bandpass(typereal fc_low, typereal fc_high,
 }
 
 
-const dfilter *create_chebychev_filter(typereal fc, unsigned int num_pole,
+hfilter create_chebychev_filter(typereal fc, unsigned int num_pole,
 				 unsigned int nchann, int highpass,
 				 typereal ripple)
 {
 	typereal *a = NULL, *b = NULL;
-	const dfilter *filt;
+	hfilter filt;
 
 	if (num_pole % 2 != 0)
 		return NULL;
@@ -361,17 +361,17 @@ const dfilter *create_chebychev_filter(typereal fc, unsigned int num_pole,
 	return filt;
 }
 
-const dfilter *create_butterworth_filter(typereal fc, unsigned int num_pole,
+hfilter create_butterworth_filter(typereal fc, unsigned int num_pole,
 				   unsigned int num_chann, int highpass)
 {
 	return create_chebychev_filter(fc, num_pole, num_chann, highpass,
 				       0.0);
 }
 
-const dfilter *create_integrate_filter(unsigned int nchann)
+hfilter create_integrate_filter(unsigned int nchann)
 {
 	typereal a = 1.0f, b = 1.0f;
-	const dfilter *filt;
+	hfilter filt;
 
 	filt = create_dfilter(nchann, 1, &a, 1, &b);
 	if (!filt)
