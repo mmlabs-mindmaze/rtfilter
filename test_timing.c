@@ -13,8 +13,6 @@
 #define FILTORDER 4
 
 
-void filter_u(hfilter filt, const typereal* x, typereal* y, unsigned int num_samples);
-void filter_a(hfilter filt, const typereal* x, typereal* y, unsigned int num_samples);
 
 int main(int argc, char *argv[])
 {
@@ -24,7 +22,7 @@ int main(int argc, char *argv[])
 	long long delay = 0, delayv = 0;
 	long long tc, dt, timing, mintime, mintimev;
 	hfilter filt1 = NULL, filt2 = NULL;
-	typereal *buff1, *buff2;
+	float *buff1, *buff2, *buff1b, *buff2b;
 
 
 	// Process command-line options
@@ -59,12 +57,18 @@ int main(int argc, char *argv[])
 
 	// Allocate buffers
 	if (posix_memalign
-	    ((void **) &buff1, 16, sizeof(typereal) * nchann * nsample))
+	    ((void **) &buff1, 16, sizeof(*buff1) * nchann * nsample))
 		buff1 = NULL;
 	if (posix_memalign
-	    ((void **) &buff2, 16, sizeof(typereal) * nchann * nsample))
+	    ((void **) &buff2, 16, sizeof(*buff2) * nchann * nsample))
 		buff2 = NULL;
-	if (!buff1 || !buff2) {
+	if (posix_memalign
+	    ((void **) &buff1b, 16, sizeof(*buff1) * nchann * nsample))
+		buff1 = NULL;
+	if (posix_memalign
+	    ((void **) &buff2b, 16, sizeof(*buff2) * nchann * nsample))
+		buff2 = NULL;
+	if (!buff1 || !buff2 || !buff1b || !buff2b) {
 		fprintf(stderr, "buffer allocation failed\n");
 		goto out;
 	}
@@ -72,6 +76,7 @@ int main(int argc, char *argv[])
 	for (i = 0; i < nchann; i++)
 		for (j = 0; j < nsample; j++)
 			buff1[j * nchann + i] = j;
+	memcpy(buff1b, buff1, sizeof(*buff1) * nchann * nsample);
 
 
 	// Estimate timecall of clockgettime
@@ -84,8 +89,8 @@ int main(int argc, char *argv[])
 	}
 
 	// create filters
-	filt1 = create_butterworth_filter(0.02, filtorder, nchann, 0);
-	filt2 = create_butterworth_filter(0.02, filtorder, nchann, 0);
+	filt1 = create_butterworth_filter(0.02, filtorder, nchann, 0, DATATYPE_FLOAT);
+	filt2 = create_butterworth_filter(0.02, filtorder, nchann, 0, DATATYPE_FLOAT);
 	if (!filt1 || !filt2) {
 		fprintf(stderr,"Creation of filters failed (filt1:%i filt2:%i)\n",
 			filt1 ? 1 : 0,
@@ -98,7 +103,7 @@ int main(int argc, char *argv[])
 	for (k=0; k<niter; k++) {
 		// Test normal version
 		clock_gettime(CLOCK_MONOTONIC, &start);
-		filter(filt1, buff1, buff2, nsample);
+		filter_f(filt1, buff1, buff2, nsample);
 		clock_gettime(CLOCK_MONOTONIC, &stop);
 		timing = ((stop.tv_sec - start.tv_sec)*1000000000 + (stop.tv_nsec - start.tv_nsec)) - tc;
 		delay += timing;
@@ -106,7 +111,7 @@ int main(int argc, char *argv[])
 
 		// Test vectorized version
 		clock_gettime(CLOCK_MONOTONIC, &start);
-		filter_u(filt2, buff1, buff2, nsample);
+		filter_f(filt2, buff1b, buff2b, nsample);
 		clock_gettime(CLOCK_MONOTONIC, &stop);
 		timing = ((stop.tv_sec - start.tv_sec)*1000000000 + (stop.tv_nsec - start.tv_nsec)) - tc;
 		delayv += timing;
@@ -133,6 +138,8 @@ out:
 	destroy_filter(filt2);
 	free(buff1);
 	free(buff2);
+	free(buff1b);
+	free(buff2b);
 
 	return 0;
 }

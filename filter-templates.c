@@ -1,88 +1,30 @@
-#include "filter.h"
-#include <memory.h>
-#include <stdlib.h>
-#include <math.h>
-#include <stdint.h>
-#ifdef __SSE__
-#include <xmmintrin.h>
-#endif
 
-#ifdef USE_DOUBLE
-
-# define get_num_padded_chann(numchann)	(((int)(numchann)+1) & ~1)
-# define get_num_chgrp(numchann)	(get_num_padded_chann(numchann)/2)
-# define add_vec(v1,v2)			_mm_add_pd(v1,v2)
-# define mul_vec(v1,v2)			_mm_mul_pd(v1,v2)
-# define zero_vec()			_mm_setzero_pd()
-# define set1_vec(data)			_mm_set1_pd(data)
-# define NELEM_VEC			2
-typedef __m128d  typereal_a;
+#undef NELEM_VEC
+#define NELEM_VEC	(sizeof(TYPEREAL_V)/sizeof(TYPEREAL))
 
 
-#else
-
-# define get_num_padded_chann(numchann)	(((int)(numchann)+3) & ~3)
-# define get_num_chgrp(numchann)	(get_num_padded_chann(numchann)/4)
-# define add_vec(v1,v2)			_mm_add_ps(v1,v2)
-# define mul_vec(v1,v2)			_mm_mul_ps(v1,v2)
-#define zero_vec()			_mm_setzero_ps()
-# define set1_vec(data)			_mm_set1_ps(data)
-# define NELEM_VEC			4
-typedef __m128  typereal_a;
-
-#endif
-
-
-struct _dfilter
+hfilter CREATE_FILTER_FUNC(unsigned int nchann, unsigned int a_len, const TYPEREAL *num, unsigned int b_len, const TYPEREAL *denum, unsigned int type)
 {
-	unsigned int num_chann;
-	unsigned int a_len;
-	const typereal* a;
-	unsigned int b_len;
-	const typereal* b;
-	typereal* xoff;
-	typereal* yoff;
-};
-
-
-void* align_alloc(size_t alignment, size_t size)
-{
-	void* memptr = NULL;
-	if (posix_memalign(&memptr, alignment, size))
-		return NULL;
-	return memptr;
-}
-
-
-void  align_free(void* memptr)
-{
-	free(memptr);
-}
-
-
-hfilter create_dfilter(unsigned int nchann, unsigned int a_len, const typereal *num, unsigned int b_len, const typereal *denum)
-{
-	struct _dfilter *filt = NULL;
-	typereal *a = NULL;
-	typereal *xoff = NULL;
-	typereal *b = NULL;
-	typereal *yoff = NULL;
-	int xoffsize, yoffsize;
-	int nvchann;
-
-	// Compute the nearest bigger multiple of 
-	nvchann = get_num_padded_chann(nchann);
+	unsigned int i;
 	
-	xoffsize = (a_len - 1) * nvchann;
-	yoffsize = b_len * nvchann;
+	struct _dfilter *filt = NULL;
+	void *a = NULL;
+	void *xoff = NULL;
+	void *b = NULL;
+	void *yoff = NULL;
+	int xoffsize, yoffsize;
+
+	
+	xoffsize = (a_len - 1) * nchann;
+	yoffsize = b_len * nchann;
 
 	filt = malloc(sizeof(*filt));
-	a = (a_len > 0) ? malloc(a_len * sizeof(*num)) : NULL;
-	b = (b_len > 0) ? malloc(b_len * sizeof(*denum)) : NULL;
+	a = (a_len > 0) ? malloc(a_len * sizeof_data(type)) : NULL;
+	b = (b_len > 0) ? malloc(b_len * sizeof_data(type)) : NULL;
 	if (xoffsize > 0) 
-		xoff = align_alloc(16,xoffsize * sizeof(typereal));
+		xoff = align_alloc(16,xoffsize * sizeof_data(type));
 	if (yoffsize > 0) 
-		yoff = align_alloc(16,yoffsize * sizeof(typereal));
+		yoff = align_alloc(16,yoffsize * sizeof_data(type));
 
 	// handle memory allocation problem
 	if (!filt || ((a_len > 0) && !a) || ((xoffsize > 0) && !xoff)
@@ -98,8 +40,9 @@ hfilter create_dfilter(unsigned int nchann, unsigned int a_len, const typereal *
 	memset(filt, 0, sizeof(*filt));
 
 	// prepare the filt struct
-	filt->a = a;
 	filt->num_chann = nchann;
+	filt->type = type;
+	filt->a = a;
 	filt->a_len = a_len;
 	filt->xoff = xoff;
 	filt->b = b;
@@ -107,8 +50,20 @@ hfilter create_dfilter(unsigned int nchann, unsigned int a_len, const typereal *
 	filt->yoff = yoff;
 
 	// copy the numerator and denumerator
-	memcpy(a, num, a_len * sizeof(*num));
-	memcpy(b, denum, b_len * sizeof(*denum));
+	if (type == DATATYPE_FLOAT) {
+		float *af = a, *bf = b;
+		for (i=0; i<a_len; i++)
+			af[i] = num[i];
+		for (i=0; i<b_len; i++)
+			bf[i] = denum[i];
+	}
+	else {
+		float *ad = a, *bd = b;
+		for (i=0; i<a_len; i++)
+			ad[i] = num[i];
+		for (i=0; i<b_len; i++)
+			bd[i] = denum[i];
+	}
 
 	reset_filter(filt);
 
@@ -116,41 +71,19 @@ hfilter create_dfilter(unsigned int nchann, unsigned int a_len, const typereal *
 }
 
 
-void destroy_filter(hfilter filt)
-{
-	if (!filt)
-		return;
-
-	free((void *) (filt->a));
-	free((void *) (filt->b));
-	align_free(filt->xoff);
-	align_free(filt->yoff);
-	free((void*) filt);
-}
-
-
-void reset_filter(hfilter filt)
-{
-	memset(filt->xoff, 0,
-	       (filt->a_len -
-		1) * filt->num_chann * sizeof(*(filt->xoff)));
-	memset(filt->yoff, 0,
-	       (filt->b_len) * filt->num_chann * sizeof(*(filt->yoff)));
-}
-
-void filter_u(hfilter filt, const typereal* in, typereal* out, unsigned int nsamples)
+void FILTER_UNALIGNED_FUNC(hfilter filt, const TYPEREAL* in, TYPEREAL* out, unsigned int nsamples)
 {
 	unsigned int i;
 	int k, ichann, io, ii, num;
-	const typereal* x;
-	const typereal* y;
+	const TYPEREAL* x;
+	const TYPEREAL* y;
 	int a_len = filt->a_len;
-	const typereal* a = filt->a;
+	const TYPEREAL* a = filt->a;
 	int b_len = filt->b_len;
-	const typereal* b = filt->b;
+	const TYPEREAL* b = filt->b;
 	int nchann = filt->num_chann;
-	const typereal* xprev = filt->xoff + (a_len-1)*nchann;
-	const typereal* yprev = filt->yoff + b_len*nchann;
+	const TYPEREAL* xprev = filt->xoff + (a_len-1)*nchann;
+	const TYPEREAL* yprev = filt->yoff + b_len*nchann;
 
 
 	if (!nchann)
@@ -210,24 +143,24 @@ void filter_u(hfilter filt, const typereal* in, typereal* out, unsigned int nsam
 
 
 
-void filter_a(hfilter filt, const typereal *xaligned, typereal *yaligned, unsigned int nsamples)
+void FILTER_ALIGNED_FUNC(hfilter filt, const TYPEREAL *xaligned, TYPEREAL *yaligned, unsigned int nsamples)
 {
 	unsigned int i;
 	int k, ichann, ii, len, midlen;
-	const typereal_a *x, *y;
+	const TYPEREAL_V *x, *y;
 
 	int a_len = filt->a_len;
-	const typereal *a = filt->a;
+	const TYPEREAL *a = filt->a;
 	int b_len = filt->b_len;
-	const typereal *b = filt->b;
-	int nchann = get_num_chgrp(filt->num_chann);
-	const typereal_a *xprev = (typereal_a*)(filt->xoff) + (a_len - 1) * nchann;
-	const typereal_a *yprev = (typereal_a*)(filt->yoff) + b_len * nchann;
-	typereal_a coef, *currout, *dest;
-	const typereal_a* src;
+	const TYPEREAL *b = filt->b;
+	int nchann = filt->num_chann / NELEM_VEC;
+	const TYPEREAL_V *xprev = (TYPEREAL_V*)(filt->xoff) + (a_len - 1) * nchann;
+	const TYPEREAL_V *yprev = (TYPEREAL_V*)(filt->yoff) + b_len * nchann;
+	TYPEREAL_V coef, *currout, *dest;
+	const TYPEREAL_V* src;
 
-	const typereal_a *in = (typereal_a*)xaligned;
-	typereal_a *out = (typereal_a*)yaligned;
+	const TYPEREAL_V *in = (TYPEREAL_V*)xaligned;
+	TYPEREAL_V *out = (TYPEREAL_V*)yaligned;
 
 
 	if (!nchann)
@@ -273,7 +206,7 @@ void filter_a(hfilter filt, const typereal *xaligned, typereal *yaligned, unsign
 	}
 
 	// Store the latest input samples
-	dest = (typereal_a*)(filt->xoff);
+	dest = (TYPEREAL_V*)(filt->xoff);
 	len = (a_len-1)*nchann;
 	midlen = (a_len-1-nsamples)*nchann;
 	if (midlen > 0) {
@@ -288,7 +221,7 @@ void filter_a(hfilter filt, const typereal *xaligned, typereal *yaligned, unsign
 	
 	
 	// Store the latest output samples
-	dest = (typereal_a*)(filt->yoff);
+	dest = (TYPEREAL_V*)(filt->yoff);
 	len = b_len*nchann;
 	midlen = (b_len-nsamples)*nchann;
 	if (midlen > 0) {
@@ -303,14 +236,14 @@ void filter_a(hfilter filt, const typereal *xaligned, typereal *yaligned, unsign
 
 }
 
-void filter(hfilter filt, const typereal* in, typereal* out, unsigned int nsamples)
+void FILTER_FUNC(hfilter filt, const TYPEREAL* in, TYPEREAL* out, unsigned int nsamples)
 {
 	// Check that data is aligned on 16 byte boundaries
 	if ( (filt->num_chann%NELEM_VEC) 
-		|| ((uintptr_t)in % sizeof(typereal_a)) 
-		|| ((uintptr_t)out % sizeof(typereal_a)) )
-		filter_u(filt, in, out, nsamples);
+		|| ((uintptr_t)in % sizeof(TYPEREAL_V)) 
+		|| ((uintptr_t)out % sizeof(TYPEREAL_V)) )
+		FILTER_UNALIGNED_FUNC(filt, in, out, nsamples);
 	else
-		filter_a(filt, in, out, nsamples);
+		FILTER_ALIGNED_FUNC(filt, in, out, nsamples);
 }
 

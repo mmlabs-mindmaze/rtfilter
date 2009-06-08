@@ -9,25 +9,25 @@
 
 // TODO change the data type used for filter function (use double) to improve stability of recursive filters
 
-void apply_window(typereal *fir, unsigned int length, KernelWindow window)
+void apply_window(double *fir, unsigned int length, KernelWindow window)
 {
 	unsigned int i;
-	typereal M = length - 1;
+	double M = length - 1;
 
 	switch (window) {
 	case HAMMING_WINDOW:
 		for (i = 0; i < length; i++)
 			fir[i] *=
 			    0.54 +
-			    0.46 * cos(2.0 * PIf * ((typereal) i / M - 0.5));
+			    0.46 * cos(2.0 * PIf * ((double) i / M - 0.5));
 		break;
 
 	case BLACKMAN_WINDOW:
 		for (i = 0; i < length; i++)
 			fir[i] *=
 			    0.42 +
-			    0.5 * cos(2.0 * PIf * ((typereal) i / M - 0.5)) +
-			    0.08 * cos(4.0 * PIf * ((typereal) i / M - 0.5));
+			    0.5 * cos(2.0 * PIf * ((double) i / M - 0.5)) +
+			    0.08 * cos(4.0 * PIf * ((double) i / M - 0.5));
 		break;
 
 	case RECT_WINDOW:
@@ -38,7 +38,7 @@ void apply_window(typereal *fir, unsigned int length, KernelWindow window)
 
 
 
-void normalize_fir(typereal *fir, unsigned int length)
+void normalize_fir(double *fir, unsigned int length)
 {
 	unsigned int i;
 	double sum = 0.0;
@@ -50,8 +50,8 @@ void normalize_fir(typereal *fir, unsigned int length)
 		fir[i] /= sum;
 }
 
-void compute_convolution(typereal *product, typereal *sig1, unsigned int len1,
-			 typereal *sig2, unsigned int len2)
+void compute_convolution(double *product, double *sig1, unsigned int len1,
+			 double *sig2, unsigned int len2)
 {
 	unsigned int i, j;
 
@@ -63,22 +63,22 @@ void compute_convolution(typereal *product, typereal *sig1, unsigned int len1,
 }
 
 
-void compute_fir_lowpass(typereal *fir, unsigned int length, typereal fc)
+void compute_fir_lowpass(double *fir, unsigned int length, double fc)
 {
 	unsigned int i;
-	typereal half_len = (typereal) ((unsigned int) (length / 2));
+	double half_len = (double) ((unsigned int) (length / 2));
 
 	for (i = 0; i < length; i++)
 		if (i != length / 2)
 			fir[i] =
-			    sin(2.0 * PIf * (typereal) fc *
-				((typereal) i - half_len)) / ((typereal) i -
+			    sin(2.0 * PIf * (double) fc *
+				((double) i - half_len)) / ((double) i -
 							   half_len);
 		else
 			fir[i] = 2.0 * PIf * fc;
 }
 
-void reverse_fir(typereal *fir, unsigned int length)
+void reverse_fir(double *fir, unsigned int length)
 {
 	unsigned int i;
 
@@ -89,8 +89,8 @@ void reverse_fir(typereal *fir, unsigned int length)
 }
 
 // inspired by DSP guide ch33
-int compute_cheby_iir(typereal *num, typereal *den, unsigned int num_pole,
-		      int highpass, typereal ripple, typereal cutoff_freq)
+int compute_cheby_iir(double *num, double *den, unsigned int num_pole,
+		      int highpass, double ripple, double cutoff_freq)
 {
 	double *a, *b, *ta, *tb;
 	double a0, a1, a2, b1, b2;
@@ -207,16 +207,16 @@ int compute_cheby_iir(typereal *num, typereal *den, unsigned int num_pole,
 
 
 
-///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 //
 //                      Create particular filters
 //
-///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 hfilter create_fir_filter_mean(unsigned int fir_length,
-				unsigned int nchann)
+				unsigned int nchann, unsigned int type)
 {
 	unsigned int i;
-	typereal* fir= NULL;
+	double* fir= NULL;
 	hfilter filt;
 
 	// Alloc temporary fir
@@ -226,19 +226,19 @@ hfilter create_fir_filter_mean(unsigned int fir_length,
 
 	// prepare the finite impulse response
 	for (i = 0; i < fir_length; i++)
-		fir[i] = 1.0f / (typereal) fir_length;
+		fir[i] = 1.0f / (double) fir_length;
 	
-	filt = create_dfilter(nchann, fir_length, fir, 0, NULL);
+	filt = create_filter_d(nchann, fir_length, fir, 0, NULL, type);
 
 	free(fir);
 	return filt;
 }
 
-hfilter create_fir_filter_lowpass(typereal fc, unsigned int half_length,
+hfilter create_fir_filter_lowpass(double fc, unsigned int half_length,
 				   unsigned int nchann,
-				   KernelWindow window)
+				   KernelWindow window, unsigned int type)
 {
-	typereal *fir = NULL;
+	double *fir = NULL;
 	hfilter filt;
 	unsigned int fir_length = 2 * half_length + 1;
 
@@ -252,18 +252,18 @@ hfilter create_fir_filter_lowpass(typereal fc, unsigned int half_length,
 	apply_window(fir, fir_length, window);
 	normalize_fir(fir, fir_length);
 
-	filt = create_dfilter(nchann, fir_length, fir, 0, NULL);
+	filt = create_filter_d(nchann, fir_length, fir, 0, NULL, type);
 
 	free(fir);
 	return filt;
 }
 
 
-hfilter create_fir_filter_highpass(typereal fc, unsigned int half_length,
+hfilter create_fir_filter_highpass(double fc, unsigned int half_length,
 				    unsigned int nchann,
-				    KernelWindow window)
+				    KernelWindow window, unsigned int type)
 {
-	typereal *fir = NULL;
+	double *fir = NULL;
 	hfilter filt;
 	unsigned int fir_length = 2 * half_length + 1;
 	
@@ -278,7 +278,7 @@ hfilter create_fir_filter_highpass(typereal fc, unsigned int half_length,
 	normalize_fir(fir, fir_length);
 	reverse_fir(fir, fir_length);
 
-	filt = create_dfilter(nchann, fir_length, fir, 0, NULL);
+	filt = create_filter_d(nchann, fir_length, fir, 0, NULL, type);
 	if (!filt)
 		return NULL;
 
@@ -287,14 +287,14 @@ hfilter create_fir_filter_highpass(typereal fc, unsigned int half_length,
 }
 
 
-hfilter create_fir_filter_bandpass(typereal fc_low, typereal fc_high,
+hfilter create_fir_filter_bandpass(double fc_low, double fc_high,
 				    unsigned int half_length,
 				    unsigned int nchann,
-				    KernelWindow window)
+				    KernelWindow window, unsigned int type)
 {
 	unsigned int len = 2 * (half_length / 2) + 1;
-	typereal fir_low[len], fir_high[len];
-	typereal *fir = NULL;
+	double fir_low[len], fir_high[len];
+	double *fir = NULL;
 	hfilter filt;
 	unsigned int fir_length = 2 * half_length + 1;
 
@@ -319,18 +319,18 @@ hfilter create_fir_filter_bandpass(typereal fc_low, typereal fc_high,
 	compute_convolution(fir, fir_low, len, fir_high, len);
 
 
-	filt = create_dfilter(nchann, fir_length, fir, 0, NULL);
+	filt = create_filter_d(nchann, fir_length, fir, 0, NULL, type);
 
 	free(fir);
 	return filt;
 }
 
 
-hfilter create_chebychev_filter(typereal fc, unsigned int num_pole,
+hfilter create_chebychev_filter(double fc, unsigned int num_pole,
 				 unsigned int nchann, int highpass,
-				 typereal ripple)
+				 double ripple, unsigned int type)
 {
-	typereal *a = NULL, *b = NULL;
+	double *a = NULL, *b = NULL;
 	hfilter filt;
 
 	if (num_pole % 2 != 0)
@@ -352,7 +352,7 @@ hfilter create_chebychev_filter(typereal fc, unsigned int num_pole,
 	}
 
 
-	filt = create_dfilter(nchann, num_pole + 1, a, num_pole, b);
+	filt = create_filter_d(nchann, num_pole + 1, a, num_pole, b, type);
 	if (!filt)
 		return NULL;
 
@@ -361,19 +361,20 @@ hfilter create_chebychev_filter(typereal fc, unsigned int num_pole,
 	return filt;
 }
 
-hfilter create_butterworth_filter(typereal fc, unsigned int num_pole,
-				   unsigned int num_chann, int highpass)
+hfilter create_butterworth_filter(double fc, unsigned int num_pole,
+				   unsigned int num_chann, int highpass,
+				   unsigned int type)
 {
 	return create_chebychev_filter(fc, num_pole, num_chann, highpass,
-				       0.0);
+				       0.0, type);
 }
 
-hfilter create_integrate_filter(unsigned int nchann)
+hfilter create_integrate_filter(unsigned int nchann, unsigned int type)
 {
-	typereal a = 1.0f, b = 1.0f;
+	double a = 1.0, b = 1.0;
 	hfilter filt;
 
-	filt = create_dfilter(nchann, 1, &a, 1, &b);
+	filt = create_filter_d(nchann, 1, &a, 1, &b, type);
 	if (!filt)
 		return NULL;
 

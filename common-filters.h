@@ -9,12 +9,12 @@ typedef enum {
 	RECT_WINDOW
 } KernelWindow;
 
-hfilter create_fir_filter_mean(unsigned int nsamples, unsigned int nchann);
-hfilter create_fir_filter_lowpass(typereal fc, unsigned int half_length, unsigned int nchann, KernelWindow window);
-hfilter create_fir_filter_highpass(typereal fc, unsigned int half_length, unsigned int nchann, KernelWindow window);
-hfilter create_fir_filter_bandpass(typereal fc_low, typereal fc_high, unsigned int half_length, unsigned int nchann, KernelWindow window);
-hfilter create_butterworth_filter(typereal fc, unsigned int num_pole, unsigned int num_chann, int highpass);
-hfilter create_chebychev_filter(typereal fc, unsigned int num_pole, unsigned int nchann, int highpass, typereal ripple);
-hfilter create_integrate_filter(unsigned int nchann);
+hfilter create_fir_filter_mean(unsigned int nsamples, unsigned int nchann, unsigned int type);
+hfilter create_fir_filter_lowpass(double fc, unsigned int half_length, unsigned int nchann, KernelWindow window, unsigned int type);
+hfilter create_fir_filter_highpass(double fc, unsigned int half_length, unsigned int nchann, KernelWindow window, unsigned int type);
+hfilter create_fir_filter_bandpass(double fc_low, double fc_high, unsigned int half_length, unsigned int nchann, KernelWindow window, unsigned int type);
+hfilter create_butterworth_filter(double fc, unsigned int num_pole, unsigned int num_chann, int highpass, unsigned int type);
+hfilter create_chebychev_filter(double fc, unsigned int num_pole, unsigned int nchann, int highpass, double ripple, unsigned int type);
+hfilter create_integrate_filter(unsigned int nchann, unsigned int type);
 
 #endif /*COMMON_FILTERS_H*/
