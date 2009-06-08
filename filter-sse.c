@@ -2,6 +2,7 @@
 #include <memory.h>
 #include <stdlib.h>
 #include <math.h>
+#include <stdint.h>
 #ifdef __SSE__
 #include <xmmintrin.h>
 #endif
@@ -14,7 +15,9 @@
 # define mul_vec(v1,v2)			_mm_mul_pd(v1,v2)
 # define zero_vec()			_mm_setzero_pd()
 # define set1_vec(data)			_mm_set1_pd(data)
+# define NELEM_VEC			2
 typedef __m128d  typereal_a;
+
 
 #else
 
@@ -24,6 +27,7 @@ typedef __m128d  typereal_a;
 # define mul_vec(v1,v2)			_mm_mul_ps(v1,v2)
 #define zero_vec()			_mm_setzero_ps()
 # define set1_vec(data)			_mm_set1_ps(data)
+# define NELEM_VEC			4
 typedef __m128  typereal_a;
 
 #endif
@@ -134,10 +138,10 @@ void reset_filter(hfilter filt)
 	       (filt->b_len) * filt->num_chann * sizeof(*(filt->yoff)));
 }
 
-
-void filter(hfilter filt, const typereal* in, typereal* out, int nsamples)
+void filter_u(hfilter filt, const typereal* in, typereal* out, unsigned int nsamples)
 {
-	int i, k, ichann, io, ii, num;
+	unsigned int i;
+	int k, ichann, io, ii, num;
 	const typereal* x;
 	const typereal* y;
 	int a_len = filt->a_len;
@@ -206,9 +210,10 @@ void filter(hfilter filt, const typereal* in, typereal* out, int nsamples)
 
 
 
-void filtera(hfilter filt, const typereal *xaligned, typereal *yaligned, unsigned int nsamples)
+void filter_a(hfilter filt, const typereal *xaligned, typereal *yaligned, unsigned int nsamples)
 {
-	int i, k, ichann, ii, len, midlen;
+	unsigned int i;
+	int k, ichann, ii, len, midlen;
 	const typereal_a *x, *y;
 
 	int a_len = filt->a_len;
@@ -297,3 +302,15 @@ void filtera(hfilter filt, const typereal *xaligned, typereal *yaligned, unsigne
 	memcpy(dest, src, len*sizeof(*src));
 
 }
+
+void filter(hfilter filt, const typereal* in, typereal* out, unsigned int nsamples)
+{
+	// Check that data is aligned on 16 byte boundaries
+	if ( (filt->num_chann%NELEM_VEC) 
+		|| ((uintptr_t)in % sizeof(typereal_a)) 
+		|| ((uintptr_t)out % sizeof(typereal_a)) )
+		filter_u(filt, in, out, nsamples);
+	else
+		filter_a(filt, in, out, nsamples);
+}
+

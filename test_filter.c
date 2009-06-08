@@ -13,17 +13,18 @@
 #define FILTORDER 4
 
 
+void filter_u(hfilter filt, const typereal* x, typereal* y, unsigned int num_samples);
+void filter_a(hfilter filt, const typereal* x, typereal* y, unsigned int num_samples);
 
 int main(int argc, char *argv[])
 {
-	unsigned int nchann, nsample, niter, filtorder, nvchann;
+	int nchann, nsample, niter, filtorder;
 	int i, j, k, opt;
 	struct timespec start, stop;
 	long long delay = 0, delayv = 0;
 	long long tc, dt, timing, mintime, mintimev;
 	hfilter filt1 = NULL, filt2 = NULL;
 	typereal *buff1, *buff2;
-	typereal *vbuff1, *vbuff2;
 
 
 	// Process command-line options
@@ -45,6 +46,7 @@ int main(int argc, char *argv[])
 		case 'o':
 			filtorder = atoi(optarg);
 			break;
+		case 'h':
 		default:	/* '?' */
 			fprintf(stderr, "Usage: %s [-c numchannel] [-s numsample] [-i numiteration] [-o filterorder]\n",
 				argv[0]);
@@ -56,31 +58,20 @@ int main(int argc, char *argv[])
 
 
 	// Allocate buffers
-#ifdef	USE_DOUBLE
-	nvchann = (nchann+1)&~1;
-#else
-	nvchann = (nchann+3)&~3;
-#endif
-	printf("nvchann=%i\n",nvchann);
-	buff1 = malloc(sizeof(*buff1) * nchann * nsample);
-	buff2 = malloc(sizeof(*buff1) * nchann * nsample);
 	if (posix_memalign
-	    ((void **) &vbuff1, 16, sizeof(*vbuff1) * nvchann * nsample))
-		vbuff1 = NULL;
+	    ((void **) &buff1, 16, sizeof(typereal) * nchann * nsample))
+		buff1 = NULL;
 	if (posix_memalign
-	    ((void **) &vbuff2, 16, sizeof(*vbuff2) * nvchann * nsample))
-		vbuff2 = NULL;
-	if (!buff1 || !buff2 || !vbuff1 || !vbuff2) {
+	    ((void **) &buff2, 16, sizeof(typereal) * nchann * nsample))
+		buff2 = NULL;
+	if (!buff1 || !buff2) {
 		fprintf(stderr, "buffer allocation failed\n");
 		goto out;
 	}
 	// set signals (ramps)
-//	for (i = 0; i < nchann; i++)
-//		for (j = 0; j < nsample; j++)
-//			buff1[j * nchann + i] = j;
-//	for (j=0; i<nsample; j++) 
-//		memcpy(vbuff1+j*nvchann, buff1+j*nchann, sizeof(*buff1) * nchann);
-
+	for (i = 0; i < nchann; i++)
+		for (j = 0; j < nsample; j++)
+			buff1[j * nchann + i] = j;
 
 
 	// Estimate timecall of clockgettime
@@ -115,7 +106,7 @@ int main(int argc, char *argv[])
 
 		// Test vectorized version
 		clock_gettime(CLOCK_MONOTONIC, &start);
-		filtera(filt2, vbuff1, vbuff2, nsample);
+		filter_u(filt2, buff1, buff2, nsample);
 		clock_gettime(CLOCK_MONOTONIC, &stop);
 		timing = ((stop.tv_sec - start.tv_sec)*1000000000 + (stop.tv_nsec - start.tv_nsec)) - tc;
 		delayv += timing;
@@ -124,15 +115,15 @@ int main(int argc, char *argv[])
 
 	printf("normal version:\n");
 	dt = delay / niter;
-	printf("mean time per call: %i nsec\n",(int)dt);
-	printf("mean time per sample: %i nsec\n",(int)(dt/(nsample*nchann)));
+//	printf("mean time per call: %i nsec\n",(int)dt);
+//	printf("mean time per sample: %i nsec\n",(int)(dt/(nsample*nchann)));
 	dt = mintime;
 	printf("min time per call: %i nsec\n",(int)dt);
 	printf("min time per sample: %i nsec\n",(int)(dt/(nsample*nchann)));
 	printf("vector version:\n");
 	dt = delayv / niter;
-	printf("mean time per call: %i nsec\n",(int)dt);
-	printf("mean time per sample: %i nsec\n",(int)(dt/(nsample*nchann)));
+//	printf("mean time per call: %i nsec\n",(int)dt);
+//	printf("mean time per sample: %i nsec\n",(int)(dt/(nsample*nchann)));
 	dt = mintimev;
 	printf("min time per call: %i nsec\n",(int)dt);
 	printf("min time per sample: %i nsec\n",(int)(dt/(nsample*nchann)));
@@ -142,8 +133,6 @@ out:
 	destroy_filter(filt2);
 	free(buff1);
 	free(buff2);
-	free(vbuff1);
-	free(vbuff2);
 
 	return 0;
 }
