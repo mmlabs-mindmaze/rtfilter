@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 	nsample = NSAMPLE;
 	niter = NITER;
 	filtorder = FILTORDER;
-	while ((opt = getopt(argc, argv, "hc:s:i:o:")) != -1) {
+	while ((opt = getopt(argc, argv, "c:s:i:o:")) != -1) {
 		switch (opt) {
 		case 'c':
 			nchann = atoi(optarg);
