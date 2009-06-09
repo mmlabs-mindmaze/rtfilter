@@ -1,10 +1,11 @@
 CC=gcc
 LD=gcc
 LDFLAGS=-lm -lrt $(PFLAGS)
-CFLAGS=-march=native -msse2 -mfpmath=sse -O3 -I. -W -Wall -g3 $(PFLAGS)
+CFLAGS=-march=native -msse2 -mfpmath=sse -I. -W -Wall -g3 $(PFLAGS)
 
 all: test_timing test_filter
 	
+filter.o: filter.c filter-templates.c filter.h
 
 test_filter: filter.o test_filter.o common-filters.o
 	$(LD) -o $@ $^ $(LDFLAGS)

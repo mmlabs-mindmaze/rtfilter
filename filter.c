@@ -8,7 +8,7 @@
 #endif
 
 
-#define sizeof_data(type)	(type == DATATYPE_FLOAT ? sizeof(float) : sizeof(double))
+#define sizeof_data(type)	((type == DATATYPE_FLOAT) ? sizeof(float) : sizeof(double))
 
 struct _dfilter
 {

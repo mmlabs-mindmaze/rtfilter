@@ -89,16 +89,73 @@ void reverse_fir(double *fir, unsigned int length)
 }
 
 // inspired by DSP guide ch33
+//
+
+void get_pole_coefs(double p, double np, double fc, double r, int highpass, double a[3], double b[3])
+{
+	double rp, ip, es, vx, kx, t, w, m, d, x0, x1, x2, y1, y2, k;
+
+	// calculate pole locate on the unit circle
+	rp = -cos(PId / (np * 2.0) + (p - 1.0) * PId / np);
+	ip = sin(PId / (np * 2.0) + (p - 1.0) * PId / np);
+
+	// Warp from a circle to an ellipse
+	if (r != 0.0) {
+	/*	es = sqrt(pow(1.0 / (1.0 - r), 2) - 1.0);
+		vx = (1.0 / np) * log((1.0 / es) +
+				      sqrt((1.0 / (es * es)) +
+					   1.0));
+		kx = (1.0 / np) * log((1.0 / es) +
+				      sqrt((1.0 / (es * es)) -
+					   1.0));
+		kx = (exp(kx) + exp(-kx)) / 2.0;
+		rp = rp * ((exp(vx) - exp(-vx)) / 2.0) / kx;
+		ip = ip * ((exp(vx) + exp(-vx)) / 2.0) / kx;*/
+	
+		es = sqrt(pow(1.0 / (1.0 - r), 2) - 1.0);
+		vx = asinh(1/es) / np;
+		kx = acosh(1/es) / np;
+		kx = cosh( kx );
+		rp = rp * sinh(vx) / kx;
+		ip = ip * cosh(vx) / kx;
+	}
+
+
+	// s to z domains conversion
+	t = 2.0*tan(0.5);
+	w = 2.0*PId*fc;
+	m = rp*rp + ip*ip;
+	d = 4.0 - 4.0*rp*t + m*t*t;
+	x0 = t*t/d;
+	x1 = 2.0*t*t/d;
+	x2 = t*t/d;
+	y1 = (8.0 - 2.0*m*t*t)/d;
+	y2 = (-4.0 - 4.0*rp*t - m*t*t)/d;
+
+	// LP(s) to LP(z) or LP(s) to HP(z)
+	if (highpass)
+		k = -cos(w/2.0 + 0.5)/cos(w/2.0 - 0.5);
+	else
+		k = sin(0.5 - w/2.0)/sin(0.5 + w/2.0);
+	d = 1.0 + y1*k - y2*k*k;
+	a[0] = (x0 - x1*k + x2*k*k)/d;
+	a[1] = (-2.0*x0*k + x1 + x1*k*k - 2.0*x2*k)/d;
+	a[2] = (x0*k*k - x1*k + x2)/d;
+	b[1] = (2.0*k + y1 + y1*k*k - 2.0*y2*k)/d;
+	b[2] = (-k*k - y1*k + y2)/d;
+	if (highpass) {
+		a[1] *= -1.0;
+		b[1] *= -1.0;
+	}
+}
+
 int compute_cheby_iir(double *num, double *den, unsigned int num_pole,
 		      int highpass, double ripple, double cutoff_freq)
 {
 	double *a, *b, *ta, *tb;
-	double a0, a1, a2, b1, b2;
-	double rp, ip, es, vx, kx, t, w, m, d, x0, x1, x2, y1, y2, k;
+	double ap[3], bp[3];
 	double sa, sb, gain;
-	double np = num_pole;
 	unsigned int i, p;
-	double fc = cutoff_freq, r = ripple;
 	int retval = 1;
 
 	// Allocate temporary arrays
@@ -117,57 +174,15 @@ int compute_cheby_iir(double *num, double *den, unsigned int num_pole,
 	b[2] = 1.0;
 
 	for (p = 1; p <= num_pole / 2; p++) {
-		// calculate pole locate on the unit circle
-		rp = -cos(PId / (np * 2.0) +
-			  ((double) (p - 1)) * PId / np);
-		ip = sin(PId / (np * 2.0) + ((double) (p - 1)) * PId / np);
+		// Compute the coefficients for this pole
+		get_pole_coefs(p, num_pole, cutoff_freq, ripple, highpass, ap, bp);
 
-		// Warp from a circle to an ellipse
-		if (r != 0.0) {
-			es = sqrt(pow(1.0 / (1.0 - r), 2) - 1.0);
-			vx = (1.0 / np) * log((1.0 / es) +
-					      sqrt((1.0 / (es * es)) +
-						   1.0));
-			kx = (1.0 / np) * log((1.0 / es) +
-					      sqrt((1.0 / (es * es)) -
-						   1.0));
-			kx = (exp(kx) + exp(-kx)) / 2.0;
-			rp = rp * ((exp(vx) - exp(-vx)) / 2.0) / kx;
-			ip = ip * ((exp(vx) + exp(-vx)) / 2.0) / kx;
-		}
-		// s to z domains conversion
-		t = 2.0 * tan(0.5);
-		w = 2.0 * PId * fc;
-		m = rp * rp + ip * ip;
-		d = 4.0 - 4.0 * rp * t + m * t * t;
-		x0 = t * t / d;
-		x1 = 2.0 * t * t / d;
-		x2 = t * t / d;
-		y1 = (8.0 - 2.0 * m * t * t) / d;
-		y2 = (-4.0 - 4.0 * rp * t - m * t * t) / d;
-
-		// LP(s) to LP(z) or LP(s) to HP(z)
-		if (highpass)
-			k = -cos(w / 2.0 + 0.5) / cos(w / 2.0 - 0.5);
-		else
-			k = sin(0.5 - w / 2.0) / sin(0.5 + w / 2.0);
-		d = 1.0 + y1 * k - y2 * k * k;
-		a0 = (x0 - x1 * k + x2 * k * k) / d;
-		a1 = (-2.0 * x0 * k + x1 + x1 * k * k - 2.0 * x2 * k) / d;
-		a2 = (x0 * k * k - x1 * k + x2) / d;
-		b1 = (2.0 * k + y1 + y1 * k * k - 2.0 * y2 * k) / d;
-		b2 = (-k * k - y1 * k + y2) / d;
-		if (highpass) {
-			a1 *= -1.0;
-			b1 *= -1.0;
-		}
 		// Add coefficients to the cascade
 		memcpy(ta, a, (num_pole + 3) * sizeof(*a));
 		memcpy(tb, b, (num_pole + 3) * sizeof(*b));
 		for (i = 2; i <= num_pole + 2; i++) {
-			a[i] =
-			    a0 * ta[i] + a1 * ta[i - 1] + a2 * ta[i - 2];
-			b[i] = tb[i] + b1 * tb[i - 1] + b2 * tb[i - 2];
+			a[i] = ap[0]*ta[i] + ap[1]*ta[i-1] + ap[2]*ta[i-2];
+			b[i] = tb[i] - bp[1]*tb[i-1] - bp[2]*tb[i-2];
 		}
 	}
 
@@ -175,7 +190,7 @@ int compute_cheby_iir(double *num, double *den, unsigned int num_pole,
 	b[2] = 0;
 	for (i = 0; i <= num_pole; i++) {
 		a[i] = a[i + 2];
-		b[i] = b[i + 2];
+		b[i] = -b[i + 2];
 	}
 
 	// Normalize the gain

@@ -22,9 +22,9 @@ hfilter CREATE_FILTER_FUNC(unsigned int nchann, unsigned int a_len, const TYPERE
 	a = (a_len > 0) ? malloc(a_len * sizeof_data(type)) : NULL;
 	b = (b_len > 0) ? malloc(b_len * sizeof_data(type)) : NULL;
 	if (xoffsize > 0) 
-		xoff = align_alloc(16,xoffsize * sizeof_data(type));
+		xoff = align_alloc(16, xoffsize * sizeof_data(type));
 	if (yoffsize > 0) 
-		yoff = align_alloc(16,yoffsize * sizeof_data(type));
+		yoff = align_alloc(16, yoffsize * sizeof_data(type));
 
 	// handle memory allocation problem
 	if (!filt || ((a_len > 0) && !a) || ((xoffsize > 0) && !xoff)
@@ -74,7 +74,7 @@ hfilter CREATE_FILTER_FUNC(unsigned int nchann, unsigned int a_len, const TYPERE
 void FILTER_UNALIGNED_FUNC(hfilter filt, const TYPEREAL* in, TYPEREAL* out, unsigned int nsamples)
 {
 	unsigned int i;
-	int k, ichann, io, ii, num;
+	int k, ichann, ii, num;
 	const TYPEREAL* x;
 	const TYPEREAL* y;
 	int a_len = filt->a_len;
@@ -82,19 +82,21 @@ void FILTER_UNALIGNED_FUNC(hfilter filt, const TYPEREAL* in, TYPEREAL* out, unsi
 	int b_len = filt->b_len;
 	const TYPEREAL* b = filt->b;
 	int nchann = filt->num_chann;
-	const TYPEREAL* xprev = filt->xoff + (a_len-1)*nchann;
-	const TYPEREAL* yprev = filt->yoff + b_len*nchann;
+	const TYPEREAL* xprev = (TYPEREAL*)(filt->xoff) + (a_len-1)*nchann;
+	const TYPEREAL* yprev = (TYPEREAL*)(filt->yoff) + b_len*nchann;
+	TYPEREAL* currout;
 
 
 	if (!nchann)
 		return;
 
+	// Init to convolution to 0
+	memset(out, 0, nchann*nsamples*sizeof(*out));
 
 	// compute the product of convolution of the input with the finite
 	// impulse response (fir)
 	for (i=0; i<nsamples; i++) {
-		io = i*nchann;
-		memset(out+io, 0, nchann*sizeof(*out));
+		currout = out + i*nchann;
 
 		for (k=0; k<a_len; k++) {
 			ii = (i-k)*nchann;
@@ -104,7 +106,7 @@ void FILTER_UNALIGNED_FUNC(hfilter filt, const TYPEREAL* in, TYPEREAL* out, unsi
 			x = (ii >= 0) ? in : xprev;
 			
 			for (ichann=0; ichann<nchann; ichann++)
-				out[io+ichann] += a[k]*x[ii+ichann];
+				currout[ichann] += a[k]*x[ii+ichann];
 		}
 
 		// compute the convolution in the denominator
@@ -116,7 +118,7 @@ void FILTER_UNALIGNED_FUNC(hfilter filt, const TYPEREAL* in, TYPEREAL* out, unsi
 			y = (ii>=0) ? out : yprev;
 			
 			for (ichann=0; ichann<nchann; ichann++)
-				out[io+ichann] += b[k]*y[ii+ichann];
+				currout[ichann] += b[k]*y[ii+ichann];
 		}
 	}
 
