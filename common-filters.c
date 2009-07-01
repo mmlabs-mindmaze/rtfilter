@@ -205,10 +205,9 @@ int compute_cheby_iir(double *num, double *den, unsigned int num_pole,
 
 
 	// Copy the results to the num and den
-	num[0] = a[0];
-	for (i = 1; i <= num_pole; i++) {
+	for (i = 0; i <= num_pole; i++) {
 		num[i] = a[i];
-		den[i - 1] = b[i];
+		den[i] = b[i];
 	}
 
       exit:
@@ -352,7 +351,7 @@ hfilter create_chebychev_filter(double fc, unsigned int num_pole,
 		return NULL;
 
 	a = malloc( (num_pole+1)*sizeof(*a));
-	b = malloc( (num_pole)*sizeof(*b));
+	b = malloc( (num_pole+1)*sizeof(*b));
 	if (!a || !b) {
 		free(a);
 		free(b);
@@ -367,7 +366,7 @@ hfilter create_chebychev_filter(double fc, unsigned int num_pole,
 	}
 
 
-	filt = create_filter_d(nchann, num_pole + 1, a, num_pole, b, type);
+	filt = create_filter_d(nchann, num_pole+1, a, num_pole+1, b, type);
 	if (!filt)
 		return NULL;
 

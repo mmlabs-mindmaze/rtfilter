@@ -6,7 +6,7 @@
 hfilter CREATE_FILTER_FUNC(unsigned int nchann, unsigned int a_len, const TYPEREAL *num, unsigned int b_len, const TYPEREAL *denum, unsigned int type)
 {
 	unsigned int i;
-	
+	TYPEREAL normfactor;
 	struct _dfilter *filt = NULL;
 	void *a = NULL;
 	void *xoff = NULL;
@@ -14,7 +14,16 @@ hfilter CREATE_FILTER_FUNC(unsigned int nchann, unsigned int a_len, const TYPERE
 	void *yoff = NULL;
 	int xoffsize, yoffsize;
 
-	
+	// Check if a denominator exists
+	if ((b_len==0) || (denum==NULL)) {
+		b_len = 0;
+		normfactor = 1.0;
+	}
+	else {
+		b_len--;
+		normfactor = denum[0];
+	}
+
 	xoffsize = (a_len - 1) * nchann;
 	yoffsize = b_len * nchann;
 
@@ -49,20 +58,21 @@ hfilter CREATE_FILTER_FUNC(unsigned int nchann, unsigned int a_len, const TYPERE
 	filt->b_len = b_len;
 	filt->yoff = yoff;
 
-	// copy the numerator and denumerator
+	// copy the numerator and denumerator 
+	// (and normalize and convert to recursive rule)
 	if (type == DATATYPE_FLOAT) {
 		float *af = a, *bf = b;
 		for (i=0; i<a_len; i++)
-			af[i] = num[i];
+			af[i] = num[i] / normfactor;
 		for (i=0; i<b_len; i++)
-			bf[i] = denum[i];
+			bf[i] = -denum[i+1] / normfactor;
 	}
 	else {
 		float *ad = a, *bd = b;
 		for (i=0; i<a_len; i++)
-			ad[i] = num[i];
+			ad[i] = num[i] / normfactor;
 		for (i=0; i<b_len; i++)
-			bd[i] = denum[i];
+			bd[i] = -denum[i+1] / normfactor;
 	}
 
 	reset_filter(filt);
