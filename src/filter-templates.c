@@ -155,6 +155,7 @@ void FILTER_UNALIGNED_FUNC(hfilter filt, const TYPEREAL* in, TYPEREAL* out, unsi
 
 
 
+#ifdef USE_SIMD
 void FILTER_ALIGNED_FUNC(hfilter filt, const TYPEREAL *xaligned, TYPEREAL *yaligned, unsigned int nsamples)
 {
 	unsigned int i;
@@ -247,15 +248,18 @@ void FILTER_ALIGNED_FUNC(hfilter filt, const TYPEREAL *xaligned, TYPEREAL *yalig
 	memcpy(dest, src, len*sizeof(*src));
 
 }
+#endif //USE_SIMD
 
 void FILTER_FUNC(hfilter filt, const TYPEREAL* in, TYPEREAL* out, unsigned int nsamples)
 {
+#ifdef USE_SIMD
 	// Check that data is aligned on 16 byte boundaries
-	if ( (filt->num_chann%NELEM_VEC) 
+	if ( !((filt->num_chann%NELEM_VEC) 
 		|| ((uintptr_t)in % sizeof(TYPEREAL_V)) 
-		|| ((uintptr_t)out % sizeof(TYPEREAL_V)) )
-		FILTER_UNALIGNED_FUNC(filt, in, out, nsamples);
-	else
+		|| ((uintptr_t)out % sizeof(TYPEREAL_V))) )
 		FILTER_ALIGNED_FUNC(filt, in, out, nsamples);
+	else
+#endif //USE_SIMD
+		FILTER_UNALIGNED_FUNC(filt, in, out, nsamples);
 }
 

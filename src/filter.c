@@ -1,12 +1,18 @@
-#include "filter.h"
+#if HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 #include <memory.h>
 #include <stdlib.h>
 #include <math.h>
 #include <stdint.h>
-#ifdef __SSE__
+
+#ifdef USE_SIMD
 #include <xmmintrin.h>
 #endif
 
+
+#include "filter.h"
 
 #define sizeof_data(type)	((type == DATATYPE_FLOAT) ? sizeof(float) : sizeof(double))
 
