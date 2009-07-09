@@ -44,6 +44,20 @@ case $host in
 esac
 
 
+AC_ARG_ENABLE([simd],
+	AC_HELP_STRING([--enable-simd@<:@=ARG@:>@],[Use sse intrinsics when possible @<:@DEFAULT=yes@:>@]),
+	[case "${enableval}" in
+		yes) simd=true ;;
+		no) simd=false ;;
+		*) AC_MSG_ERROR([bad value ${enableval} for --enable-simd]) ;;
+	esac],
+	[simd=true])
+
+
+if test "x$simd" = "xtrue"; then
+	AC_DEFINE(USE_SIMD, [], [Enable code using sse intrinsics])
+fi
+
 AC_SUBST([RELEASE],[lib_release])
 AC_SUBST([CURRENT],[lib_current])
 AC_SUBST([REVISION],[lib_revision])
