@@ -187,7 +187,7 @@ int compute_cheby_iir(double *num, double *den, unsigned int num_pole,
 	}
 
 	// Finish combining coefficients
-	b[2] = 0;
+	b[2] = 0.0;
 	for (i = 0; i <= num_pole; i++) {
 		a[i] = a[i + 2];
 		b[i] = -b[i + 2];
@@ -204,11 +204,14 @@ int compute_cheby_iir(double *num, double *den, unsigned int num_pole,
 		a[i] /= gain;
 
 
+
 	// Copy the results to the num and den
 	for (i = 0; i <= num_pole; i++) {
 		num[i] = a[i];
-		den[i] = b[i];
+		den[i] = -b[i];
 	}
+	// den[0] must be 1.0
+	den[0] = 1.0;
 
       exit:
 	free(a);
