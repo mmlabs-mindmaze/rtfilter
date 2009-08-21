@@ -97,7 +97,7 @@ hfilter CREATE_FILTER_FUNC(unsigned int nchann, unsigned int a_len, const TYPERE
 }
 
 
-void FILTER_UNALIGNED_FUNC(hfilter filt, const TYPEREAL* in, TYPEREAL* out, unsigned int nsamples)
+static void FILTER_UNALIGNED_FUNC(hfilter filt, const TYPEREAL* in, TYPEREAL* out, unsigned int nsamples)
 {
 	unsigned int i;
 	int k, ichann, ii, num;
@@ -172,7 +172,7 @@ void FILTER_UNALIGNED_FUNC(hfilter filt, const TYPEREAL* in, TYPEREAL* out, unsi
 
 
 #ifdef USE_SIMD
-void FILTER_ALIGNED_FUNC(hfilter filt, const TYPEREAL *xaligned, TYPEREAL *yaligned, unsigned int nsamples)
+static void FILTER_ALIGNED_FUNC(hfilter filt, const TYPEREAL *xaligned, TYPEREAL *yaligned, unsigned int nsamples)
 {
 	unsigned int i;
 	int k, ichann, ii, len, midlen;

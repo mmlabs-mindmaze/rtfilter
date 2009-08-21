@@ -26,7 +26,7 @@
 
 // TODO change the data type used for filter function (use double) to improve stability of recursive filters
 
-void apply_window(double *fir, unsigned int length, KernelWindow window)
+static void apply_window(double *fir, unsigned int length, KernelWindow window)
 {
 	unsigned int i;
 	double M = length - 1;
@@ -53,7 +53,7 @@ void apply_window(double *fir, unsigned int length, KernelWindow window)
 
 
 
-void normalize_fir(double *fir, unsigned int length)
+static void normalize_fir(double *fir, unsigned int length)
 {
 	unsigned int i;
 	double sum = 0.0;
@@ -65,7 +65,7 @@ void normalize_fir(double *fir, unsigned int length)
 		fir[i] /= sum;
 }
 
-void compute_convolution(double *product, double *sig1, unsigned int len1,
+static void compute_convolution(double *product, double *sig1, unsigned int len1,
 			 double *sig2, unsigned int len2)
 {
 	unsigned int i, j;
@@ -78,7 +78,7 @@ void compute_convolution(double *product, double *sig1, unsigned int len1,
 }
 
 
-void compute_fir_lowpass(double *fir, unsigned int length, double fc)
+static void compute_fir_lowpass(double *fir, unsigned int length, double fc)
 {
 	unsigned int i;
 	double half_len = (double) ((unsigned int) (length / 2));
@@ -93,7 +93,7 @@ void compute_fir_lowpass(double *fir, unsigned int length, double fc)
 			fir[i] = 2.0 * PIf * fc;
 }
 
-void reverse_fir(double *fir, unsigned int length)
+static void reverse_fir(double *fir, unsigned int length)
 {
 	unsigned int i;
 
@@ -106,7 +106,7 @@ void reverse_fir(double *fir, unsigned int length)
 // inspired by DSP guide ch33
 //
 
-void get_pole_coefs(double p, double np, double fc, double r, int highpass, double a[3], double b[3])
+static void get_pole_coefs(double p, double np, double fc, double r, int highpass, double a[3], double b[3])
 {
 	double rp, ip, es, vx, kx, t, w, m, d, x0, x1, x2, y1, y2, k;
 
@@ -164,7 +164,7 @@ void get_pole_coefs(double p, double np, double fc, double r, int highpass, doub
 	}
 }
 
-int compute_cheby_iir(double *num, double *den, unsigned int num_pole,
+static int compute_cheby_iir(double *num, double *den, unsigned int num_pole,
 		      int highpass, double ripple, double cutoff_freq)
 {
 	double *a, *b, *ta, *tb;
