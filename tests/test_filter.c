@@ -2,11 +2,11 @@
 #include <time.h>
 #include <sys/time.h>
 #include <memory.h>
-#include <xmmintrin.h>
 #include <limits.h>
 #include <unistd.h>
 #include <stdint.h>
 #include <math.h>
+#include <stdlib.h>
 
 #include "common-filters.h"
 

@@ -15,11 +15,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "filter.h"
-#include "common-filters.h"
 #include <memory.h>
 #include <stdlib.h>
 #include <math.h>
+#include "filter.h"
+#include "common-filters.h"
 
 #define PId	3.1415926535897932384626433832795L
 #define PIf	3.1415926535897932384626433832795f
@@ -34,9 +34,7 @@ void apply_window(double *fir, unsigned int length, KernelWindow window)
 	switch (window) {
 	case HAMMING_WINDOW:
 		for (i = 0; i < length; i++)
-			fir[i] *=
-			    0.54 +
-			    0.46 * cos(2.0 * PIf * ((double) i / M - 0.5));
+			fir[i] *= 0.54 + 0.46 * cos(2.0 * PIf * ((double)i / M - 0.5));
 		break;
 
 	case BLACKMAN_WINDOW:
