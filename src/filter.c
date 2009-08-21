@@ -66,6 +66,25 @@ void reset_filter(hfilter filt)
 	       (filt->b_len) * filt->num_chann * sizeof_data(filt->type));
 }
 
+void init_filter(hfilter filt, const void* val)
+{
+	int i;
+	void* dest;
+	int datlen = filt->num_chann*sizeof(filt->type);
+
+	dest = filt->xoff;
+	for (i=0; i<(filt->a_len-1); i++) {
+		memcpy(dest, val, datlen);
+		dest = (char*)dest + datlen;
+	}
+
+	dest = filt->yoff;
+	for (i=0; i<filt->b_len; i++) {
+		memcpy(dest, val, datlen);
+		dest = (char*)dest + datlen;
+	}
+}
+
 /**************************************************************************
  *                                                                        *
  *                        Single precision version                        *
