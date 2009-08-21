@@ -15,6 +15,15 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+/**
+ * \file filter.h
+ * \brief Definitions of foundamental primitives of rtfilter library
+ * \author Nicolas Bourdaud
+ *
+ * These are the definitions of the minimal primitives used to interact with digital filters in the rtfilter library. The primitives described here for using a filter, not designing it.
+ *
+ * \sa common-filter.h
+ */
 #ifndef FILTER_H
 #define FILTER_H
 
@@ -27,19 +36,26 @@ extern "C" {
 
 typedef const struct _dfilter* hfilter;
 
+//! create a filter operating on \c float data
 hfilter create_filter_f(unsigned int nchann, 
-                        unsigned int alen, const float *a,
-			unsigned int blen, const float *b,
+                        unsigned int num_len, const float *num,
+			unsigned int denum_len, const float *denum,
 			unsigned int type);
+//! create a filter operating on \c double data
 hfilter create_filter_d(unsigned int nchann,
-                        unsigned int alen, const double *a,
-			unsigned int blen, const double *b,
+                        unsigned int num_len, const double *num,
+			unsigned int denum_len, const double *denum,
 			unsigned int type);
+//! filter chunk of \c float data
 void filter_f(hfilter filt, const float* x, float* y, unsigned int ns);
+//! filter chunk of \c double data
 void filter_d(hfilter filt, const double* x, double* y, unsigned int ns);
-void reset_filter(hfilter filt);
-void init_filter(hfilter filt, const void* val);
+//! initialize a filter with particular data
+void init_filter(hfilter filt, const void* data);
+//! destroy a filter
 void destroy_filter(hfilter filt);
+
+
 
 #ifdef __cplusplus
 }

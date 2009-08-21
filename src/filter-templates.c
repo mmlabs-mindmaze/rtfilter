@@ -15,11 +15,33 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#undef NELEM_VEC
+/** \internal
+ * \file filter-template.c
+ * \brief Templates for implemention of data specific primitives
+ * \author Nicolas Bourdaud
+ *
+ * This file includes the templates of the functions that are specific to certain data type
+ */
+
 #define NELEM_VEC	(sizeof(TYPEREAL_V)/sizeof(TYPEREAL))
 
-
-hfilter CREATE_FILTER_FUNC(unsigned int nchann, unsigned int a_len, const TYPEREAL *num, unsigned int b_len, const TYPEREAL *denum, unsigned int type)
+/*! \fn hfilter create_filter_f(unsigned int nchann, unsigned int num_len, const float *num, unsigned int denum_len, const float *denum, unsigned int type)
+ * \param nchann 	number of channel to process
+ * \param num_len 	length of the numerator of the z-transform
+ * \param num 		array of values representing the numerator of the z-transform
+ * \param denum_len 	length of the denumerator of the z-transform
+ * \param denum		array  of values representing the the denumerator of the z-transform
+ * \param type		constant representing the type of data the filter will have to process (\c DATA_FLOAT or \c DATA_DOUBLE)
+ * \return		Handle to the created filter
+ *
+ * dfswf
+ */
+/*! \fn hfilter create_filter_d(unsigned int nchann, unsigned int num_len, const double *num, unsigned int denum_len, const double *denum, unsigned int type)
+ *
+ * same as create_filter_f but operating on \c double data 
+ * \sa create_filter_f()
+ */
+hfilter CREATE_FILTER_FUNC(unsigned int nchann, unsigned int num_len, const TYPEREAL *num, unsigned int denum_len, const TYPEREAL *denum, unsigned int type)
 {
 	unsigned int i;
 	TYPEREAL normfactor;
@@ -31,29 +53,29 @@ hfilter CREATE_FILTER_FUNC(unsigned int nchann, unsigned int a_len, const TYPERE
 	int xoffsize, yoffsize;
 
 	// Check if a denominator exists
-	if ((b_len==0) || (denum==NULL)) {
-		b_len = 0;
+	if ((denum_len==0) || (denum==NULL)) {
+		denum_len = 0;
 		normfactor = 1.0;
 	}
 	else {
-		b_len--;
+		denum_len--;
 		normfactor = denum[0];
 	}
 
-	xoffsize = (a_len - 1) * nchann;
-	yoffsize = b_len * nchann;
+	xoffsize = (num_len - 1) * nchann;
+	yoffsize = denum_len * nchann;
 
 	filt = malloc(sizeof(*filt));
-	a = (a_len > 0) ? malloc(a_len * sizeof_data(type)) : NULL;
-	b = (b_len > 0) ? malloc(b_len * sizeof_data(type)) : NULL;
+	a = (num_len > 0) ? malloc(num_len * sizeof_data(type)) : NULL;
+	b = (denum_len > 0) ? malloc(denum_len * sizeof_data(type)) : NULL;
 	if (xoffsize > 0) 
 		xoff = align_alloc(16, xoffsize * sizeof_data(type));
 	if (yoffsize > 0) 
 		yoff = align_alloc(16, yoffsize * sizeof_data(type));
 
 	// handle memory allocation problem
-	if (!filt || ((a_len > 0) && !a) || ((xoffsize > 0) && !xoff)
-	    || ((b_len > 0) && !b) || ((yoffsize > 0) && !yoff)) {
+	if (!filt || ((num_len > 0) && !a) || ((xoffsize > 0) && !xoff)
+	    || ((denum_len > 0) && !b) || ((yoffsize > 0) && !yoff)) {
 		free(filt);
 		free(a);
 		align_free(xoff);
@@ -68,30 +90,30 @@ hfilter CREATE_FILTER_FUNC(unsigned int nchann, unsigned int a_len, const TYPERE
 	filt->num_chann = nchann;
 	filt->type = type;
 	filt->a = a;
-	filt->a_len = a_len;
+	filt->a_len = num_len;
 	filt->xoff = xoff;
 	filt->b = b;
-	filt->b_len = b_len;
+	filt->b_len = denum_len;
 	filt->yoff = yoff;
 
 	// copy the numerator and denumerator 
 	// (and normalize and convert to recursive rule)
 	if (type == DATATYPE_FLOAT) {
 		float *af = a, *bf = b;
-		for (i=0; i<a_len; i++)
+		for (i=0; i<num_len; i++)
 			af[i] = num[i] / normfactor;
-		for (i=0; i<b_len; i++)
+		for (i=0; i<denum_len; i++)
 			bf[i] = -denum[i+1] / normfactor;
 	}
 	else {
 		float *ad = a, *bd = b;
-		for (i=0; i<a_len; i++)
+		for (i=0; i<num_len; i++)
 			ad[i] = num[i] / normfactor;
-		for (i=0; i<b_len; i++)
+		for (i=0; i<denum_len; i++)
 			bd[i] = -denum[i+1] / normfactor;
 	}
 
-	reset_filter(filt);
+	init_filter(filt, NULL);
 
 	return filt;
 }

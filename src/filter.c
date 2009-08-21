@@ -15,6 +15,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+/** \internal
+ * \file filter.c
+ * \brief Implemention of common fundamental primitives
+ * \author Nicolas Bourdaud
+ *
+ * This is the implementation of the functions part of the fundamental primitives that are shared (no specificity to data type)
+ */
 #if HAVE_CONFIG_H
 # include <config.h>
 #endif
@@ -43,7 +50,11 @@ void  align_free(void* memptr)
 }
 
 
-
+/*!
+ * \param filt \c handle of a filter 
+ * 
+ * Destroy a filter that you don't use anymore. It will free all its associated resources. After calling this function, you cannot use the handle anymore.
+ */
 void destroy_filter(hfilter filt)
 {
 	if (!filt)
@@ -57,7 +68,7 @@ void destroy_filter(hfilter filt)
 }
 
 
-void reset_filter(hfilter filt)
+static void reset_filter(hfilter filt)
 {
 	memset(filt->xoff, 0,
 	       (filt->a_len -
@@ -66,22 +77,40 @@ void reset_filter(hfilter filt)
 	       (filt->b_len) * filt->num_chann * sizeof_data(filt->type));
 }
 
-void init_filter(hfilter filt, const void* val)
+void init_filter(hfilter filt, const void* data)
 {
 	int i;
 	void* dest;
 	int datlen = filt->num_chann*sizeof(filt->type);
+	
+	if (data == NULL) {
+		reset_filter(filt);
+		return;
+	}
 
 	dest = filt->xoff;
 	for (i=0; i<(filt->a_len-1); i++) {
-		memcpy(dest, val, datlen);
+		memcpy(dest, data, datlen);
 		dest = (char*)dest + datlen;
 	}
 
 	dest = filt->yoff;
 	for (i=0; i<filt->b_len; i++) {
-		memcpy(dest, val, datlen);
+		memcpy(dest, data, datlen);
 		dest = (char*)dest + datlen;
 	}
 }
 
+
+/*! \fn void init_filter(hfilter filt, const void* data)
+ * \param filt \c handle of a filter 
+ * \param data pointer to an array of values (float or double, depending on the filter). Can be \c NULL.
+ * 
+ * Initialize the internal states of the filter with provided data.
+ *
+ * If \c data is \c NULL, it will initialize the internal states with 0.0.
+ *
+ * If \c data is not \c NULL, it should point to an array of values whose the type and the number depends respectively on the type and the number of channels processed by the filter.\n
+ * The type should be the same than the type used for the creation of the filter. The number of values in the array should be the same as the number of channels of the filter.\n
+ * The internal states will then be initialized as if we had constantly fed the filter during its past with the values provided for each channel.
+ */

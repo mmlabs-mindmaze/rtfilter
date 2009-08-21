@@ -15,6 +15,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+/** \internal
+ * \file filter-single.c
+ * \brief Implemention of single precision fundamental primitives
+ * \author Nicolas Bourdaud
+ *
+ * This is the implementation of the functions part of the fundamental primitives that are specificatic to single precision data (\c float)
+ */
 #if HAVE_CONFIG_H
 # include <config.h>
 #endif
@@ -49,7 +56,8 @@
 #define FILTER_FUNC			filter_f
 #define CREATE_FILTER_FUNC		create_filter_f
 
+
+
+
 #include "filter-templates.c"
-
-
 
