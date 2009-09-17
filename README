@@ -9,7 +9,8 @@ This package provides a library written in C implementing realtime digital
 filtering functions for multichannel signals (i.e. filtering multiple
 signals with the same filter). The core library implements FIR and IIR
 filtering for float and double data type. Additional functions are also
-provided to design few usual filters: Butterworth, Chebyshev, sinc window...
+provided to design few usual filters: Butterworth, Chebyshev, windowed
+sinc...
 
 In addition, the filter functions have been especially optimized for
 multichannel signals. If data allows it (and if enabled at the
@@ -31,10 +32,3 @@ Compilation
 
 This library is organized as a GNU package and can be compiled and
 installed in the same way (see INSTALL file for further information).
-However, few non standard options are proposed to be passed to the
-configure script:
-
-    --enable-simd[=yes/no] : Compile SIMD code as well. If enable, the host
-        CPU must support SSE2 instruction set and the compiler should
-	understand SSE intrinsics (the case of any common compiler).
-	(enable by default)
