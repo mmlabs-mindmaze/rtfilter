@@ -36,16 +36,11 @@ extern "C" {
 
 typedef const struct _dfilter* hfilter;
 
-//! create a filter operating on \c float data
-hfilter create_filter_f(unsigned int nchann, 
-                        unsigned int num_len, const float *num,
-			unsigned int denum_len, const float *denum,
-			unsigned int type);
-//! create a filter operating on \c double data
-hfilter create_filter_d(unsigned int nchann,
-                        unsigned int num_len, const double *num,
-			unsigned int denum_len, const double *denum,
-			unsigned int type);
+//! create a digital filter 
+hfilter create_filter(unsigned int nchann, unsigned int proctype,
+                      unsigned int num_len, const void *num,
+		      unsigned int denum_len, const void *denum,
+		      unsigned int type);
 //! filter chunk of \c float data
 void filter_f(hfilter filt, const float* x, float* y, unsigned int ns);
 //! filter chunk of \c double data

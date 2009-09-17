@@ -54,7 +54,7 @@
 #define FILTER_ALIGNED_FUNC		filter_fa
 #define FILTER_UNALIGNED_FUNC		filter_fu
 #define FILTER_FUNC			filter_f
-#define CREATE_FILTER_FUNC		create_filter_f
+#define COPY_NUMDENUM			copy_numdenum_f
 
 
 

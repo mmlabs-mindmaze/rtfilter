@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 			buffin[j * nchann + i] = sin(6.28/(double)(i+1)*(double)j);//(float)j - ((float)(nsample-1))/2.0f;
 
 	// create filters
-//	filt = create_filter_f(nchann, sizeof(num)/sizeof(num[0]), num, sizeof(denum)/sizeof(denum[0]), denum, DATATYPE_FLOAT);
+//	filt = create_filter(nchann, DATATYPE_FLOAT, sizeof(num)/sizeof(num[0]), num, sizeof(denum)/sizeof(denum[0]), denum, DATATYPE_FLOAT);
 //	filt = create_butterworth_filter(fc, filtorder, nchann, 0, DATATYPE_FLOAT);
 	filt = create_chebychev_filter(fc, filtorder, nchann, 0, 0.005, DATATYPE_FLOAT);
 //	filt = create_integrate_filter(nchann, DATATYPE_FLOAT);

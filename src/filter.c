@@ -35,7 +35,7 @@
 
 
 
-void* align_alloc(size_t alignment, size_t size)
+static void* align_alloc(size_t alignment, size_t size)
 {
 	void* memptr = NULL;
 	if (posix_memalign(&memptr, alignment, size))
@@ -44,7 +44,7 @@ void* align_alloc(size_t alignment, size_t size)
 }
 
 
-void  align_free(void* memptr)
+static void  align_free(void* memptr)
 {
 	free(memptr);
 }
@@ -77,6 +77,18 @@ static void reset_filter(hfilter filt)
 	       (filt->b_len) * filt->num_chann * sizeof_data(filt->type));
 }
 
+/*!
+ * \param filt \c handle of a filter 
+ * \param data pointer to an array of values (float or double, depending on the filter). Can be \c NULL.
+ * 
+ * Initialize the internal states of the filter with provided data.
+ *
+ * If \c data is \c NULL, it will initialize the internal states with 0.0.
+ *
+ * If \c data is not \c NULL, it should point to an array of values whose the type and the number depends respectively on the type and the number of channels processed by the filter.\n
+ * The type should be the same than the type used for the creation of the filter. The number of values in the array should be the same as the number of channels of the filter.\n
+ * The internal states will then be initialized as if we had constantly fed the filter during its past with the values provided for each channel.
+ */
 void init_filter(hfilter filt, const void* data)
 {
 	int i;
@@ -102,15 +114,82 @@ void init_filter(hfilter filt, const void* data)
 }
 
 
-/*! \fn void init_filter(hfilter filt, const void* data)
- * \param filt \c handle of a filter 
- * \param data pointer to an array of values (float or double, depending on the filter). Can be \c NULL.
- * 
- * Initialize the internal states of the filter with provided data.
+/*!
+ * \param nchann 	number of channel to process
+ * \param proctype	constant representing the type of data processed by the filter (\c DATA_FLOAT or \c DATA_DOUBLE)
+ * \param num_len 	length of the numerator of the z-transform
+ * \param num 		array of values representing the numerator of the z-transform
+ * \param denum_len 	length of the denumerator of the z-transform
+ * \param denum		array  of values representing the the denumerator of the z-transform
+ * \param paramtype	constant representing the type of data supplied as parameters (\c DATA_FLOAT or \c DATA_DOUBLE)
+ * \return		Handle to the created filter
  *
- * If \c data is \c NULL, it will initialize the internal states with 0.0.
- *
- * If \c data is not \c NULL, it should point to an array of values whose the type and the number depends respectively on the type and the number of channels processed by the filter.\n
- * The type should be the same than the type used for the creation of the filter. The number of values in the array should be the same as the number of channels of the filter.\n
- * The internal states will then be initialized as if we had constantly fed the filter during its past with the values provided for each channel.
+ * dfswf
  */
+hfilter create_filter(unsigned int nchann, unsigned int proctype, 
+                      unsigned int num_len, const void *num,
+		      unsigned int denum_len, const void *denum,
+		      unsigned int paramtype)
+{
+	struct _dfilter *filt = NULL;
+	void *a = NULL;
+	void *xoff = NULL;
+	void *b = NULL;
+	void *yoff = NULL;
+	int xoffsize, yoffsize;
+
+	// Check if a denominator exists
+	if ((denum_len==0) || (denum==NULL)) {
+		denum_len = 0;
+		denum = NULL;
+	}
+	else {
+		denum_len--;
+	}
+
+	xoffsize = (num_len - 1) * nchann;
+	yoffsize = denum_len * nchann;
+
+	filt = malloc(sizeof(*filt));
+	a = (num_len > 0) ? malloc(num_len * sizeof_data(proctype)) : NULL;
+	b = (denum_len > 0) ? malloc(denum_len * sizeof_data(proctype)) : NULL;
+	if (xoffsize > 0) 
+		xoff = align_alloc(16, xoffsize * sizeof_data(proctype));
+	if (yoffsize > 0) 
+		yoff = align_alloc(16, yoffsize * sizeof_data(proctype));
+
+	// handle memory allocation problem
+	if (!filt || ((num_len > 0) && !a) || ((xoffsize > 0) && !xoff)
+	    || ((denum_len > 0) && !b) || ((yoffsize > 0) && !yoff)) {
+		free(filt);
+		free(a);
+		align_free(xoff);
+		free(b);
+		align_free(yoff);
+		return NULL;
+	}
+
+	memset(filt, 0, sizeof(*filt));
+
+	// prepare the filt struct
+	filt->num_chann = nchann;
+	filt->type = proctype;
+	filt->a = a;
+	filt->a_len = num_len;
+	filt->xoff = xoff;
+	filt->b = b;
+	filt->b_len = denum_len;
+	filt->yoff = yoff;
+
+	// copy the numerator and denumerator 
+	// (and normalize and convert to recursive rule)
+	if (paramtype == DATATYPE_FLOAT)
+		copy_numdenum_f(filt, proctype, num_len, num, denum_len+1, denum);
+	else
+		copy_numdenum_d(filt, proctype, num_len, num, denum_len+1, denum);
+
+	init_filter(filt, NULL);
+
+	return filt;
+}
+

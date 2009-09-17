@@ -25,97 +25,26 @@
 
 #define NELEM_VEC	(sizeof(TYPEREAL_V)/sizeof(TYPEREAL))
 
-/*! \fn hfilter create_filter_f(unsigned int nchann, unsigned int num_len, const float *num, unsigned int denum_len, const float *denum, unsigned int type)
- * \param nchann 	number of channel to process
- * \param num_len 	length of the numerator of the z-transform
- * \param num 		array of values representing the numerator of the z-transform
- * \param denum_len 	length of the denumerator of the z-transform
- * \param denum		array  of values representing the the denumerator of the z-transform
- * \param type		constant representing the type of data the filter will have to process (\c DATA_FLOAT or \c DATA_DOUBLE)
- * \return		Handle to the created filter
- *
- * dfswf
- */
-/*! \fn hfilter create_filter_d(unsigned int nchann, unsigned int num_len, const double *num, unsigned int denum_len, const double *denum, unsigned int type)
- *
- * same as create_filter_f but operating on \c double data 
- * \sa create_filter_f()
- */
-hfilter CREATE_FILTER_FUNC(unsigned int nchann, unsigned int num_len, const TYPEREAL *num, unsigned int denum_len, const TYPEREAL *denum, unsigned int type)
+void COPY_NUMDENUM(hfilter filt, unsigned int type, unsigned int num_len, const TYPEREAL *num, unsigned int denum_len, const TYPEREAL *denum)
 {
-	unsigned int i;
-	TYPEREAL normfactor;
-	struct _dfilter *filt = NULL;
-	void *a = NULL;
-	void *xoff = NULL;
-	void *b = NULL;
-	void *yoff = NULL;
-	int xoffsize, yoffsize;
+	int i;
+	TYPEREAL normfactor = (num == NULL) ? 1.0 : denum[0];
 
-	// Check if a denominator exists
-	if ((denum_len==0) || (denum==NULL)) {
-		denum_len = 0;
-		normfactor = 1.0;
-	}
-	else {
-		denum_len--;
-		normfactor = denum[0];
-	}
-
-	xoffsize = (num_len - 1) * nchann;
-	yoffsize = denum_len * nchann;
-
-	filt = malloc(sizeof(*filt));
-	a = (num_len > 0) ? malloc(num_len * sizeof_data(type)) : NULL;
-	b = (denum_len > 0) ? malloc(denum_len * sizeof_data(type)) : NULL;
-	if (xoffsize > 0) 
-		xoff = align_alloc(16, xoffsize * sizeof_data(type));
-	if (yoffsize > 0) 
-		yoff = align_alloc(16, yoffsize * sizeof_data(type));
-
-	// handle memory allocation problem
-	if (!filt || ((num_len > 0) && !a) || ((xoffsize > 0) && !xoff)
-	    || ((denum_len > 0) && !b) || ((yoffsize > 0) && !yoff)) {
-		free(filt);
-		free(a);
-		align_free(xoff);
-		free(b);
-		align_free(yoff);
-		return NULL;
-	}
-
-	memset(filt, 0, sizeof(*filt));
-
-	// prepare the filt struct
-	filt->num_chann = nchann;
-	filt->type = type;
-	filt->a = a;
-	filt->a_len = num_len;
-	filt->xoff = xoff;
-	filt->b = b;
-	filt->b_len = denum_len;
-	filt->yoff = yoff;
-
-	// copy the numerator and denumerator 
-	// (and normalize and convert to recursive rule)
 	if (type == DATATYPE_FLOAT) {
-		float *af = a, *bf = b;
+		float *af = (float*)(filt->a);
+		float *bf = (float*)(filt->b);
 		for (i=0; i<num_len; i++)
 			af[i] = num[i] / normfactor;
-		for (i=0; i<denum_len; i++)
+		for (i=0; i<denum_len-1; i++)
 			bf[i] = -denum[i+1] / normfactor;
-	}
-	else {
-		float *ad = a, *bd = b;
+	} else {
+		double *ad = (double*)(filt->a);
+		double *bd = (double*)(filt->b);
 		for (i=0; i<num_len; i++)
 			ad[i] = num[i] / normfactor;
-		for (i=0; i<denum_len; i++)
+		for (i=0; i<denum_len-1; i++)
 			bd[i] = -denum[i+1] / normfactor;
 	}
-
-	init_filter(filt, NULL);
-
-	return filt;
 }
 
 

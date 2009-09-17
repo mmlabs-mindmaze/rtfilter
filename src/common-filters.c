@@ -260,7 +260,7 @@ hfilter create_fir_filter_mean(unsigned int fir_length,
 	for (i = 0; i < fir_length; i++)
 		fir[i] = 1.0f / (double) fir_length;
 	
-	filt = create_filter_d(nchann, fir_length, fir, 0, NULL, type);
+	filt = create_filter(nchann, type, fir_length, fir, 0, NULL, DATATYPE_DOUBLE);
 
 	free(fir);
 	return filt;
@@ -284,7 +284,7 @@ hfilter create_fir_filter_lowpass(double fc, unsigned int half_length,
 	apply_window(fir, fir_length, window);
 	normalize_fir(fir, fir_length);
 
-	filt = create_filter_d(nchann, fir_length, fir, 0, NULL, type);
+	filt = create_filter(nchann, type, fir_length, fir, 0, NULL, DATATYPE_DOUBLE);
 
 	free(fir);
 	return filt;
@@ -310,7 +310,7 @@ hfilter create_fir_filter_highpass(double fc, unsigned int half_length,
 	normalize_fir(fir, fir_length);
 	reverse_fir(fir, fir_length);
 
-	filt = create_filter_d(nchann, fir_length, fir, 0, NULL, type);
+	filt = create_filter(nchann, type, fir_length, fir, 0, NULL, DATATYPE_DOUBLE);
 	if (!filt)
 		return NULL;
 
@@ -351,7 +351,7 @@ hfilter create_fir_filter_bandpass(double fc_low, double fc_high,
 	compute_convolution(fir, fir_low, len, fir_high, len);
 
 
-	filt = create_filter_d(nchann, fir_length, fir, 0, NULL, type);
+	filt = create_filter(nchann, type, fir_length, fir, 0, NULL, DATATYPE_DOUBLE);
 
 	free(fir);
 	return filt;
@@ -384,7 +384,7 @@ hfilter create_chebychev_filter(double fc, unsigned int num_pole,
 	}
 
 
-	filt = create_filter_d(nchann, num_pole+1, a, num_pole+1, b, type);
+	filt = create_filter(nchann, type, num_pole+1, a, num_pole+1, b, DATATYPE_DOUBLE);
 	if (!filt)
 		return NULL;
 
@@ -403,10 +403,10 @@ hfilter create_butterworth_filter(double fc, unsigned int num_pole,
 
 hfilter create_integrate_filter(unsigned int nchann, unsigned int type)
 {
-	double a = 1.0, b = 1.0;
+	double a = 1.0, b[2] = {1.0, 1.0};
 	hfilter filt;
 
-	filt = create_filter_d(nchann, 1, &a, 1, &b, type);
+	filt = create_filter(nchann, type, 1, &a, 2, &b, DATATYPE_DOUBLE);
 	if (!filt)
 		return NULL;
 

@@ -23,6 +23,7 @@
 # include <config.h>
 #endif
 
+#define sizeof_data(type)	((type == DATATYPE_FLOAT) ? sizeof(float) : sizeof(double))
 
 struct _dfilter
 {
@@ -35,9 +36,8 @@ struct _dfilter
 	void* yoff;
 };
 
-#define sizeof_data(type)	((type == DATATYPE_FLOAT) ? sizeof(float) : sizeof(double))
 
-void* align_alloc(size_t alignment, size_t size);
-void  align_free(void* memptr);
+void copy_numdenum_f(hfilter filt, unsigned int type, unsigned int num_len, const float *num, unsigned int denum_len, const float *denum);
+void Copy_numdenum_d(hfilter filt, unsigned int type, unsigned int num_len, const double *num, unsigned int denum_len, const double *denum);
 
 #endif //FILTER_INTERNAL_H
