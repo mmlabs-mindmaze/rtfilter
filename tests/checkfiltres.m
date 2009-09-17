@@ -48,4 +48,3 @@ diffval = abs(datmatlab - datout);
 errvals = max(diffval,[],2) ./ max(abs(datin),[],2);
 errval = max(errvals);
 fprintf('Error value = %10.10g\n',errval);
-exit;

@@ -29,14 +29,15 @@ uint32_t pdattype = DATATYPE_DOUBLE;
 
 static int compare_results(double thres)
 {
-	FILE* pipe;
+	FILE *pipe;
 	double errval = DBL_MAX;
-	int nf;
 	int rval = 1;
 	char line[128];
+	char command[256];
+	
 
-
-	pipe = popen("matlab -nojvm -nodisplay -r checkfiltres", "r");
+	sprintf(command, "matlab -nojvm -nodisplay -r \"addpath('%s');checkfiltres;exit;\"", getenv("srcdir"));
+	pipe = popen(command, "r");
 	while (fgets(line, 127, pipe)) {
 		if (sscanf(line, " Error value = %lg", &errval) == 1) {
 			rval = 0;
@@ -57,7 +58,7 @@ static int compare_results(double thres)
 
 static void set_signals(unsigned int nchann, unsigned int nsample, unsigned int dattype, void* buff)
 {
-	int i, j;
+	unsigned int i, j;
 	
 	if (dattype == DATATYPE_FLOAT) {
 		float* data = buff;
@@ -76,10 +77,10 @@ static void set_signals(unsigned int nchann, unsigned int nsample, unsigned int 
 int main(int argc, char *argv[])
 {
 	int nchann, nsample, niter, filtorder;
-	int i, j, k, opt;
+	int k, opt;
 	hfilter filt = NULL;
 	void *buffin, *buffout;
-	FILE *filein = NULL, *fileout = NULL, *pipe = NULL;
+	FILE *filein = NULL, *fileout = NULL;
 	float fc = FC_DEF;
 	size_t buffsize;
 	uint32_t nchan32;
@@ -199,7 +200,7 @@ out:
 		fclose(fileout);
 
 	if (retval == 0)
-		retval = compare_results( (dattype == DATATYPE_DOUBLE) ? 1e-9 : 1e-4);
+		retval = compare_results( (dattype == DATATYPE_DOUBLE) ? 1e-12 : 1e-4);
 	if (!keepfiles) {
 		unlink(infilename);
 		unlink(outfilename);
