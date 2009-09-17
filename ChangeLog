@@ -1,0 +1,142 @@
+2009-09-17  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+  * README: Correct README (no more simd flags for configure)
+
+  * src/Makefile.am, tests/Makefile.am, tests/checkfiltres.m,
+  tests/cmpwmatlab.c: Add forgotten files for package and robustify the tests
+
+  * doc/mainpage.dox, src/common-filters.c, src/common-filters.h,
+  src/filter-single.c, src/filter.h: Add more doc (Almost done)
+
+2009-09-16  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+  * src/filter-func-template.c, tests/Makefile.am, tests/checkfiltres.m,
+  tests/cmp-aligned-double.sh, tests/cmp-aligned-float.sh,
+  tests/cmp-unaligned-double.sh, tests/cmp-unaligned-float.sh,
+  tests/cmpwmatlab.c, tests/plotfilter.m: Add test and correct bug in unaligned
+  verion of filter
+
+2009-09-08  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+  * tests/checkfiltres.m, tests/cmpwmatlab.c, tests/plotfilter.m: finish
+  comparison w/ MATLAB
+
+  * tests/checkfiltres.m, tests/cmpwmatlab.c: Continue test with matlab
+
+  * src/filter-internal.h, src/filter.h, tests/Makefile.am, tests/cmpwmatlab.c:
+  Modify tests
+
+  * src/common-filters.c, src/common-filters.h, src/filter-internal.h,
+  src/filter.c, src/templates.c, tests/test_filter.c, tests/test_timing.c: Use
+  only one template for filter function and make the common filters creations
+  consistent
+
+2009-08-27  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+  * src/Makefile.am, src/common-filters.c, src/common-filters.h,
+  src/filter-double.c, src/filter-internal.h, src/filter-single.c,
+  src/filter-templates.c, src/filter.h, src/templates.c: Add more doc
+
+2009-08-26  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+  * src/filter-internal.h, src/filter-single.c, src/filter.c, src/filter.h:
+  Continued doc
+
+2009-08-25  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+  * src/common-filters.c, src/filter-double.c, src/filter-internal.h,
+  src/filter-single.c, src/filter-templates.c, src/filter.c, src/filter.h,
+  tests/test_filter.c: Unified the API (only 1 function to create a filter)
+
+2009-08-21  bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+  * Makefile.am, configure.ac, doc/Makefile.am, doc/doxygen.cfg.in,
+  src/filter-single.c, src/filter-templates.c, src/filter.c, src/filter.h:
+  Start doc 
+
+  * src/common-filters.c, src/filter-templates.c: Make static all internal
+  functions 
+
+  * configure.ac, src/Makefile.am, src/common-filters.c, src/filter-double.c,
+  src/filter-internal.h, src/filter-single.c, src/filter.c,
+  tests/test_filter.c: Remove switch in configure script about SIMD 
+
+  * src/common-filters.c, src/common-filters.h, src/filter-templates.c,
+  src/filter.c, src/filter.h: Make header file C++ compatible and add license
+  notices 
+
+  * src/filter.c, src/filter.h: Add init function 
+
+2009-08-18  bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+  * src/common-filters.c, tests/plotfilter.m: Fix generation of chebyshev
+  filter (bug due to the new specification of filter) 
+
+  * src/Makefile.am: Export common filter header file 
+
+2009-07-14  bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+  * README: Fill the README 
+
+2009-07-09  bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+  * configure.ac: Add switch to enable/disable SIMD code 
+
+2009-07-09  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+  * src/filter-templates.c, src/filter.c: Use USE_SIMD define to use SSE code
+
+2009-07-01  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+  * COPYING, src/Makefile.am: Add missing src/Makefile.am and version license
+  file
+
+  * Makefile: Remove unecessary tracked Makefile
+
+  * AUTHORS, Makefile, Makefile.am, ccoeffilt.m, common-filters.c,
+  common-filters.h, configure.ac, filter-templates.c, filter.c, filter.h,
+  plotfilter.m, src/common-filters.c, src/common-filters.h,
+  src/filter-templates.c, src/filter.c, src/filter.h, test_filter.c,
+  test_timing.c, tests/Makefile.am, tests/ccoeffilt.m, tests/plotfilter.m,
+  tests/test_filter.c, tests/test_timing.c: Create a minimal working GNU
+  package (not tested on other platforms)
+
+  * ccoeffilt.m, common-filters.c, filter-templates.c, plotfilter.m,
+  test_filter.c: Change interface of create filter to be consistent with most
+  usual specification of a filter (like in MATLAB)
+
+2009-06-09  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+  * Makefile, ccoeffilt.m, common-filters.c, filter-templates.c, filter.c,
+  plotfilter.m, test_filter.c: Correct bugs in: - FILTER_UNALIGNED_FUNC -
+  compute_chebychev_iir : now it works
+
+2009-06-08  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+  * Makefile, common-filters.c, common-filters.h, filter-sse.c,
+  filter-templates.c, filter.c, filter.h, test_filter.c, test_timing.c: Create
+  code for float and double (share the the same code base)
+
+  * Makefile, test_filter.c, test_timing.c: Create another test
+
+  * filter-sse.c, filter.h, test_filter.c: switch automatically between aligned
+  and unaligned version of filter
+
+2009-05-29  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+  * Makefile, common-filters.c, common-filters.h, filter-sse.c, filter.h,
+  test_filter.c: Change to datatype hfilter
+
+2009-05-27  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+  * Makefile, common-filters.c, common-filters.h, filter-sse.c, filter.h,
+  test_filter.c: Implementat both double or float processing (based on a flag)
+
+2009-05-26  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+  * Makefile, common-filters.c, common-filters.h, filter-sse.c, filter.h,
+  test_filter.c: Add SIMD version and separate core from optional code
+
+2009-05-20  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+  * filter.c, filter.h, test_filter.c: Initial Commit (code from plottk)
