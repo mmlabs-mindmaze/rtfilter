@@ -43,7 +43,7 @@ struct _dfilter
 };
 
 
-void copy_numdenum_f(hfilter filt, unsigned int type, unsigned int num_len, const float *num, unsigned int denum_len, const float *denum);
-void copy_numdenum_d(hfilter filt, unsigned int type, unsigned int num_len, const double *num, unsigned int denum_len, const double *denum);
+void copy_numdenum_f(hfilter filt, unsigned int num_len, const float *num, unsigned int denum_len, const float *denum);
+void copy_numdenum_d(hfilter filt, unsigned int num_len, const double *num, unsigned int denum_len, const double *denum);
 
 #endif //FILTER_INTERNAL_H

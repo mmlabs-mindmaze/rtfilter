@@ -250,8 +250,8 @@ static int compute_cheby_iir(double *num, double *den, unsigned int num_pole,
  * \param type		type of data the filter will process (\c DATATYPE_FLOAT or \c DATATYPE_DOUBLE)
  * \return	the handle of the newly created filter in case of success, \c NULL otherwise. 
  */
-hfilter create_fir_filter_mean(unsigned int fir_length,
-				unsigned int nchann, unsigned int type)
+hfilter create_fir_filter_mean(unsigned int nchann, unsigned int type,
+                               unsigned int fir_length)
 {
 	unsigned int i;
 	double* fir= NULL;
@@ -266,7 +266,9 @@ hfilter create_fir_filter_mean(unsigned int fir_length,
 	for (i = 0; i < fir_length; i++)
 		fir[i] = 1.0f / (double) fir_length;
 	
-	filt = create_filter(nchann, type, fir_length, fir, 0, NULL, DATATYPE_DOUBLE);
+	filt = create_filter(nchann, type,
+	                     fir_length, fir, 0, NULL,
+			     DATATYPE_DOUBLE);
 
 	free(fir);
 	return filt;
@@ -280,9 +282,9 @@ hfilter create_fir_filter_mean(unsigned int fir_length,
  * \param type		type of data the filter will process (\c DATATYPE_FLOAT or \c DATATYPE_DOUBLE)
  * \return	the handle of the newly created filter in case of success, \c NULL otherwise. 
  */
-hfilter create_fir_filter_lowpass(double fc, unsigned int half_length,
-				   unsigned int nchann,
-				   KernelWindow window, unsigned int type)
+hfilter create_fir_filter_lowpass(unsigned int nchann, unsigned int type,
+                                  double fc, unsigned int half_length,
+                                  KernelWindow window)
 {
 	double *fir = NULL;
 	hfilter filt;
@@ -298,7 +300,9 @@ hfilter create_fir_filter_lowpass(double fc, unsigned int half_length,
 	apply_window(fir, fir_length, window);
 	normalize_fir(fir, fir_length);
 
-	filt = create_filter(nchann, type, fir_length, fir, 0, NULL, DATATYPE_DOUBLE);
+	filt = create_filter(nchann, type,
+	                     fir_length, fir, 0, NULL,
+	                     DATATYPE_DOUBLE);
 
 	free(fir);
 	return filt;
@@ -313,9 +317,9 @@ hfilter create_fir_filter_lowpass(double fc, unsigned int half_length,
  * \param type		type of data the filter will process (\c DATATYPE_FLOAT or \c DATATYPE_DOUBLE)
  * \return	the handle of the newly created filter in case of success, \c NULL otherwise. 
  */
-hfilter create_fir_filter_highpass(double fc, unsigned int half_length,
-				    unsigned int nchann,
-				    KernelWindow window, unsigned int type)
+hfilter create_fir_filter_highpass(unsigned int nchann, unsigned int type,
+                                   double fc, unsigned int half_length,
+                                   KernelWindow window)
 {
 	double *fir = NULL;
 	hfilter filt;
@@ -332,9 +336,9 @@ hfilter create_fir_filter_highpass(double fc, unsigned int half_length,
 	normalize_fir(fir, fir_length);
 	reverse_fir(fir, fir_length);
 
-	filt = create_filter(nchann, type, fir_length, fir, 0, NULL, DATATYPE_DOUBLE);
-	if (!filt)
-		return NULL;
+	filt = create_filter(nchann, type,
+	                     fir_length, fir, 0, NULL,
+	                     DATATYPE_DOUBLE);
 
 	free(fir);
 	return filt;
@@ -350,10 +354,10 @@ hfilter create_fir_filter_highpass(double fc, unsigned int half_length,
  * \param type		type of data the filter will process (\c datatype_float or \c datatype_double)
  * \return	the handle of the newly created filter in case of success, \c null otherwise. 
  */
-hfilter create_fir_filter_bandpass(double fc_low, double fc_high,
-				    unsigned int half_length,
-				    unsigned int nchann,
-				    KernelWindow window, unsigned int type)
+hfilter create_fir_filter_bandpass(unsigned int nchann, unsigned int type,
+                                   double fc_low, double fc_high,
+				   unsigned int half_length,
+				   KernelWindow window)
 {
 	unsigned int len = 2 * (half_length / 2) + 1;
 	double fir_low[len], fir_high[len];
@@ -382,7 +386,9 @@ hfilter create_fir_filter_bandpass(double fc_low, double fc_high,
 	compute_convolution(fir, fir_low, len, fir_high, len);
 
 
-	filt = create_filter(nchann, type, fir_length, fir, 0, NULL, DATATYPE_DOUBLE);
+	filt = create_filter(nchann, type,
+	                     fir_length, fir, 0, NULL,
+	                     DATATYPE_DOUBLE);
 
 	free(fir);
 	return filt;
@@ -398,36 +404,32 @@ hfilter create_fir_filter_bandpass(double fc_low, double fc_high,
  * \param type		type of data the filter will process (\c datatype_float or \c datatype_double)
  * \return	the handle of the newly created filter in case of success, \c null otherwise. 
  */
-hfilter create_chebychev_filter(double fc, unsigned int num_pole,
-				 unsigned int nchann, int highpass,
-				 double ripple, unsigned int type)
+hfilter create_chebychev_filter(unsigned int nchann, unsigned int type,
+                                double fc, unsigned int num_pole,
+				int highpass,
+				double ripple)
 {
 	double *a = NULL, *b = NULL;
-	hfilter filt;
+	hfilter filt = NULL;
 
 	if (num_pole % 2 != 0)
 		return NULL;
 
 	a = malloc( (num_pole+1)*sizeof(*a));
 	b = malloc( (num_pole+1)*sizeof(*b));
-	if (!a || !b) {
-		free(a);
-		free(b);
-		return NULL;
-	}
+	if (!a || !b)
+		goto out;
 
-	// prepare the filter
-	if (!compute_cheby_iir(a, b, num_pole, highpass, ripple, fc)) {
-		free(a);
-		free(b);
-		return NULL;
-	}
+	// prepare the z-transform of the filter
+	if (!compute_cheby_iir(a, b, num_pole, highpass, ripple, fc))
+		goto out;
 
+	
+	filt = create_filter(nchann, type,
+	                     num_pole+1, a, num_pole+1, b,
+	                     DATATYPE_DOUBLE);
 
-	filt = create_filter(nchann, type, num_pole+1, a, num_pole+1, b, DATATYPE_DOUBLE);
-	if (!filt)
-		return NULL;
-
+out:
 	free(a);
 	free(b);
 	return filt;
@@ -441,12 +443,12 @@ hfilter create_chebychev_filter(double fc, unsigned int num_pole,
  * \param type		type of data the filter will process (\c datatype_float or \c datatype_double)
  * \return	the handle of the newly created filter in case of success, \c null otherwise. 
  */
-hfilter create_butterworth_filter(double fc, unsigned int num_pole,
-				   unsigned int num_chann, int highpass,
-				   unsigned int type)
+hfilter create_butterworth_filter(unsigned int num_chann, unsigned int type,
+                                  double fc, unsigned int num_pole,
+				  int highpass)
 {
-	return create_chebychev_filter(fc, num_pole, num_chann, highpass,
-				       0.0, type);
+	return create_chebychev_filter(num_chann, type,
+	                               fc, num_pole, highpass, 0.0);
 }
 
 /**
@@ -455,15 +457,13 @@ hfilter create_butterworth_filter(double fc, unsigned int num_pole,
  * \param type		type of data the filter will process (\c datatype_float or \c datatype_double)
  * \return	the handle of the newly created filter in case of success, \c null otherwise. 
  */
-hfilter create_integral_filter(unsigned int nchann, double fs, unsigned int type)
+hfilter create_integral_filter(unsigned int nchann, unsigned int type,
+                               double fs)
 {
 	hfilter filt;
 	double a = 1.0/fs, b[2] = {1.0, -1.0};
 
 	filt = create_filter(nchann, type, 1, &a, 2, &b, DATATYPE_DOUBLE);
-	if (!filt)
-		return NULL;
-
 
 	return filt;
 }

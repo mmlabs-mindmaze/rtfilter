@@ -36,11 +36,14 @@
 
 static void reset_filter(hfilter filt)
 {
-	memset(filt->xoff, 0,
-	       (filt->a_len -
-		1) * filt->num_chann * sizeof_data(filt->type));
-	memset(filt->yoff, 0,
-	       (filt->b_len) * filt->num_chann * sizeof_data(filt->type));
+	if (filt->xoff)
+		memset(filt->xoff, 0,
+		       (filt->a_len -
+			1) * filt->num_chann * sizeof_data(filt->type));
+	
+	if (filt->yoff)
+		memset(filt->yoff, 0,
+		       (filt->b_len) * filt->num_chann * sizeof_data(filt->type));
 }
 
 
@@ -89,30 +92,33 @@ void destroy_filter(hfilter filt)
  * The type should be the same than the type used for the creation of the filter. The number of values in the array should be the same as the number of channels of the filter.\n
  * The internal states will then be initialized as if we had constantly fed the filter during its past with the values provided for each channel.
  */
-void init_filter(hfilter filt, const void* data)
+void init_filter(hfilter filt, const void *data)
 {
-	int i;
-	void* dest;
-	int datlen = filt->num_chann*sizeof(filt->type);
-	
+	unsigned int i;
+	void *dest;
+	int datlen = filt->num_chann * sizeof(filt->type);
+
 	if (data == NULL) {
 		reset_filter(filt);
 		return;
 	}
 
 	dest = filt->xoff;
-	for (i=0; i<(filt->a_len-1); i++) {
-		memcpy(dest, data, datlen);
-		dest = (char*)dest + datlen;
+	if (dest) {
+		for (i = 0; i < (filt->a_len - 1); i++) {
+			memcpy(dest, data, datlen);
+			dest = (char *) dest + datlen;
+		}
 	}
 
 	dest = filt->yoff;
-	for (i=0; i<filt->b_len; i++) {
-		memcpy(dest, data, datlen);
-		dest = (char*)dest + datlen;
+	if (dest) {
+		for (i = 0; i < filt->b_len; i++) {
+			memcpy(dest, data, datlen);
+			dest = (char *) dest + datlen;
+		}
 	}
 }
-
 
 /*!
  * \param nchann 	number of channel to process
@@ -193,9 +199,9 @@ hfilter create_filter(unsigned int nchann, unsigned int proctype,
 	// copy the numerator and denumerator 
 	// (and normalize and convert to recursive rule)
 	if (paramtype == DATATYPE_FLOAT)
-		copy_numdenum_f(filt, proctype, blen, b, alen+1, a);
+		copy_numdenum_f(filt, blen, b, alen+1, a);
 	else
-		copy_numdenum_d(filt, proctype, blen, b, alen+1, a);
+		copy_numdenum_d(filt, blen, b, alen+1, a);
 
 	init_filter(filt, NULL);
 

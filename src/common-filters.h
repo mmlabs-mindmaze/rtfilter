@@ -40,36 +40,36 @@ typedef enum {
 } KernelWindow;
 
 //! Create a local mean filter based on a sliding window 
-hfilter create_fir_filter_mean(unsigned int nsamples, unsigned int nchann,
-                               unsigned int type);
+hfilter create_fir_filter_mean(unsigned int nchann, unsigned int type,
+                               unsigned int nsamples);
 
 //! Lowpass windowed sinc filter
-hfilter create_fir_filter_lowpass(double fc, unsigned int half_length,
-                                  unsigned int nchann, KernelWindow window,
-				  unsigned int type);
+hfilter create_fir_filter_lowpass(unsigned int nchann, unsigned int type, 
+                                  double fc, unsigned int half_length,
+                                  KernelWindow window);
 //! Highpass windowed sinc filter
-hfilter create_fir_filter_highpass(double fc, unsigned int half_length,
-                                   unsigned int nchann, KernelWindow window,
-				   unsigned int type);
+hfilter create_fir_filter_highpass(unsigned int nchann, unsigned int type,
+                                   double fc, unsigned int half_length,
+                                   KernelWindow window);
 
 //! Highpass windowed sinc filter
-hfilter create_fir_filter_bandpass(double fc_low, double fc_high,
+hfilter create_fir_filter_bandpass(unsigned int nchann, unsigned int type,
+                                   double fc_low, double fc_high,
                                    unsigned int half_length,
-				   unsigned int nchann, KernelWindow window,
-				   unsigned int type);
+				   KernelWindow window);
 
 //! Butterworth filter (IIR filter)
-hfilter create_butterworth_filter(double fc, unsigned int num_pole,
-                                  unsigned int num_chann, int highpass,
-				  unsigned int type);
+hfilter create_butterworth_filter(unsigned int num_chann, unsigned int type,
+                                  double fc, unsigned int num_pole,
+                                  int highpass);
 
 //! Chebychev filter (IIR filter)
-hfilter create_chebychev_filter(double fc, unsigned int num_pole,
-                                unsigned int nchann, int highpass,
-				double ripple, unsigned int type);
+hfilter create_chebychev_filter(unsigned int nchann, unsigned int type,
+                                double fc, unsigned int num_pole,
+                                int highpass, double ripple);
 
 //! Simple first order integral filter (IIR filter) 
-hfilter create_integral_filter(unsigned int nchann, double fs, unsigned int type);
+hfilter create_integral_filter(unsigned int nchann, unsigned int type, double fs);
 
 #ifdef __cplusplus
 }

@@ -95,8 +95,8 @@ int main(int argc, char *argv[])
 
 	// create filters
 //	filt = create_filter(nchann, DATATYPE_FLOAT, sizeof(num)/sizeof(num[0]), num, sizeof(denum)/sizeof(denum[0]), denum, DATATYPE_FLOAT);
-//	filt = create_butterworth_filter(fc, filtorder, nchann, 0, DATATYPE_FLOAT);
-	filt = create_chebychev_filter(fc, filtorder, nchann, 0, 0.005, DATATYPE_FLOAT);
+//	filt = create_butterworth_filter(nchann, DATATYPE_FLOAT, fc, filtorder, 0);
+	filt = create_chebychev_filter(nchann, DATATYPE_FLOAT, fc, filtorder, 0, 0.005);
 //	filt = create_integrate_filter(nchann, DATATYPE_FLOAT);
 	if (!filt) {
 		fprintf(stderr,"Creation of filter failed\n");
