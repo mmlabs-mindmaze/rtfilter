@@ -36,6 +36,7 @@ extern "C" {
 #define DATATYPE_FLOAT	0
 #define DATATYPE_DOUBLE	1
 /** \} */
+#define sizeof_data(type)	((type == DATATYPE_FLOAT) ? sizeof(float) : sizeof(double))
 typedef const struct _dfilter* hfilter;
 
 //! create a digital filter 
