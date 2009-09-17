@@ -34,6 +34,15 @@
 #include "filter-internal.h"
 
 
+static void reset_filter(hfilter filt)
+{
+	memset(filt->xoff, 0,
+	       (filt->a_len -
+		1) * filt->num_chann * sizeof_data(filt->type));
+	memset(filt->yoff, 0,
+	       (filt->b_len) * filt->num_chann * sizeof_data(filt->type));
+}
+
 
 static void* align_alloc(size_t alignment, size_t size)
 {
@@ -67,15 +76,6 @@ void destroy_filter(hfilter filt)
 	free((void*) filt);
 }
 
-
-static void reset_filter(hfilter filt)
-{
-	memset(filt->xoff, 0,
-	       (filt->a_len -
-		1) * filt->num_chann * sizeof_data(filt->type));
-	memset(filt->yoff, 0,
-	       (filt->b_len) * filt->num_chann * sizeof_data(filt->type));
-}
 
 /*!
  * \param filt \c handle of a filter 
@@ -117,54 +117,63 @@ void init_filter(hfilter filt, const void* data)
 /*!
  * \param nchann 	number of channel to process
  * \param proctype	constant representing the type of data processed by the filter (\c DATA_FLOAT or \c DATA_DOUBLE)
- * \param num_len 	length of the numerator of the z-transform
- * \param num 		array of values representing the numerator of the z-transform
- * \param denum_len 	length of the denumerator of the z-transform
- * \param denum		array  of values representing the the denumerator of the z-transform
+ * \param blen	 	length of the array representing the numerator of the z-transform
+ * \param b 		array of values representing the numerator of the z-transform ordered increasingly with the powers of \f$z^{-1}\f$
+ * \param alen	 	length of the array representing the denominator of the z-transform
+ * \param a		array  of values representing the the denominator of the z-transform ordered increasingly with the powers of \f$z^{-1}\f$
  * \param paramtype	constant representing the type of data supplied as parameters (\c DATA_FLOAT or \c DATA_DOUBLE)
  * \return		Handle to the created filter
  *
- * dfswf
+ * This function create and initialize the necessary resources for a digital filter to process a number of channels specified by the parameter \c nchann.
+ * 
+ * The type of data the filter will process is specified once for all by the \c proctype parameter. Set it to \c DATATYPE_FLOAT for processing \c float values or to \c DATATYPE_DOUBLE for \c double values thus allowing to call respectively filter_f() or filter_d() with the filter handle returned by the function. 
+ * 
+ * The parameters \c b and \c a are used to specify the coefficients of the z-transform of the filter (\c blen and \c alen are respectively \f$nb+1\f$ and \f$na+1\f$):
+ * \f[
+ * H(z) = \frac{b_0 + b_1z^{-1} + b_2z^{-2}+\ldots+b_{nb}z^{-nb}}{a_0 + a_1z^{-1} + a_2z^{-2}+\ldots+a_{na}z^{-na}}
+ * \f]
+ * The arrays pointed by \c b and \c a can be either \c float or \c double values. This is specified by the \c paramtype parameter by taking the value \c DATATYPE_FLOAT or \c DATATYPE_DOUBLE.\n
+ * The integer \c alen can also be \c 0 or the pointer \c a be \c NULL. In that case, the denominator is 1 thus specifying a filter with a finite impulse response.
  */
 hfilter create_filter(unsigned int nchann, unsigned int proctype, 
-                      unsigned int num_len, const void *num,
-		      unsigned int denum_len, const void *denum,
+                      unsigned int blen, const void *b,
+		      unsigned int alen, const void *a,
 		      unsigned int paramtype)
 {
 	struct _dfilter *filt = NULL;
-	void *a = NULL;
+	void *num = NULL;
 	void *xoff = NULL;
-	void *b = NULL;
+	void *denum = NULL;
 	void *yoff = NULL;
 	int xoffsize, yoffsize;
 
 	// Check if a denominator exists
-	if ((denum_len==0) || (denum==NULL)) {
-		denum_len = 0;
-		denum = NULL;
+	if ((alen==0) || (a==NULL)) {
+		alen = 0;
+		a = NULL;
 	}
 	else {
-		denum_len--;
+		alen--;
 	}
 
-	xoffsize = (num_len - 1) * nchann;
-	yoffsize = denum_len * nchann;
+	xoffsize = (blen - 1) * nchann;
+	yoffsize = alen * nchann;
 
 	filt = malloc(sizeof(*filt));
-	a = (num_len > 0) ? malloc(num_len * sizeof_data(proctype)) : NULL;
-	b = (denum_len > 0) ? malloc(denum_len * sizeof_data(proctype)) : NULL;
+	num = (blen > 0) ? malloc(blen * sizeof_data(proctype)) : NULL;
+	denum = (alen > 0) ? malloc(alen * sizeof_data(proctype)) : NULL;
 	if (xoffsize > 0) 
 		xoff = align_alloc(16, xoffsize * sizeof_data(proctype));
 	if (yoffsize > 0) 
 		yoff = align_alloc(16, yoffsize * sizeof_data(proctype));
 
 	// handle memory allocation problem
-	if (!filt || ((num_len > 0) && !a) || ((xoffsize > 0) && !xoff)
-	    || ((denum_len > 0) && !b) || ((yoffsize > 0) && !yoff)) {
+	if (!filt || ((blen > 0) && !num) || ((xoffsize > 0) && !xoff)
+	    || ((alen > 0) && !denum) || ((yoffsize > 0) && !yoff)) {
 		free(filt);
-		free(a);
+		free(num);
 		align_free(xoff);
-		free(b);
+		free(denum);
 		align_free(yoff);
 		return NULL;
 	}
@@ -174,19 +183,19 @@ hfilter create_filter(unsigned int nchann, unsigned int proctype,
 	// prepare the filt struct
 	filt->num_chann = nchann;
 	filt->type = proctype;
-	filt->a = a;
-	filt->a_len = num_len;
+	filt->a = num;
+	filt->a_len = blen;
 	filt->xoff = xoff;
 	filt->b = b;
-	filt->b_len = denum_len;
+	filt->b_len = alen;
 	filt->yoff = yoff;
 
 	// copy the numerator and denumerator 
 	// (and normalize and convert to recursive rule)
 	if (paramtype == DATATYPE_FLOAT)
-		copy_numdenum_f(filt, proctype, num_len, num, denum_len+1, denum);
+		copy_numdenum_f(filt, proctype, blen, b, alen+1, a);
 	else
-		copy_numdenum_d(filt, proctype, num_len, num, denum_len+1, denum);
+		copy_numdenum_d(filt, proctype, blen, b, alen+1, a);
 
 	init_filter(filt, NULL);
 

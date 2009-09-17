@@ -39,8 +39,8 @@ typedef const struct _dfilter* hfilter;
 //! create a digital filter 
 hfilter create_filter(unsigned int nchann, unsigned int proctype,
                       unsigned int num_len, const void *num,
-		      unsigned int denum_len, const void *denum,
-		      unsigned int type);
+                      unsigned int denum_len, const void *denum,
+                      unsigned int type);
 //! filter chunk of \c float data
 void filter_f(hfilter filt, const float* x, float* y, unsigned int ns);
 //! filter chunk of \c double data

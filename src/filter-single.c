@@ -58,6 +58,17 @@
 
 
 
-
 #include "filter-templates.c"
 
+/** \fn void filter_f(hfilter filt, const float* x, float* y, unsigned int ns)
+ * \param filt	handle to a digital filter resource
+ * \param x	pointer to an array of input data
+ * \param y	pointer to an array of output data
+ * \param ns	number of time sample that should be processed
+ *
+ * This function apply the filter on the data specified by pointer \c x and write the filter data on the array pointed by \c y. You can call this funtion ONLY if the filter used has been created using the DATATYPE_FLOAT for the parameter \c proctype in the function create_filter()
+ * 
+ * The arrays pointed by \c x and \c y must be made of \c float values their number of elements have to be equal to \c ns multiplied by the number of channels processed.
+ *
+ * \sa create_filter()
+ */
