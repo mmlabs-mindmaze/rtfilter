@@ -52,14 +52,14 @@ hfilter create_fir_filter_highpass(unsigned int nchann, unsigned int type,
                                    double fc, unsigned int half_length,
                                    KernelWindow window);
 
-//! Highpass windowed sinc filter
+//! Bandpass windowed sinc filter
 hfilter create_fir_filter_bandpass(unsigned int nchann, unsigned int type,
                                    double fc_low, double fc_high,
                                    unsigned int half_length,
 				   KernelWindow window);
 
 //! Butterworth filter (IIR filter)
-hfilter create_butterworth_filter(unsigned int num_chann, unsigned int type,
+hfilter create_butterworth_filter(unsigned int nchann, unsigned int type,
                                   double fc, unsigned int num_pole,
                                   int highpass);
 

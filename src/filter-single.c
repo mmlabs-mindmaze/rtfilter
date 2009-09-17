@@ -69,7 +69,7 @@
  *
  * This function apply the filter on the data specified by pointer \c x and write the filter data on the array pointed by \c y. You can call this funtion ONLY if the filter used has been created using the DATATYPE_FLOAT for the parameter \c proctype in the function create_filter()
  * 
- * The arrays pointed by \c x and \c y must be made of \c float values their number of elements have to be equal to \c ns multiplied by the number of channels processed.
+ * The arrays pointed by \c x and \c y must be made of \c float values their number of elements have to be equal to \c ns multiplied by the number of channels processed. The arrays should be packed by channels with the following pattern: | S1C1 | S1C2 | ... | S1Ck | S2C1 | S2C2 | .... | S2Ck | ... | SnCk | where SiCj refers to the data in the i-th sample of the j-th channel.
  *
  * \sa create_filter(), filter_d()
  */

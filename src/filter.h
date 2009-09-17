@@ -20,7 +20,7 @@
  * \brief Definitions of foundamental primitives of rtfilter library
  * \author Nicolas Bourdaud
  *
- * These are the definitions of the minimal primitives used to interact with digital filters in the rtfilter library. The primitives described here for using a filter, not designing it.
+ * These are the definitions of the minimal primitives used to interact with digital filters in the rtfilter library. The primitives described here are for using a filter, not designing it.
  *
  * \sa common-filter.h
  */
@@ -36,7 +36,11 @@ extern "C" {
 #define DATATYPE_FLOAT	0
 #define DATATYPE_DOUBLE	1
 /** \} */
+
+//! helper macro that returns the size in byte of a type (DATATYPE_FLOAT or DATATYPE_DOUBLE)
 #define sizeof_data(type)	((type == DATATYPE_FLOAT) ? sizeof(float) : sizeof(double))
+
+//! Handle to a filter. Used by all the functions to manipulate a filter.
 typedef const struct _dfilter* hfilter;
 
 //! create a digital filter 

@@ -1,0 +1,15 @@
+/*! \mainpage
+
+The purpose of this library is to provides a set of C functions to achieve online (and realtime) filtering as well as some functions to design usual filters. It is divided into two components: the filteting and the filter design.
+
+The filtering component provides functions to create generically discrete filters which have a rational z-transform and to use them. The underlying type of data used can be either \c float or \c double. The filters functions are optimized for processing several channels at the same time. In addition, if arrays holding data are properly aligned on memory boundaries, the algorithm takes advantage of the SSE and SSE2 extensions of the processor (if available) to accelerate even more the processing.
+
+The filter design component provides functions to create usual filters that will be used by the filter functions of the previous component. It can create filters with a finite impulse response (windowed sinc filter) or with infinite impulse response (butterworth and chebychev filters).
+
+To learn how to use the filtering functions, refer to page \ref filter.h
+
+To learn how to use the filter design functions, refer to page \ref common-filters.h
+*/
+//To learn how to use the USB2 driver functions, refer to page \ref API
+
+//To learn how to use the abstract layer, refer to page \ref LIB
