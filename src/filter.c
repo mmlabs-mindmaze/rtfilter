@@ -186,7 +186,7 @@ hfilter create_filter(unsigned int nchann, unsigned int proctype,
 	filt->a = num;
 	filt->a_len = blen;
 	filt->xoff = xoff;
-	filt->b = b;
+	filt->b = denum;
 	filt->b_len = alen;
 	filt->yoff = yoff;
 
