@@ -1,16 +1,35 @@
 fin = fopen('filein.bin');
 fout = fopen('fileout.bin');
 
-nchann = fread(fin, 1, 'int32');
-nchann2 = fread(fout, 1, 'int32');
+pdattype = fread(fout, 1, 'uint32');
+ptype = 'float32';
+if pdattype == 1
+    ptype = 'float64';
+end
+numlen = fread(fout, 1, 'uint32');
+num = fread(fout, numlen, ptype);
+denumlen = fread(fout, 1, 'uint32');
+denum = fread(fout, denumlen, ptype);
 
-if nchann ~= nchann2
-    error('Mismatch of nchann');
+dattype = fread(fin, 1, 'uint32');
+nchann = fread(fin, 1, 'uint32');
+dattype2 = fread(fout, 1, 'uint32');
+nchann2 = fread(fout, 1, 'uint32');
+
+if (dattype ~= dattype2) || (nchann ~= nchann2)
+    error('data params differs in the 2 files');
 end
 
-datin = fread(fin,[nchann,inf],'float32');
-datout = fread(fout,[nchann,inf],'float32');
-%datmatlab = filter(b,a,datin,[],2);
+type = 'float32';
+if dattype == 1
+    type = 'float64';
+end
+
+
+
+datin = fread(fin,[nchann,inf],type);
+datout = fread(fout,[nchann,inf],type);
+datmatlab = filter(num,denum,datin,[],2);
 
 fclose(fin);
 fclose(fout);
@@ -20,9 +39,11 @@ for ichann=1:6:nchann
     plot(datin(ichann,:),'r')
     hold on
     plot(datout(ichann,:),'b')
-   % plot(datmatlab(ichann,:),'g--')
+    plot(datmatlab(ichann,:),'g--')
     hold off
     axis([0 600 -2 2])
 end
 
 nchann
+diffval = (datmatlab - datout);
+[errval,imax] = max(abs(diffval),[],2);

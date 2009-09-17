@@ -2,9 +2,9 @@ fin = fopen('filein.bin');
 fout = fopen('fileout.bin');
 
 pdattype = fread(fout, 1, 'uint32');
-ptype = 'float32';
+ptype = '*float32';
 if pdattype == 1
-    ptype = 'float64';
+    ptype = '*float64';
 end
 numlen = fread(fout, 1, 'uint32');
 num = fread(fout, numlen, ptype);
@@ -20,9 +20,9 @@ if (dattype ~= dattype2) || (nchann ~= nchann2)
     error('data params differs in the 2 files');
 end
 
-type = 'float32';
+type = '*float32';
 if dattype == 1
-    type = 'float64';
+    type = '*float64';
 end
 
 
@@ -44,7 +44,7 @@ fclose(fout);
 %     axis([0 600 -2 2])
 % end
 
-sqval = (datmatlab - datout).^2;
-errval = mean(sqval(:));
+diffval = (datmatlab - datout);
+errval = max(abs(diffval(:)));
 fprintf('Error value = %10.10g\n',errval);
 exit;

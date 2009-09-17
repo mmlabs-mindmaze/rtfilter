@@ -19,12 +19,11 @@
 #define TYPE_DEF	DATATYPE_FLOAT
 
 
-// fc = 0.100 (wn=0.100 in MATLAB)
-float num[5] = {7.397301684767964e-04, 2.958920673907186e-03, 4.438381010860778e-03, 2.958920673907186e-03, 7.397301684767964e-04, };
-float denum[5] = {1.000000000000000e+00, -3.152761111579526e+00, 3.860934099037117e+00, -2.161019850256067e+00, 4.647120978065145e-01, };
+double num[5] = {7.397301684767964e-04, 2.958920673907186e-03, 4.438381010860778e-03, 2.958920673907186e-03, 7.397301684767964e-04, };
+double denum[5] = {1.000000000000000e+00, -3.152761111579526e+00, 3.860934099037117e+00, -2.161019850256067e+00, 4.647120978065145e-01, };
 uint32_t numlen = sizeof(num)/sizeof(num[0]);
 uint32_t denumlen = sizeof(denum)/sizeof(num[0]);
-uint32_t pdattype = DATATYPE_FLOAT;
+uint32_t pdattype = DATATYPE_DOUBLE;
 
 static int compare_results(void)
 {
@@ -43,7 +42,7 @@ static int compare_results(void)
 	}
 	pclose(pipe);
 
-	fprintf(stdout, "Error value = %lg\n", errval);
+	fprintf(stdout, "Error value = %lg\n (min dbl:%lg   min flt:%g)\n", errval, DBL_MIN, FLT_MIN);
 
 	return rval;
 }
