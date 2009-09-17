@@ -55,10 +55,11 @@
 #define FILTER_UNALIGNED_FUNC		filter_fu
 #define FILTER_FUNC			filter_f
 #define COPY_NUMDENUM			copy_numdenum_f
+#define DTYPE				DATATYPE_FLOAT
 
 
 
-#include "filter-templates.c"
+#include "templates.c"
 
 /** \fn void filter_f(hfilter filt, const float* x, float* y, unsigned int ns)
  * \param filt	handle to a digital filter resource
@@ -70,5 +71,5 @@
  * 
  * The arrays pointed by \c x and \c y must be made of \c float values their number of elements have to be equal to \c ns multiplied by the number of channels processed.
  *
- * \sa create_filter()
+ * \sa create_filter(), filter_d()
  */

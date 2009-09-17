@@ -15,6 +15,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+/** \internal
+ * \file filter-internal.h
+ * \brief Definitions of implementation specifics of rtfilter library
+ * \author Nicolas Bourdaud
+ * \sa common-filter.h
+ */
 #ifndef FILTER_INTERNAL_H
 #define FILTER_INTERNAL_H
 

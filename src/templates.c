@@ -23,7 +23,10 @@
  * This file includes the templates of the functions that are specific to certain data type
  */
 
+#include <assert.h>
+
 #define NELEM_VEC	(sizeof(TYPEREAL_V)/sizeof(TYPEREAL))
+
 
 void COPY_NUMDENUM(hfilter filt, unsigned int type, unsigned int num_len, const TYPEREAL *num, unsigned int denum_len, const TYPEREAL *denum)
 {
@@ -219,6 +222,7 @@ static void FILTER_ALIGNED_FUNC(hfilter filt, const TYPEREAL *xaligned, TYPEREAL
 
 void FILTER_FUNC(hfilter filt, const TYPEREAL* in, TYPEREAL* out, unsigned int nsamples)
 {
+	assert(filt->type == DTYPE);
 #ifdef USE_SIMD
 	// Check that data is aligned on 16 byte boundaries
 	if ( !((filt->num_chann%NELEM_VEC) 

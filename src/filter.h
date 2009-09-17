@@ -31,9 +31,11 @@
 extern "C" {
 #endif
 
+/*! \name Data type specifications
+\{ */
 #define DATATYPE_FLOAT	0
 #define DATATYPE_DOUBLE	1
-
+/** \} */
 typedef const struct _dfilter* hfilter;
 
 //! create a digital filter 

@@ -1,4 +1,4 @@
-EXTRA_DIST=filter-templates.c
+EXTRA_DIST=templates.c
 
 lib_LTLIBRARIES = librtfilter.la
 include_HEADERS = filter.h common-filters.h

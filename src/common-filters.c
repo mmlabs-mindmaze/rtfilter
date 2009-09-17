@@ -244,6 +244,12 @@ static int compute_cheby_iir(double *num, double *den, unsigned int num_pole,
 //                      Create particular filters
 //
 ////////////////////////////////////////////////////////////////////////////
+/**
+ * \param fir_length	number of sample used to compute the mean
+ * \param nchann	number of channels the filter will process
+ * \param type		type of data the filter will process (\c DATATYPE_FLOAT or \c DATATYPE_DOUBLE)
+ * \return	the handle of the newly created filter in case of success, \c NULL otherwise. 
+ */
 hfilter create_fir_filter_mean(unsigned int fir_length,
 				unsigned int nchann, unsigned int type)
 {
@@ -266,6 +272,14 @@ hfilter create_fir_filter_mean(unsigned int fir_length,
 	return filt;
 }
 
+/**
+ * \param fc		Normalized cutoff frequency (the normal frequency divided by the sampling frequency)
+ * \param half_length	the half size of the impulse response (in number of samples)
+ * \param nchann	number of channels the filter will process
+ * \param window	The type of the kernel wondow to use for designing the filter
+ * \param type		type of data the filter will process (\c DATATYPE_FLOAT or \c DATATYPE_DOUBLE)
+ * \return	the handle of the newly created filter in case of success, \c NULL otherwise. 
+ */
 hfilter create_fir_filter_lowpass(double fc, unsigned int half_length,
 				   unsigned int nchann,
 				   KernelWindow window, unsigned int type)
@@ -291,6 +305,14 @@ hfilter create_fir_filter_lowpass(double fc, unsigned int half_length,
 }
 
 
+/**
+ * \param fc		Normalized cutoff frequency (the normal frequency divided by the sampling frequency)
+ * \param half_length	the half size of the impulse response (in number of samples)
+ * \param nchann	number of channels the filter will process
+ * \param window	The type of the kernel wondow to use for designing the filter
+ * \param type		type of data the filter will process (\c DATATYPE_FLOAT or \c DATATYPE_DOUBLE)
+ * \return	the handle of the newly created filter in case of success, \c NULL otherwise. 
+ */
 hfilter create_fir_filter_highpass(double fc, unsigned int half_length,
 				    unsigned int nchann,
 				    KernelWindow window, unsigned int type)
@@ -319,6 +341,15 @@ hfilter create_fir_filter_highpass(double fc, unsigned int half_length,
 }
 
 
+/**
+ * \param fc_low	normalized cutoff frequency of the lowpass part (the normal frequency divided by the sampling frequency)
+ * \param fc_high	normalized cutoff frequency of the highpass part (the normal frequency divided by the sampling frequency)
+ * \param half_length	the half size of the impulse response (in number of samples)
+ * \param nchann	number of channels the filter will process
+ * \param window	the type of the kernel wondow to use for designing the filter
+ * \param type		type of data the filter will process (\c datatype_float or \c datatype_double)
+ * \return	the handle of the newly created filter in case of success, \c null otherwise. 
+ */
 hfilter create_fir_filter_bandpass(double fc_low, double fc_high,
 				    unsigned int half_length,
 				    unsigned int nchann,
@@ -358,6 +389,15 @@ hfilter create_fir_filter_bandpass(double fc_low, double fc_high,
 }
 
 
+/**
+ * \param fc		normalized cutoff frequency (the normal frequency divided by the sampling frequency)
+ * \param num_pole	The number of pole the z-transform of the filter should possess
+ * \param nchann	number of channels the filter will process
+ * \param highpass	flag to specify the type of filter (0 for a lowpass, 1 for a highpass)
+ * \param ripple	ripple
+ * \param type		type of data the filter will process (\c datatype_float or \c datatype_double)
+ * \return	the handle of the newly created filter in case of success, \c null otherwise. 
+ */
 hfilter create_chebychev_filter(double fc, unsigned int num_pole,
 				 unsigned int nchann, int highpass,
 				 double ripple, unsigned int type)
@@ -393,6 +433,14 @@ hfilter create_chebychev_filter(double fc, unsigned int num_pole,
 	return filt;
 }
 
+/**
+ * \param fc		normalized cutoff frequency (the normal frequency divided by the sampling frequency)
+ * \param num_pole	The number of pole the z-transform of the filter should possess
+ * \param nchann	number of channels the filter will process
+ * \param highpass	flag to specify the type of filter (0 for a lowpass, 1 for a highpass)
+ * \param type		type of data the filter will process (\c datatype_float or \c datatype_double)
+ * \return	the handle of the newly created filter in case of success, \c null otherwise. 
+ */
 hfilter create_butterworth_filter(double fc, unsigned int num_pole,
 				   unsigned int num_chann, int highpass,
 				   unsigned int type)
@@ -401,10 +449,16 @@ hfilter create_butterworth_filter(double fc, unsigned int num_pole,
 				       0.0, type);
 }
 
-hfilter create_integrate_filter(unsigned int nchann, unsigned int type)
+/**
+ * \param nchann	number of channels the filter will process
+ * \param fs		sampling frequency in Hz
+ * \param type		type of data the filter will process (\c datatype_float or \c datatype_double)
+ * \return	the handle of the newly created filter in case of success, \c null otherwise. 
+ */
+hfilter create_integral_filter(unsigned int nchann, double fs, unsigned int type)
 {
-	double a = 1.0, b[2] = {1.0, 1.0};
 	hfilter filt;
+	double a = 1.0/fs, b[2] = {1.0, -1.0};
 
 	filt = create_filter(nchann, type, 1, &a, 2, &b, DATATYPE_DOUBLE);
 	if (!filt)

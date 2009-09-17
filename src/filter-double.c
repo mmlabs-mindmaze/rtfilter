@@ -15,6 +15,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+/** \internal
+ * \file filter-double.c
+ * \brief Implemention of double precision fundamental primitives
+ * \author Nicolas Bourdaud
+ *
+ * This is the implementation of the functions part of the fundamental primitives that are specificatic to double precision data (\c double)
+ */
 #if HAVE_CONFIG_H
 # include <config.h>
 #endif
@@ -48,7 +55,13 @@
 #define FILTER_UNALIGNED_FUNC		filter_du
 #define FILTER_FUNC			filter_d
 #define COPY_NUMDENUM			copy_numdenum_d
+#define DTYPE				DATATYPE_DOUBLE
 
-#include "filter-templates.c"
+#include "templates.c"
 
+/** \fn void filter_d(hfilter filt, const double* x, double* y, unsigned int ns)
+ * Same as filter_f() but works on double precision data (\c double). You can call this funtion ONLY if the filter used has been created using the DATATYPE_DOUBLE for the parameter \c proctype in the function create_filter()
+ * 
+ * \sa filter_f()
+ */
 
