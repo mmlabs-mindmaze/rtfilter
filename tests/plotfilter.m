@@ -20,9 +20,9 @@ if (dattype ~= dattype2) || (nchann ~= nchann2)
     error('data params differs in the 2 files');
 end
 
-type = 'float32';
+type = '*float32';
 if dattype == 1
-    type = 'float64';
+    type = '*float64';
 end
 
 

@@ -18,6 +18,8 @@
 #define FC_DEF	0.2
 #define TYPE_DEF	DATATYPE_FLOAT
 
+const char infilename[] = "filein.bin";
+const char outfilename[] = "fileout.bin";
 
 double num[5] = {7.397301684767964e-04, 2.958920673907186e-03, 4.438381010860778e-03, 2.958920673907186e-03, 7.397301684767964e-04, };
 double denum[5] = {1.000000000000000e+00, -3.152761111579526e+00, 3.860934099037117e+00, -2.161019850256067e+00, 4.647120978065145e-01, };
@@ -25,13 +27,14 @@ uint32_t numlen = sizeof(num)/sizeof(num[0]);
 uint32_t denumlen = sizeof(denum)/sizeof(num[0]);
 uint32_t pdattype = DATATYPE_DOUBLE;
 
-static int compare_results(void)
+static int compare_results(double thres)
 {
 	FILE* pipe;
 	double errval = DBL_MAX;
 	int nf;
 	int rval = 1;
 	char line[128];
+
 
 	pipe = popen("matlab -nojvm -nodisplay -r checkfiltres", "r");
 	while (fgets(line, 127, pipe)) {
@@ -41,9 +44,14 @@ static int compare_results(void)
 		}
 	}
 	pclose(pipe);
+	if (rval)
+		return rval;
 
-	fprintf(stdout, "Error value = %lg\n (min dbl:%lg   min flt:%g)\n", errval, DBL_MIN, FLT_MIN);
+	fprintf(stdout, "Error value = %lg (thresehold = %lg)\n", errval, thres);
 
+	
+
+	rval = (errval < thres) ? 0 : 1;
 	return rval;
 }
 
@@ -77,6 +85,7 @@ int main(int argc, char *argv[])
 	uint32_t nchan32;
 	uint32_t dattype;
 	int retval = 1;
+	int keepfiles = 0;
 
 
 	// Process command-line options
@@ -85,7 +94,7 @@ int main(int argc, char *argv[])
 	niter = NITER;
 	filtorder = FILTORDER;
 	dattype = TYPE_DEF;
-	while ((opt = getopt(argc, argv, "hc:s:i:o:f:d:")) != -1) {
+	while ((opt = getopt(argc, argv, "hc:s:i:o:f:d:k:")) != -1) {
 		switch (opt) {
 		case 'c':
 			nchann = atoi(optarg);
@@ -104,6 +113,9 @@ int main(int argc, char *argv[])
 			break;
 		case 'd':
 			dattype = atoi(optarg);
+			break;
+		case 'k':
+			keepfiles = atoi(optarg);
 			break;
 		case 'h':
 		default:	/* '?' */
@@ -130,8 +142,8 @@ int main(int argc, char *argv[])
 
 
 	// Open files for writing
-	filein = fopen("filein.bin","w");
-	fileout = fopen("fileout.bin","w");
+	filein = fopen(infilename,"w");
+	fileout = fopen(outfilename,"w");
 	if (!filein || !fileout) {
 		fprintf(stderr, "File opening failed\n");
 		goto out;
@@ -187,7 +199,11 @@ out:
 		fclose(fileout);
 
 	if (retval == 0)
-		retval = compare_results();
+		retval = compare_results( (dattype == DATATYPE_DOUBLE) ? 1e-9 : 1e-4);
+	if (!keepfiles) {
+		unlink(infilename);
+		unlink(outfilename);
+	}
 
 	return retval;
 }

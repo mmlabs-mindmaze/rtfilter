@@ -22,6 +22,10 @@
  *
  * This file includes the template of the different filter functions
  */
+
+#undef NELEM_DAT
+#define NELEM_DAT	(sizeof(TYPEREAL_LOCAL)/sizeof(TYPEREAL))
+
 static void FILTER_DATADEP_FUNC(hfilter filt, const TYPEREAL_LOCAL *in, TYPEREAL_LOCAL *out, unsigned int nsamples)
 {
 	unsigned int i;
@@ -32,7 +36,7 @@ static void FILTER_DATADEP_FUNC(hfilter filt, const TYPEREAL_LOCAL *in, TYPEREAL
 	const TYPEREAL *a = filt->a;
 	int b_len = filt->b_len;
 	const TYPEREAL *b = filt->b;
-	int nchann = filt->num_chann / NELEM_VEC;
+	int nchann = filt->num_chann / NELEM_DAT;
 	const TYPEREAL_LOCAL *xprev = (TYPEREAL_LOCAL*)(filt->xoff) + (a_len - 1) * nchann;
 	const TYPEREAL_LOCAL *yprev = (TYPEREAL_LOCAL*)(filt->yoff) + b_len * nchann;
 	TYPEREAL_LOCAL coef, *currout, *dest;

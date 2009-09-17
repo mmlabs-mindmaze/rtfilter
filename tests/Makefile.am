@@ -9,4 +9,7 @@ testfilter_LDADD = $(top_builddir)/src/librtfilter.la
 cmpwmatlab_SOURCES = cmpwmatlab.c
 cmpwmatlab_LDADD = $(top_builddir)/src/librtfilter.la
 
-TESTS = testfilter
+TESTS = testfilter\
+	cmp-aligned-float.sh cmp-unaligned-float.sh\
+	cmp-aligned-double.sh cmp-unaligned-double.sh
+

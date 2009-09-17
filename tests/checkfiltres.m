@@ -44,7 +44,8 @@ fclose(fout);
 %     axis([0 600 -2 2])
 % end
 
-diffval = (datmatlab - datout);
-errval = max(abs(diffval(:)));
+diffval = abs(datmatlab - datout);
+errvals = max(diffval,[],2) ./ max(abs(datin),[],2);
+errval = max(errvals);
 fprintf('Error value = %10.10g\n',errval);
 exit;
