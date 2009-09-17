@@ -3,6 +3,7 @@
 #include <sys/time.h>
 #include <memory.h>
 #include <limits.h>
+#include <float.h>
 #include <unistd.h>
 #include <stdint.h>
 #include <math.h>
@@ -25,7 +26,27 @@ uint32_t numlen = sizeof(num)/sizeof(num[0]);
 uint32_t denumlen = sizeof(denum)/sizeof(num[0]);
 uint32_t pdattype = DATATYPE_FLOAT;
 
+static int compare_results(void)
+{
+	FILE* pipe;
+	double errval = DBL_MAX;
+	int nf;
+	int rval = 1;
+	char line[128];
 
+	pipe = popen("matlab -nojvm -nodisplay -r checkfiltres", "r");
+	while (fgets(line, 127, pipe)) {
+		if (sscanf(line, " Error value = %lg", &errval) == 1) {
+			rval = 0;
+			break;
+		}
+	}
+	pclose(pipe);
+
+	fprintf(stdout, "Error value = %lg\n", errval);
+
+	return rval;
+}
 
 static void set_signals(unsigned int nchann, unsigned int nsample, unsigned int dattype, void* buff)
 {
@@ -51,7 +72,7 @@ int main(int argc, char *argv[])
 	int i, j, k, opt;
 	hfilter filt = NULL;
 	void *buffin, *buffout;
-	FILE *filein = NULL, *fileout = NULL;
+	FILE *filein = NULL, *fileout = NULL, *pipe = NULL;
 	float fc = FC_DEF;
 	size_t buffsize;
 	uint32_t nchan32;
@@ -118,17 +139,16 @@ int main(int argc, char *argv[])
 	}
 
 	// write filter params on fileout
-	fwrite(&pdattype, sizeof(dattype), 1, fileout);
-	fwrite(&numlen, sizeof(numlen), 1, fileout);
-	fwrite(&num, sizeof(num), 1, fileout);
-	fwrite(&denumlen, sizeof(denumlen), 1, fileout);
-	fwrite(&denum, sizeof(denum), 1, fileout);
-
-	// Write data info on files
-	fwrite(&dattype, sizeof(dattype), 1, filein);
-	fwrite(&nchan32, sizeof(nchan32), 1, filein);
-	fwrite(&dattype, sizeof(dattype), 1, fileout);
-	fwrite(&nchan32, sizeof(nchan32), 1, fileout);
+	if (!fwrite(&pdattype, sizeof(dattype), 1, fileout) ||
+	    !fwrite(&numlen, sizeof(numlen), 1, fileout) ||
+	    !fwrite(&num, sizeof(num), 1, fileout) ||
+	    !fwrite(&denumlen, sizeof(denumlen), 1, fileout) ||
+	    !fwrite(&denum, sizeof(denum), 1, fileout) ||
+	    !fwrite(&dattype, sizeof(dattype), 1, filein) ||
+	    !fwrite(&nchan32, sizeof(nchan32), 1, filein) ||
+	    !fwrite(&dattype, sizeof(dattype), 1, fileout) ||
+	    !fwrite(&nchan32, sizeof(nchan32), 1, fileout))
+		goto out;
 
 
 
@@ -156,7 +176,6 @@ int main(int argc, char *argv[])
 	}
 	retval = 0;
 
-	popen("matlab -nojvm -nodisplay -r checkfiltres", "r");
 
 
 out:
@@ -167,6 +186,9 @@ out:
 		fclose(filein);
 	if (fileout)
 		fclose(fileout);
+
+	if (retval == 0)
+		retval = compare_results();
 
 	return retval;
 }
