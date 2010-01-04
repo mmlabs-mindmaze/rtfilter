@@ -1,5 +1,7 @@
-fin = fopen('filein.bin');
-fout = fopen('fileout.bin');
+function checkfiltres(filein, fileout)
+
+fin = fopen(filein);
+fout = fopen(fileout);
 
 pdattype = fread(fout, 1, 'uint32');
 ptype = '*float32';

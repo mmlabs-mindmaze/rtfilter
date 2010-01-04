@@ -18,8 +18,7 @@
 #define FC_DEF	0.2
 #define TYPE_DEF	DATATYPE_FLOAT
 
-const char infilename[] = "filein.bin";
-const char outfilename[] = "fileout.bin";
+char infilename[256], outfilename[256], line[128], command[1024], tmpdir[128] = "/tmp";
 
 double num[5] = {7.397301684767964e-04, 2.958920673907186e-03, 4.438381010860778e-03, 2.958920673907186e-03, 7.397301684767964e-04, };
 double denum[5] = {1.000000000000000e+00, -3.152761111579526e+00, 3.860934099037117e+00, -2.161019850256067e+00, 4.647120978065145e-01, };
@@ -32,11 +31,9 @@ static int compare_results(double thres)
 	FILE *pipe;
 	double errval = DBL_MAX;
 	int rval = 1;
-	char line[128];
-	char command[256];
 	
 
-	sprintf(command, "matlab -nojvm -nodisplay -r \"addpath('%s');checkfiltres;exit;\"", getenv("srcdir"));
+	sprintf(command, "matlab -nojvm -nodisplay -r \"addpath('%s');checkfiltres('%s','%s');exit;\"", getenv("srcdir"), infilename, outfilename);
 	pipe = popen(command, "r");
 	while (fgets(line, 127, pipe)) {
 		if (sscanf(line, " Error value = %lg", &errval) == 1) {
@@ -80,7 +77,7 @@ int main(int argc, char *argv[])
 	int k, opt;
 	hfilter filt = NULL;
 	void *buffin, *buffout;
-	FILE *filein = NULL, *fileout = NULL;
+	int filein = -1, fileout = -1;
 	float fc = FC_DEF;
 	size_t buffsize;
 	uint32_t nchan32;
@@ -143,23 +140,27 @@ int main(int argc, char *argv[])
 
 
 	// Open files for writing
-	filein = fopen(infilename,"w");
-	fileout = fopen(outfilename,"w");
-	if (!filein || !fileout) {
+	if (getenv("TMPDIR"))
+		strcpy(tmpdir, getenv("TMPDIR"));
+	sprintf(infilename, "%s/filein.XXXXXX", tmpdir);
+	sprintf(outfilename, "%s/fileout.XXXXXX", tmpdir);
+	filein = mkstemp(infilename);
+	fileout = mkstemp(outfilename);
+	if ((filein < 0) || (fileout < 0)) {
 		fprintf(stderr, "File opening failed\n");
 		goto out;
 	}
 
 	// write filter params on fileout
-	if (!fwrite(&pdattype, sizeof(dattype), 1, fileout) ||
-	    !fwrite(&numlen, sizeof(numlen), 1, fileout) ||
-	    !fwrite(&num, sizeof(num), 1, fileout) ||
-	    !fwrite(&denumlen, sizeof(denumlen), 1, fileout) ||
-	    !fwrite(&denum, sizeof(denum), 1, fileout) ||
-	    !fwrite(&dattype, sizeof(dattype), 1, filein) ||
-	    !fwrite(&nchan32, sizeof(nchan32), 1, filein) ||
-	    !fwrite(&dattype, sizeof(dattype), 1, fileout) ||
-	    !fwrite(&nchan32, sizeof(nchan32), 1, fileout))
+	if (write(fileout, &pdattype, sizeof(dattype)) == -1 ||
+	    write(fileout, &numlen, sizeof(numlen)) == -1 ||
+	    write(fileout, &num, sizeof(num)) == -1 ||
+	    write(fileout, &denumlen, sizeof(denumlen)) == -1 ||
+	    write(fileout, &denum, sizeof(denum)) == -1 ||
+	    write(filein, &dattype, sizeof(dattype)) == -1 ||
+	    write(filein, &nchan32, sizeof(nchan32)) == -1 ||
+	    write(fileout, &dattype, sizeof(dattype)) == -1 ||
+	    write(fileout, &nchan32, sizeof(nchan32)) == -1 )
 		goto out;
 
 
@@ -180,8 +181,8 @@ int main(int argc, char *argv[])
 			filter_f(filt, buffin, buffout, nsample);
 		else
 			filter_d(filt, buffin, buffout, nsample);
-		if ( !fwrite(buffin, buffsize, 1, filein)
-		     || !fwrite(buffout, buffsize, 1, fileout) ) {
+		if ( write(filein, buffin, buffsize) == -1
+		     || write(fileout, buffout, buffsize) == -1 ) {
 		        fprintf(stderr,"Error while writing file\n");
 			break;
 		}
@@ -194,10 +195,10 @@ out:
 	destroy_filter(filt);
 	free(buffin);
 	free(buffout);
-	if (filein)
-		fclose(filein);
-	if (fileout)
-		fclose(fileout);
+	if (filein != -1)
+		close(filein);
+	if (fileout != -1)
+		close(fileout);
 
 	if (retval == 0)
 		retval = compare_results( (dattype == DATATYPE_DOUBLE) ? 1e-12 : 1e-4);
