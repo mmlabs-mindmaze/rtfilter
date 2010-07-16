@@ -33,12 +33,17 @@ extern "C" {
 
 /*! \name Data type specifications
 \{ */
-#define DATATYPE_FLOAT	0
-#define DATATYPE_DOUBLE	1
+#define RTF_FLOAT	0
+#define RTF_DOUBLE	1
+#define RTF_CFLOAT	2
+#define RTF_CDOUBLE	3
+#define RTF_PRECISION_MASK	1
+#define RTF_COMPLEX_MASK	2
 /** \} */
 
-//! helper macro that returns the size in byte of a type (DATATYPE_FLOAT or DATATYPE_DOUBLE)
-#define sizeof_data(type)	((type == DATATYPE_FLOAT) ? sizeof(float) : sizeof(double))
+/* Backward compatibility */
+#define DATATYPE_FLOAT	RTF_FLOAT
+#define DATATYPE_DOUBLE	RTF_DOUBLE
 
 //! Handle to a filter. Used by all the functions to manipulate a filter.
 typedef const struct _dfilter* hfilter;
@@ -48,10 +53,8 @@ hfilter create_filter(unsigned int nchann, unsigned int proctype,
                       unsigned int num_len, const void *num,
                       unsigned int denum_len, const void *denum,
                       unsigned int type);
-//! filter chunk of \c float data
-void filter_f(hfilter filt, const float* x, float* y, unsigned int ns);
-//! filter chunk of \c double data
-void filter_d(hfilter filt, const double* x, double* y, unsigned int ns);
+//! filter chunk of data
+void filter(hfilter filt, const void* x, void* y, unsigned int ns);
 //! initialize a filter with particular data
 void init_filter(hfilter filt, const void* data);
 //! destroy a filter

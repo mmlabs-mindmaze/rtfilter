@@ -21,6 +21,7 @@
 
 #include <memory.h>
 #include <stdlib.h>
+#include <complex.h>
 #include <math.h>
 #include <stdint.h>
 #include "filter.h"
@@ -29,30 +30,35 @@
 
 /**************************************************************************
  *                                                                        *
- *                        Double precision version                        *
- *                               ( double )                               *
+ *                     Complex Single precision version                   *
+ *                            ( complex float )                           *
  *                                                                        *
  **************************************************************************/
-#ifdef __SSE2__
-# include <emmintrin.h>
+#if 0
+#ifdef __SSE3__
+# include <pmmintrin.h>
 # define USE_SIMD
 #endif
+#endif
 
-#define add_vec(v1,v2)			_mm_add_pd(v1,v2)
-#define mul_vec(v1,v2)			_mm_mul_pd(v1,v2)
-#define mul_in_vec(v1,v2)		_mm_mul_pd(v1,v2)
-#define zero_vec()			_mm_setzero_pd()
-#define set1_vec(data)			_mm_set1_pd(data)
-#define TYPEIN				double
-#define TYPEIN_V			__m128d
-#define TYPEOUT				double
-#define TYPEOUT_V			__m128d
-#define FILTER_ALIGNED_FUNC		filter_da
-#define FILTER_UNALIGNED_FUNC		filter_du
-#define FILTER_FUNC			filter_d
-#define COPY_NUMDENUM			copy_numdenum_d
-#define DINTYPE				RTF_DOUBLE
-#define DOUTTYPE			RTF_DOUBLE
+typedef complex float cfloat;
+
+#define add_vec(v1,v2)			_mm_add_ps(v1,v2)
+#define mul_vec(v1,v2)			_mm_mul_ps(v1,v2)
+#define mul_in_vec(v1,v2)		_mm_mul_ps(v1,v2)
+#define zero_vec()			_mm_setzero_ps()
+#define set1_vec(data)			_mm_set1_ps(data)
+#define TYPEIN				float
+#define TYPEIN_V			__m128
+#define TYPEOUT				cfloat
+#define TYPEOUT_V			__m128
+#define FILTER_ALIGNED_FUNC		filter_fcfa
+#define FILTER_UNALIGNED_FUNC		filter_fcfu
+#define FILTER_FUNC			filter_fcf
+#define DINTYPE				RTF_FLOAT
+#define DOUTTYPE			RTF_CFLOAT
+
+
 
 #include "templates.c"
 

@@ -89,8 +89,8 @@ int main(int argc, char *argv[])
 	}
 
 	// create filters
-	filt1 = create_butterworth_filter(nchann, DATATYPE_FLOAT, 0.02, filtorder, 0);
-	filt2 = create_butterworth_filter(nchann, DATATYPE_FLOAT, 0.02, filtorder, 0);
+	filt1 = create_butterworth_filter(nchann, RTF_FLOAT, 0.02, filtorder, 0);
+	filt2 = create_butterworth_filter(nchann, RTF_FLOAT, 0.02, filtorder, 0);
 	if (!filt1 || !filt2) {
 		fprintf(stderr,"Creation of filters failed (filt1:%i filt2:%i)\n",
 			filt1 ? 1 : 0,

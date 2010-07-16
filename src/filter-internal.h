@@ -32,7 +32,8 @@
 
 struct _dfilter
 {
-	unsigned int num_chann, type;
+	void (*filter_fn)(const struct _dfilter*, const void*, void*, unsigned int);
+	unsigned int num_chann, intype, outtype;
 	unsigned int a_len;
 	const void* a;
 	unsigned int b_len;
@@ -41,8 +42,9 @@ struct _dfilter
 	void* yoff;
 };
 
-
-void copy_numdenum_f(hfilter filt, unsigned int num_len, const float *num, unsigned int denum_len, const float *denum);
-void copy_numdenum_d(hfilter filt, unsigned int num_len, const double *num, unsigned int denum_len, const double *denum);
+void filter_f(const struct _dfilter* filt, const void* x, void* y, unsigned int ns);
+void filter_d(const struct _dfilter* filt, const void* x, void* y, unsigned int ns);
+void filter_fcf(const struct _dfilter* filt, const void* x, void* y, unsigned int ns);
+void filter_dcd(const struct _dfilter* filt, const void* x, void* y, unsigned int ns);
 
 #endif //FILTER_INTERNAL_H

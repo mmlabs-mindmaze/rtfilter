@@ -6,8 +6,11 @@
 #include <float.h>
 #include <unistd.h>
 #include <stdint.h>
+#include <complex.h>
 #include <math.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include "filter.h"
 
 
@@ -16,15 +19,55 @@
 #define NITER 100
 #define FILTORDER 4
 #define FC_DEF	0.2
-#define TYPE_DEF	DATATYPE_FLOAT
+#define TYPE_DEF	RTF_FLOAT
 
 char infilename[256], outfilename[256], line[128], command[1024], tmpdir[128] = "/tmp";
 
-double num[5] = {7.397301684767964e-04, 2.958920673907186e-03, 4.438381010860778e-03, 2.958920673907186e-03, 7.397301684767964e-04, };
-double denum[5] = {1.000000000000000e+00, -3.152761111579526e+00, 3.860934099037117e+00, -2.161019850256067e+00, 4.647120978065145e-01, };
-uint32_t numlen = sizeof(num)/sizeof(num[0]);
-uint32_t denumlen = sizeof(denum)/sizeof(num[0]);
-uint32_t pdattype = DATATYPE_DOUBLE;
+double numd[5] = {7.397301684767964e-04, 2.958920673907186e-03, 4.438381010860778e-03, 2.958920673907186e-03, 7.397301684767964e-04, };
+double denumd[5] = {1.000000000000000e+00, -3.152761111579526e+00, 3.860934099037117e+00, -2.161019850256067e+00, 4.647120978065145e-01, };
+float numf[5] = {7.397301684767964e-04, 2.958920673907186e-03, 4.438381010860778e-03, 2.958920673907186e-03, 7.397301684767964e-04, };
+float denumf[5] = {1.000000000000000e+00, -3.152761111579526e+00, 3.860934099037117e+00, -2.161019850256067e+00, 4.647120978065145e-01, };
+complex double numcd[5] = {7.397301684767964e-04, 2.958920673907186e-03+1.0*I, 4.438381010860778e-03, 2.958920673907186e-03, 7.397301684767964e-04, };
+complex double denumcd[5] = {1.000000000000000e+00, -3.152761111579526e+00, 3.860934099037117e+00, -2.161019850256067e+00, 4.647120978065145e-01, };
+complex float numcf[5] = {7.397301684767964e-04, 2.958920673907186e-03+1.0*I, 4.438381010860778e-03, 2.958920673907186e-03, 7.397301684767964e-04, };
+complex float denumcf[5] = {1.000000000000000e+00, -3.152761111579526e+00, 3.860934099037117e+00, -2.161019850256067e+00, 4.647120978065145e-01, };
+uint32_t numlen = sizeof(numd)/sizeof(numd[0]);
+uint32_t denumlen = sizeof(denumd)/sizeof(numd[0]);
+uint32_t ptype = RTF_DOUBLE;
+void *num = numd, *denum = denumd;
+
+static void set_param(int ptype)
+{
+	if (ptype == RTF_FLOAT) {
+		num = numf;
+		denum = denumf;
+	} else if (ptype == RTF_DOUBLE) {
+		num = numd;
+		denum = denumd;
+	}else if (ptype == RTF_CFLOAT) {
+		num = numcf;
+		denum = denumcf;
+	} else if (ptype == RTF_CDOUBLE) {
+		num = numcd;
+		denum = denumcd;
+	}
+}
+
+static size_t sizeof_data(int type)
+{
+	size_t dsize;
+	if (type == RTF_FLOAT)
+		dsize = sizeof(float);
+	else if (type == RTF_DOUBLE)
+		dsize = sizeof(double);
+	else if (type == RTF_CFLOAT)
+		dsize = sizeof(complex float);
+	else if (type == RTF_CDOUBLE)
+		dsize = sizeof(complex double);
+
+	return dsize;
+}
+
 
 static int compare_results(double thres)
 {
@@ -33,7 +76,7 @@ static int compare_results(double thres)
 	int rval = 1;
 	
 
-	sprintf(command, "matlab -nojvm -nodisplay -r \"addpath('%s');checkfiltres('%s','%s');exit;\"", getenv("srcdir"), infilename, outfilename);
+	sprintf(command, "matlab -nojvm -nodisplay -nosplash -nodesktop -r \"addpath('%s');checkfiltres('%s','%s');exit;\"", getenv("srcdir"), infilename, outfilename);
 	pipe = popen(command, "r");
 	while (fgets(line, 127, pipe)) {
 		if (sscanf(line, " Error value = %lg", &errval) == 1) {
@@ -45,7 +88,7 @@ static int compare_results(double thres)
 	if (rval)
 		return rval;
 
-	fprintf(stdout, "Error value = %lg (thresehold = %lg)\n", errval, thres);
+	fprintf(stdout, "\t\tError value = %lg (thresehold = %lg)\n", errval, thres);
 
 	
 
@@ -53,17 +96,17 @@ static int compare_results(double thres)
 	return rval;
 }
 
-static void set_signals(unsigned int nchann, unsigned int nsample, unsigned int dattype, void* buff)
+static void set_signals(unsigned int nchann, unsigned int nsample, unsigned int intype, void* buff)
 {
 	unsigned int i, j;
 	
-	if (dattype == DATATYPE_FLOAT) {
-		float* data = buff;
+	if (intype & RTF_DOUBLE) {
+		double* data = buff;
 		for (i = 0; i < nchann; i++)
 			for (j = 0; j < nsample; j++)
 				data[j * nchann + i] = sin(6.28/(double)(i+1)*(double)j);//(float)j - ((float)(nsample-1))/2.0f;
 	} else {
-		double* data = buff;
+		float* data = buff;
 		for (i = 0; i < nchann; i++)
 			for (j = 0; j < nsample; j++)
 				data[j * nchann + i] = sin(6.28/(double)(i+1)*(double)j);//(float)j - ((float)(nsample-1))/2.0f;
@@ -79,9 +122,9 @@ int main(int argc, char *argv[])
 	void *buffin, *buffout;
 	int filein = -1, fileout = -1;
 	float fc = FC_DEF;
-	size_t buffsize;
+	size_t buffinsize, buffoutsize;
 	uint32_t nchan32;
-	uint32_t dattype;
+	uint32_t datintype, datouttype;
 	int retval = 1;
 	int keepfiles = 0;
 
@@ -91,8 +134,8 @@ int main(int argc, char *argv[])
 	nsample = NSAMPLE;
 	niter = NITER;
 	filtorder = FILTORDER;
-	dattype = TYPE_DEF;
-	while ((opt = getopt(argc, argv, "hc:s:i:o:f:d:k:")) != -1) {
+	datouttype = datintype = TYPE_DEF;
+	while ((opt = getopt(argc, argv, "hc:s:i:o:f:d:p:k:")) != -1) {
 		switch (opt) {
 		case 'c':
 			nchann = atoi(optarg);
@@ -110,7 +153,10 @@ int main(int argc, char *argv[])
 			fc = atof(optarg);
 			break;
 		case 'd':
-			dattype = atoi(optarg);
+			datintype = atoi(optarg);
+			break;
+		case 'p':
+			datouttype = atoi(optarg);
 			break;
 		case 'k':
 			keepfiles = atoi(optarg);
@@ -123,15 +169,18 @@ int main(int argc, char *argv[])
 			exit(EXIT_FAILURE);
 		}
 	}
-	printf("filter order: %i \tnumber of channels: %i \t\tlength of batch: %i\n",filtorder, nchann, nsample);
+	printf("\tfilter order: %i \tnumber of channels: %i \t\tlength of batch: %i\n",filtorder, nchann, nsample);
+	ptype = datouttype;
+	set_param(ptype);
 
-	buffsize = sizeof_data(dattype) * nchann * nsample;
+	buffinsize = sizeof_data(datintype) * nchann * nsample;
+	buffoutsize = sizeof_data(datouttype) * nchann * nsample;
 	nchan32 = nchann;
 
 	// Allocate buffers
-	if (posix_memalign((void **) &buffin, 16, buffsize))
+	if (posix_memalign((void **) &buffin, 16, buffinsize))
 		buffin = NULL;
-	if (posix_memalign((void **) &buffout, 16, buffsize))
+	if (posix_memalign((void **) &buffout, 16, buffoutsize))
 		buffout = NULL;
 	if (!buffin || !buffout) {
 		fprintf(stderr, "buffer allocation failed\n");
@@ -152,24 +201,24 @@ int main(int argc, char *argv[])
 	}
 
 	// write filter params on fileout
-	if (write(fileout, &pdattype, sizeof(dattype)) == -1 ||
+	if (write(fileout, &ptype, sizeof(ptype)) == -1 ||
 	    write(fileout, &numlen, sizeof(numlen)) == -1 ||
-	    write(fileout, &num, sizeof(num)) == -1 ||
+	    write(fileout, num, numlen*sizeof_data(ptype)) == -1 ||
 	    write(fileout, &denumlen, sizeof(denumlen)) == -1 ||
-	    write(fileout, &denum, sizeof(denum)) == -1 ||
-	    write(filein, &dattype, sizeof(dattype)) == -1 ||
+	    write(fileout, denum, denumlen*sizeof_data(ptype)) == -1 ||
+	    write(filein, &datintype, sizeof(datintype)) == -1 ||
 	    write(filein, &nchan32, sizeof(nchan32)) == -1 ||
-	    write(fileout, &dattype, sizeof(dattype)) == -1 ||
+	    write(fileout, &datouttype, sizeof(datouttype)) == -1 ||
 	    write(fileout, &nchan32, sizeof(nchan32)) == -1 )
 		goto out;
 
 
 
 	// set signals (ramps)
-	set_signals(nchann, nsample, dattype, buffin);
+	set_signals(nchann, nsample, datintype, buffin);
 
 	// create filters
-	filt = create_filter(nchann, dattype, numlen, num, denumlen, denum, pdattype);
+	filt = create_filter(nchann, datintype, numlen, num, denumlen, denum, ptype);
 	if (!filt) {
 		fprintf(stderr,"Creation of filter failed\n");
 		goto out;
@@ -177,12 +226,9 @@ int main(int argc, char *argv[])
 
 	// Filter chunks of data and write input and output on files
 	for (k=0; k<niter; k++) {
-		if (dattype == DATATYPE_FLOAT)
-			filter_f(filt, buffin, buffout, nsample);
-		else
-			filter_d(filt, buffin, buffout, nsample);
-		if ( write(filein, buffin, buffsize) == -1
-		     || write(fileout, buffout, buffsize) == -1 ) {
+		filter(filt, buffin, buffout, nsample);
+		if ( write(filein, buffin, buffinsize) == -1
+		     || write(fileout, buffout, buffoutsize) == -1 ) {
 		        fprintf(stderr,"Error while writing file\n");
 			break;
 		}
@@ -201,7 +247,7 @@ out:
 		close(fileout);
 
 	if (retval == 0)
-		retval = compare_results( (dattype == DATATYPE_DOUBLE) ? 1e-12 : 1e-4);
+		retval = compare_results( (datintype & RTF_PRECISION_MASK) ? 1e-12 : 1e-4);
 	if (!keepfiles) {
 		unlink(infilename);
 		unlink(outfilename);

@@ -257,7 +257,7 @@ static int compute_cheby_iir(double *num, double *den, unsigned int num_pole,
  **************************************************************************/
 /**
  * \param nchann	number of channels the filter will process
- * \param type		type of data the filter will process (\c DATATYPE_FLOAT or \c DATATYPE_DOUBLE)
+ * \param type		type of data the filter will process (\c RTF_FLOAT or \c RTF_DOUBLE)
  * \param fir_length	number of sample used to compute the mean
  * \return	the handle of the newly created filter in case of success, \c NULL otherwise. 
  */
@@ -279,7 +279,7 @@ hfilter create_fir_filter_mean(unsigned int nchann, unsigned int type,
 	
 	filt = create_filter(nchann, type,
 	                     fir_length, fir, 0, NULL,
-			     DATATYPE_DOUBLE);
+			     RTF_DOUBLE);
 
 	free(fir);
 	return filt;
@@ -287,7 +287,7 @@ hfilter create_fir_filter_mean(unsigned int nchann, unsigned int type,
 
 /**
  * \param nchann	number of channels the filter will process
- * \param type		type of data the filter will process (\c DATATYPE_FLOAT or \c DATATYPE_DOUBLE)
+ * \param type		type of data the filter will process (\c RTF_FLOAT or \c RTF_DOUBLE)
  * \param fc		Normalized cutoff frequency (the normal frequency divided by the sampling frequency)
  * \param half_length	the half size of the impulse response (in number of samples)
  * \param window	The type of the kernel wondow to use for designing the filter
@@ -313,7 +313,7 @@ hfilter create_fir_filter_lowpass(unsigned int nchann, unsigned int type,
 
 	filt = create_filter(nchann, type,
 	                     fir_length, fir, 0, NULL,
-	                     DATATYPE_DOUBLE);
+	                     RTF_DOUBLE);
 
 	free(fir);
 	return filt;
@@ -322,7 +322,7 @@ hfilter create_fir_filter_lowpass(unsigned int nchann, unsigned int type,
 
 /**
  * \param nchann	number of channels the filter will process
- * \param type		type of data the filter will process (\c DATATYPE_FLOAT or \c DATATYPE_DOUBLE)
+ * \param type		type of data the filter will process (\c RTF_FLOAT or \c RTF_DOUBLE)
  * \param fc		Normalized cutoff frequency (the normal frequency divided by the sampling frequency)
  * \param half_length	the half size of the impulse response (in number of samples)
  * \param window	The type of the kernel wondow to use for designing the filter
@@ -349,7 +349,7 @@ hfilter create_fir_filter_highpass(unsigned int nchann, unsigned int type,
 
 	filt = create_filter(nchann, type,
 	                     fir_length, fir, 0, NULL,
-	                     DATATYPE_DOUBLE);
+	                     RTF_DOUBLE);
 
 	free(fir);
 	return filt;
@@ -399,7 +399,7 @@ hfilter create_fir_filter_bandpass(unsigned int nchann, unsigned int type,
 
 	filt = create_filter(nchann, type,
 	                     fir_length, fir, 0, NULL,
-	                     DATATYPE_DOUBLE);
+	                     RTF_DOUBLE);
 
 	free(fir);
 	return filt;
@@ -437,7 +437,7 @@ hfilter create_chebychev_filter(unsigned int nchann, unsigned int type,
 	
 	filt = create_filter(nchann, type,
 	                     num_pole+1, a, num_pole+1, b,
-	                     DATATYPE_DOUBLE);
+	                     RTF_DOUBLE);
 
 out:
 	free(a);
@@ -473,7 +473,7 @@ hfilter create_integral_filter(unsigned int nchann, unsigned int type,
 	hfilter filt;
 	double a = 1.0/fs, b[2] = {1.0, -1.0};
 
-	filt = create_filter(nchann, type, 1, &a, 2, &b, DATATYPE_DOUBLE);
+	filt = create_filter(nchann, type, 1, &a, 2, &b, RTF_DOUBLE);
 
 	return filt;
 }

@@ -21,6 +21,7 @@
 
 #include <memory.h>
 #include <stdlib.h>
+#include <complex.h>
 #include <math.h>
 #include <stdint.h>
 #include "filter.h"
@@ -29,14 +30,18 @@
 
 /**************************************************************************
  *                                                                        *
- *                        Double precision version                        *
- *                               ( double )                               *
+ *                      Complex double precision version                  *
+ *                            ( complex double )                          *
  *                                                                        *
  **************************************************************************/
-#ifdef __SSE2__
-# include <emmintrin.h>
+#if 0
+#ifdef __SSE3__
+# include <pmmintrin.h>
 # define USE_SIMD
 #endif
+#endif
+
+typedef complex double cdouble;
 
 #define add_vec(v1,v2)			_mm_add_pd(v1,v2)
 #define mul_vec(v1,v2)			_mm_mul_pd(v1,v2)
@@ -45,14 +50,15 @@
 #define set1_vec(data)			_mm_set1_pd(data)
 #define TYPEIN				double
 #define TYPEIN_V			__m128d
-#define TYPEOUT				double
+#define TYPEOUT				cdouble
 #define TYPEOUT_V			__m128d
-#define FILTER_ALIGNED_FUNC		filter_da
-#define FILTER_UNALIGNED_FUNC		filter_du
-#define FILTER_FUNC			filter_d
-#define COPY_NUMDENUM			copy_numdenum_d
+#define FILTER_ALIGNED_FUNC		filter_dcda
+#define FILTER_UNALIGNED_FUNC		filter_dcdu
+#define FILTER_FUNC			filter_dcd
 #define DINTYPE				RTF_DOUBLE
-#define DOUTTYPE			RTF_DOUBLE
+#define DOUTTYPE			RTF_CDOUBLE
+
+
 
 #include "templates.c"
 

@@ -94,10 +94,10 @@ int main(int argc, char *argv[])
 			buffin[j * nchann + i] = sin(6.28/(double)(i+1)*(double)j);//(float)j - ((float)(nsample-1))/2.0f;
 
 	// create filters
-//	filt = create_filter(nchann, DATATYPE_FLOAT, sizeof(num)/sizeof(num[0]), num, sizeof(denum)/sizeof(denum[0]), denum, DATATYPE_FLOAT);
-//	filt = create_butterworth_filter(nchann, DATATYPE_FLOAT, fc, filtorder, 0);
-	filt = create_chebychev_filter(nchann, DATATYPE_FLOAT, fc, filtorder, 0, 0.005);
-//	filt = create_integrate_filter(nchann, DATATYPE_FLOAT);
+//	filt = create_filter(nchann, RTF_FLOAT, sizeof(num)/sizeof(num[0]), num, sizeof(denum)/sizeof(denum[0]), denum, RTF_FLOAT);
+//	filt = create_butterworth_filter(nchann, RTF_FLOAT, fc, filtorder, 0);
+	filt = create_chebychev_filter(nchann, RTF_FLOAT, fc, filtorder, 0, 0.005);
+//	filt = create_integrate_filter(nchann, RTF_FLOAT);
 	if (!filt) {
 		fprintf(stderr,"Creation of filter failed\n");
 		goto out;

@@ -1,40 +1,40 @@
 function checkfiltres(filein, fileout)
 
-fin = fopen(filein);
+
+
 fout = fopen(fileout);
 
 pdattype = fread(fout, 1, 'uint32');
-ptype = '*float32';
-if pdattype == 1
-    ptype = '*float64';
-end
 numlen = fread(fout, 1, 'uint32');
-num = fread(fout, numlen, ptype);
+num = fread_array(fout, [1,numlen], pdattype);
 denumlen = fread(fout, 1, 'uint32');
-denum = fread(fout, denumlen, ptype);
+denum = fread_array(fout, [1,denumlen], pdattype);
 
-dattype = fread(fin, 1, 'uint32');
-nchann = fread(fin, 1, 'uint32');
-dattype2 = fread(fout, 1, 'uint32');
-nchann2 = fread(fout, 1, 'uint32');
+datouttype = fread(fout, 1, 'uint32');
+nchannout = fread(fout, 1, 'uint32');
+datout = fread_array(fout, [nchannout, inf], datouttype);
 
-if (dattype ~= dattype2) || (nchann ~= nchann2)
+fclose(fout);
+
+
+
+fin = fopen(filein);
+
+datintype = fread(fin, 1, 'uint32');
+nchannin = fread(fin, 1, 'uint32');
+datin = fread_array(fin, [nchannin, inf], datintype);
+
+fclose(fin);
+
+
+if (nchannin ~= nchannout)
     error('data params differs in the 2 files');
 end
 
-type = '*float32';
-if dattype == 1
-    type = '*float64';
-end
 
 
-
-datin = fread(fin,[nchann,inf],type);
-datout = fread(fout,[nchann,inf],type);
 datmatlab = filter(num,denum,datin,[],2);
 
-fclose(fin);
-fclose(fout);
 
 % for ichann=1:6:nchann
 %     figure
@@ -47,6 +47,26 @@ fclose(fout);
 % end
 
 diffval = abs(datmatlab - datout);
-errvals = max(diffval,[],2) ./ max(abs(datin),[],2);
+errvals = max(diffval,[],2) ./ max(abs(datmatlab),[],2);
 errval = max(errvals);
 fprintf('Error value = %10.10g\n',errval);
+return;
+
+function A = fread_array(fid, arrsize, typeval)
+    type = '*float32';
+    if bitand(typeval,1)
+        type = '*float64';
+    end
+    
+    c = 0;
+    if bitand(typeval,2)
+        c = 1;
+        arrsize(1) = arrsize(1)*2;
+    end
+    
+    A = fread(fid, arrsize, type);
+    
+    if c == 1
+        A = A(1:2:end,:) + 1i*A(2:2:end,:);
+    end
+return
