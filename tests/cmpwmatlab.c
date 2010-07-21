@@ -27,10 +27,13 @@ double numd[5] = {7.397301684767964e-04, 2.958920673907186e-03, 4.43838101086077
 double denumd[5] = {1.000000000000000e+00, -3.152761111579526e+00, 3.860934099037117e+00, -2.161019850256067e+00, 4.647120978065145e-01, };
 float numf[5] = {7.397301684767964e-04, 2.958920673907186e-03, 4.438381010860778e-03, 2.958920673907186e-03, 7.397301684767964e-04, };
 float denumf[5] = {1.000000000000000e+00, -3.152761111579526e+00, 3.860934099037117e+00, -2.161019850256067e+00, 4.647120978065145e-01, };
-complex double numcd[5] = {7.397301684767964e-04, 2.958920673907186e-03+1.0*I, 4.438381010860778e-03, 2.958920673907186e-03, 7.397301684767964e-04, };
-complex double denumcd[5] = {1.000000000000000e+00, -3.152761111579526e+00, 3.860934099037117e+00, -2.161019850256067e+00, 4.647120978065145e-01, };
+//complex double numcd[5] = {7.397301684767964e-04, 2.958920673907186e-03+1.0*I, 4.438381010860778e-03, 2.958920673907186e-03, 7.397301684767964e-04, };
+//complex double denumcd[5] = {1.000000000000000e+00, -3.152761111579526e+00, 3.860934099037117e+00, -2.161019850256067e+00, 4.647120978065145e-01, };
 complex float numcf[5] = {7.397301684767964e-04, 2.958920673907186e-03+1.0*I, 4.438381010860778e-03, 2.958920673907186e-03, 7.397301684767964e-04, };
 complex float denumcf[5] = {1.000000000000000e+00, -3.152761111579526e+00, 3.860934099037117e+00, -2.161019850256067e+00, 4.647120978065145e-01, };
+complex double numcd[5] = {0.998118112900149 + 0.0613207363022086*I,	-3.95518549428921 - 0.487825602459246*I,	5.85510755698165 + 1.09013553977360*I,	-3.83742836283793 - 0.961225765559170*I,	0.939400475921947 + 0.297600686990648*I};
+complex double denumcd[5] = {-7.52463886420131e-10 - 6.69325650010451e-10*I,	-2.84001717061831e-09 - 2.85683077704080e-09*I,	-3.98923441830393e-09 - 4.53840973210240e-09*I,	-2.46895233540014e-09 - 3.18299449945748e-09*I,	-5.67280619874348e-10 - 8.32100609567963e-10*I};
+
 uint32_t numlen = sizeof(numd)/sizeof(numd[0]);
 uint32_t denumlen = sizeof(denumd)/sizeof(numd[0]);
 uint32_t ptype = RTF_DOUBLE;
@@ -50,6 +53,7 @@ static void set_param(int ptype)
 	} else if (ptype == RTF_CDOUBLE) {
 		num = numcd;
 		denum = denumcd;
+		printf("use complex double param\n");
 	}
 }
 
@@ -156,7 +160,7 @@ int main(int argc, char *argv[])
 			datintype = atoi(optarg);
 			break;
 		case 'p':
-			datouttype = atoi(optarg);
+			ptype = atoi(optarg);
 			break;
 		case 'k':
 			keepfiles = atoi(optarg);
@@ -170,8 +174,10 @@ int main(int argc, char *argv[])
 		}
 	}
 	printf("\tfilter order: %i \tnumber of channels: %i \t\tlength of batch: %i\n",filtorder, nchann, nsample);
-	ptype = datouttype;
 	set_param(ptype);
+	datouttype = datintype;
+	if (ptype & RTF_COMPLEX_MASK)
+		datouttype |= RTF_COMPLEX_MASK;
 
 	buffinsize = sizeof_data(datintype) * nchann * nsample;
 	buffoutsize = sizeof_data(datouttype) * nchann * nsample;
@@ -200,6 +206,7 @@ int main(int argc, char *argv[])
 		goto out;
 	}
 
+	fprintf(stderr, "datin=%i datout=%i ptype=%i\n", datintype, datouttype, ptype );
 	// write filter params on fileout
 	if (write(fileout, &ptype, sizeof(ptype)) == -1 ||
 	    write(fileout, &numlen, sizeof(numlen)) == -1 ||
