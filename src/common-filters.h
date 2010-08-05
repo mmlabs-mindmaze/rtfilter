@@ -1,5 +1,5 @@
 /*
-      Copyright (C) 2008-2009 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+      Copyright (C) 2008-2010 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
 
     This file is part of the rtfilter library
 
@@ -29,6 +29,7 @@ extern "C" {
 #endif
 
 #include <filter.h>
+#include <complex.h>
 
 /**
  * Enumeration specifying some kernel windows
@@ -70,6 +71,15 @@ hfilter create_chebychev_filter(unsigned int nchann, unsigned int type,
 
 //! Simple first order integral filter (IIR filter) 
 hfilter create_integral_filter(unsigned int nchann, unsigned int type, double fs);
+
+
+hfilter create_bandpass_analytic_filter(unsigned int nchann,
+					unsigned int type,
+                                	double fl, double fh,
+					unsigned int num_pole);
+
+
+
 
 #ifdef __cplusplus
 }

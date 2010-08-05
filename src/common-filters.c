@@ -25,6 +25,7 @@
 #include <memory.h>
 #include <stdlib.h>
 #include <math.h>
+#include <complex.h>
 #include "filter.h"
 #include "common-filters.h"
 
@@ -85,6 +86,18 @@ static void compute_convolution(double *product, double *sig1, unsigned int len1
 			product[i + j] += sig1[i] * sig2[j];
 }
 
+static void FFT(complex double *X, double *t, unsigned int length){
+
+	unsigned int i,j;
+
+	for(i=0; i<length; i++){
+		X[i]=0;
+		for(j=0; j<length; j++){
+			X[i]=X[i] + t[j]*cexp((-2.0*I*M_PI)*(j)*(i)/length);				
+		}
+	}	
+
+}
 
 static void compute_fir_lowpass(double *fir, unsigned int length, double fc)
 {
@@ -110,6 +123,63 @@ static void reverse_fir(double *fir, unsigned int length)
 		fir[i] = -1.0 * fir[i];
 	fir[length - 1] += 1.0;
 }
+
+/*	Algorithm taken form:
+	
+	"Introduction to Digital Filters with Audio Applications",
+	by  Julius O. Smith III, (September 2007 Edition). 
+	https://ccrma.stanford.edu/~jos/filters/Numerical_Computation_Group_Delay.html 
+*/
+static double compute_IIR_filter_delay(double *num, double *den,
+					unsigned int length)
+{
+	unsigned int i,length_c;
+	double *a,*b,*c,*cr; 
+	complex double *X,*Y;
+	double Delay = 0.0, d = 0.0;	
+
+	length_c=2*length-1;
+
+	a = malloc( (length)*sizeof(*a));
+	b = malloc( (length)*sizeof(*b));
+	c = malloc( (length_c)*sizeof(*c));
+	cr = malloc( (length_c)*sizeof(*cr));
+	X = malloc( (length_c)*sizeof(*X));
+	Y = malloc( (length_c)*sizeof(*Y));
+	if (!a || !b || !c || !cr|| !X || !Y){
+		Delay=0.0;
+		goto exit;
+	}		
+
+	for(i=0;i<length;i++){
+		b[i]=den[length-i-1];
+		a[i]=num[i];	
+	}
+	compute_convolution(c,b,length,a,length);
+
+	for (i=0;i<length_c;i++)
+		cr[i] = c[i]*i;
+		
+	FFT(Y,c,length_c);
+	FFT(X,cr,length_c);
+
+	for (i=0;i<length_c;i++) {
+		d = creal(X[i]/Y[i]);
+		
+		if (d > Delay)
+		     Delay = d;
+	}
+	
+	exit:
+	free(a);
+	free(b);
+	free(c);
+	free(cr);
+	free(X);
+	free(Y);
+	return Delay;
+}
+
 
 /******************************
  * inspired by DSP guide ch33 *
@@ -229,8 +299,6 @@ static int compute_cheby_iir(double *num, double *den, unsigned int num_pole,
 	for (i = 0; i <= num_pole; i++)
 		a[i] /= gain;
 
-
-
 	// Copy the results to the num and den
 	for (i = 0; i <= num_pole; i++) {
 		num[i] = a[i];
@@ -247,7 +315,77 @@ static int compute_cheby_iir(double *num, double *den, unsigned int num_pole,
 	return retval;
 }
 
+/**	compute_bandpass_complex_filter:
+ * \param fl		normalized lowest cutoff freq of the bandpass filter. (the normal frequency divided by the sampling freq)
+ * \param fh		normalized highest cutoff freq of the bandpass filter. (the normal frequency divided by the sampling freq)
+ * \param num_pole	The number of pole the z-transform of the filter should possess
 
+	This function creates a complex bandpass filter from a Chebyshev low pass filter.
+*/
+static int compute_bandpass_complex_filter(complex double *num,
+					   complex double *den,
+					   unsigned int num_pole,
+					   double fl, double fh)
+{
+	double *a=NULL, *b=NULL;	
+	complex double *ac,*bc;
+	double ripple,fc,alpha,Delay;
+	unsigned int i,retval=1;
+
+	// Allocate temporary arrays
+	a = malloc( (num_pole+1)*sizeof(*a));
+	b = malloc( (num_pole+1)*sizeof(*b));
+	ac = malloc((num_pole+1)*sizeof(*ac));
+	bc = malloc( (num_pole+1)*sizeof(*bc));
+	if (!a || !b || !ac || !bc){
+		retval=0;		
+		goto exit;
+	}
+
+	alpha = M_PI*(fl+fh);   // Rotation angle in radians to produces
+				// the desired analitic filter
+	fc = (fh-fl)/2.0;       // Normalized cutoff frequency
+				// of the low pass filter
+	ripple = 0.01;
+
+	// prepare the z-transform of low pass filter 
+	if (!compute_cheby_iir(b, a, num_pole, 0, ripple, fc)){
+		retval=0;		
+		goto exit;
+	}
+	
+	// Compute the low pass filter delay; the complex filter 
+	Delay=compute_IIR_filter_delay(b, a,num_pole+1);  
+
+	/* Note: The complex filter introduces a delay equal to
+	e^(j*alpha*D) (D: Delay low pass filter).To get rid of the
+	undesired frequency independent phase factor, the filter with
+	rotated poles and zeros should be multiplied by
+	the constant e^(-j*alpha*D).*/
+
+
+	// compute complex coefficients (rotating poles and zeros). 
+	for(i=0;i<num_pole + 1; i++) {
+		// complex numerator
+		ac[i]= 2.0*cexp(-1.0*I*alpha*Delay)
+		     *b[i]*cexp(1.0*I*alpha*(i+1));
+
+		// complex denominator
+		bc[i]= a[i]*cexp(1.0*I*alpha*(i+1));
+	}
+
+	for(i=0;i<num_pole + 1; i++){
+		num[i]=ac[i];
+		den[i]=bc[i];
+	}
+
+exit:
+	free(a);
+	free(b);
+	free(ac);
+	free(bc);
+	return retval;
+}
 
 
 /**************************************************************************
@@ -376,7 +514,6 @@ hfilter create_fir_filter_bandpass(unsigned int nchann, unsigned int type,
 	hfilter filt;
 	unsigned int fir_length = 2 * half_length + 1;
 
-
 	// Alloc temporary fir
 	fir = malloc(fir_length*sizeof(*fir));
 	if (!fir)
@@ -395,7 +532,6 @@ hfilter create_fir_filter_bandpass(unsigned int nchann, unsigned int type,
 
 	// compute the convolution product of the two FIR
 	compute_convolution(fir, fir_low, len, fir_high, len);
-
 
 	filt = create_filter(nchann, type,
 	                     fir_length, fir, 0, NULL,
@@ -434,7 +570,6 @@ hfilter create_chebychev_filter(unsigned int nchann, unsigned int type,
 	if (!compute_cheby_iir(a, b, num_pole, highpass, ripple, fc))
 		goto out;
 
-	
 	filt = create_filter(nchann, type,
 	                     num_pole+1, a, num_pole+1, b,
 	                     RTF_DOUBLE);
@@ -477,4 +612,51 @@ hfilter create_integral_filter(unsigned int nchann, unsigned int type,
 
 	return filt;
 }
+
+/**
+	create_bandpass_analytic_filter:
+
+	Analytic filter: Is a complex filter generating a signal whose spectrum equals the positive spectrum from a (real) 		input signal. The resulting signal is said to be “analytic".	
+	The technique relies on the rotation of the pole-zero plot of a low pass filter.
+	
+ * \param nchann	number of channels the filter will process.
+ * \param type		type of data the filter will process (\c datatype_float or \c datatype_double).
+ * \param fl		normalized low bandpass cutoff frequency (the normal frequency divided by the sampling frequency).
+ * \param fh		normalized hihg bandpass cutoff frequency (the normal frequency divided by the sampling frequency).
+ * \param num_pole	The number of pole the z-transform of the filter should possess.
+ * \return		The handle of the newly created filter in case of success, \c null otherwise. 
+ */
+
+hfilter create_bandpass_analytic_filter(unsigned int nchann,
+					unsigned int type, 
+					double fl, double fh, 
+					unsigned int num_pole)
+{
+	complex double *a = NULL, *b = NULL;
+	hfilter filt = NULL;
+
+	if (num_pole % 2 != 0)
+		return NULL;
+
+	a = malloc((num_pole+1)*sizeof(*a));
+	b = malloc((num_pole+1)*sizeof(*b));
+	if (!a || !b)
+		goto out;
+
+	// prepare the z-transform of the complex bandpass filter
+	if (!compute_bandpass_complex_filter(b,a,num_pole,fl,fh))
+		goto out;
+
+	filt = create_filter(nchann, type,
+	                     num_pole+1, b, num_pole+1, a,
+	                     RTF_CDOUBLE);
+out:
+	free(a);
+	free(b);
+	return filt;
+}
+
+
+
+
 

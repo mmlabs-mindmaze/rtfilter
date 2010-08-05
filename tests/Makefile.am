@@ -4,7 +4,6 @@ EXTRA_DIST = cmp-aligned-float.sh cmp-unaligned-float.sh\
 AM_CFLAGS = -I$(top_srcdir)/src
 
 #check_PROGRAMS = cmpwmatlab
-#check_PROGRAMS = testcomplex
 check_PROGRAMS = testcomplex cmpwmatlab
 
 testcomplex_SOURCES = testcomplex.c
@@ -13,8 +12,6 @@ cmpwmatlab_SOURCES = cmpwmatlab.c
 cmpwmatlab_LDADD = $(top_builddir)/src/librtfilter.la
 
 TESTS_ENVIRONMENT = PATH=$(PATH):$(buildir)
-
-#TESTS = testcomplex
 
 TESTS = testcomplex\
 	test-float.sh test-complex-float.sh 	\
