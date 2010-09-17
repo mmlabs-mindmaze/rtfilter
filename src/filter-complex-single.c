@@ -24,7 +24,7 @@
 #include <complex.h>
 #include <math.h>
 #include <stdint.h>
-#include "filter.h"
+#include "rtfilter.h"
 #include "filter-internal.h"
 
 

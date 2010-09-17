@@ -30,9 +30,9 @@
 #endif
 
 
-struct _dfilter
+struct rtf_filter
 {
-	void (*filter_fn)(const struct _dfilter*, const void*, void*, unsigned int);
+	void (*filter_fn)(const struct rtf_filter*, const void*, void*, unsigned int);
 	unsigned int num_chann, intype, outtype;
 	unsigned int a_len;
 	const void* a;
@@ -42,9 +42,13 @@ struct _dfilter
 	void* yoff;
 };
 
-void filter_f(const struct _dfilter* filt, const void* x, void* y, unsigned int ns);
-void filter_d(const struct _dfilter* filt, const void* x, void* y, unsigned int ns);
-void filter_fcf(const struct _dfilter* filt, const void* x, void* y, unsigned int ns);
-void filter_dcd(const struct _dfilter* filt, const void* x, void* y, unsigned int ns);
+LOCAL_FN
+void filter_f(const struct rtf_filter* filt, const void* x, void* y, unsigned int ns);
+LOCAL_FN
+void filter_d(const struct rtf_filter* filt, const void* x, void* y, unsigned int ns);
+LOCAL_FN
+void filter_fcf(const struct rtf_filter* filt, const void* x, void* y, unsigned int ns);
+LOCAL_FN
+void filter_dcd(const struct rtf_filter* filt, const void* x, void* y, unsigned int ns);
 
 #endif //FILTER_INTERNAL_H

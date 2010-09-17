@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "filter.h"
+#include "rtfilter.h"
 
 
 #define NCHANN	64
@@ -225,7 +225,7 @@ int main(int argc, char *argv[])
 	set_signals(nchann, nsample, datintype, buffin);
 
 	// create filters
-	filt = create_filter(nchann, datintype, numlen, num, denumlen, denum, ptype);
+	filt = rtf_create_filter(nchann, datintype, numlen, num, denumlen, denum, ptype);
 	if (!filt) {
 		fprintf(stderr,"Creation of filter failed\n");
 		goto out;
@@ -233,7 +233,7 @@ int main(int argc, char *argv[])
 
 	// Filter chunks of data and write input and output on files
 	for (k=0; k<niter; k++) {
-		filter(filt, buffin, buffout, nsample);
+		rtf_filter(filt, buffin, buffout, nsample);
 		if ( write(filein, buffin, buffinsize) == -1
 		     || write(fileout, buffout, buffoutsize) == -1 ) {
 		        fprintf(stderr,"Error while writing file\n");
@@ -245,7 +245,7 @@ int main(int argc, char *argv[])
 
 
 out:
-	destroy_filter(filt);
+	rtf_destroy_filter(filt);
 	free(buffin);
 	free(buffout);
 	if (filein != -1)

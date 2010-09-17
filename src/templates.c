@@ -68,8 +68,8 @@
 
 #endif /* USE_SIMD */
 
-
-void FILTER_FUNC(const struct _dfilter* filt, const void* in, void* out, unsigned int nsamples)
+LOCAL_FN
+void FILTER_FUNC(const struct rtf_filter* filt, const void* in, void* out, unsigned int nsamples)
 {
 	assert(filt->intype == DINTYPE);
 	assert(filt->outtype == DOUTTYPE);

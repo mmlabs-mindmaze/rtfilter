@@ -1,14 +1,16 @@
-EXTRA_DIST=templates.c filter-func-template.c
+EXTRA_DIST=templates.c filter-func-template.c exports.sym
 
 lib_LTLIBRARIES = librtfilter.la
-include_HEADERS = filter.h common-filters.h
+include_HEADERS = rtfilter.h rtf_common.h
 
 librtfilter_la_SOURCES = filter-internal.h\
-                         filter.h filter.c \
+                         rtfilter.h filter.c \
 			 filter-single.c filter-double.c\
 			 filter-complex-single.c filter-complex-double.c\
-			 common-filters.h common-filters.c
+			 rtf_common.h common-filters.c
 
-librtfilter_la_LDFLAGS = $(AM_CFLAGS) #-version-info $(CURRENT):$(REVISION):$(AGE) -release $(RELEASE) 
-librtfilter_la_LIBADD = -lm
+librtfilter_la_LDFLAGS = $(AM_LDFLAGS) \
+                         -no-undefined	\
+			 -export-symbols $(srcdir)/exports.sym  \
+                         -version-info $(CURRENT):$(REVISION):$(AGE) 
 

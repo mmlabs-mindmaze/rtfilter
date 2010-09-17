@@ -28,7 +28,7 @@
 extern "C" {
 #endif
 
-#include <filter.h>
+#include <rtfilter.h>
 #include <complex.h>
 
 /**
@@ -41,39 +41,39 @@ typedef enum {
 } KernelWindow;
 
 //! Create a local mean filter based on a sliding window 
-hfilter create_fir_filter_mean(unsigned int nchann, unsigned int type,
+hfilter rtf_create_fir_mean(unsigned int nchann, unsigned int type,
                                unsigned int nsamples);
 
 //! Lowpass windowed sinc filter
-hfilter create_fir_filter_lowpass(unsigned int nchann, unsigned int type, 
+hfilter rtf_create_fir_lowpass(unsigned int nchann, unsigned int type, 
                                   double fc, unsigned int half_length,
                                   KernelWindow window);
 //! Highpass windowed sinc filter
-hfilter create_fir_filter_highpass(unsigned int nchann, unsigned int type,
+hfilter rtf_create_fir_highpass(unsigned int nchann, unsigned int type,
                                    double fc, unsigned int half_length,
                                    KernelWindow window);
 
 //! Bandpass windowed sinc filter
-hfilter create_fir_filter_bandpass(unsigned int nchann, unsigned int type,
+hfilter rtf_create_fir_bandpass(unsigned int nchann, unsigned int type,
                                    double fc_low, double fc_high,
                                    unsigned int half_length,
 				   KernelWindow window);
 
 //! Butterworth filter (IIR filter)
-hfilter create_butterworth_filter(unsigned int nchann, unsigned int type,
+hfilter rtf_create_butterworth(unsigned int nchann, unsigned int type,
                                   double fc, unsigned int num_pole,
                                   int highpass);
 
 //! Chebychev filter (IIR filter)
-hfilter create_chebychev_filter(unsigned int nchann, unsigned int type,
+hfilter rtf_create_chebychev(unsigned int nchann, unsigned int type,
                                 double fc, unsigned int num_pole,
                                 int highpass, double ripple);
 
 //! Simple first order integral filter (IIR filter) 
-hfilter create_integral_filter(unsigned int nchann, unsigned int type, double fs);
+hfilter rtf_create_integral(unsigned int nchann, unsigned int type, double fs);
 
 
-hfilter create_bandpass_analytic_filter(unsigned int nchann,
+hfilter rtf_create_bandpass_analytic(unsigned int nchann,
 					unsigned int type,
                                 	double fl, double fh,
 					unsigned int num_pole);

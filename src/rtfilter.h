@@ -46,19 +46,19 @@ extern "C" {
 #define DATATYPE_DOUBLE	RTF_DOUBLE
 
 //! Handle to a filter. Used by all the functions to manipulate a filter.
-typedef const struct _dfilter* hfilter;
+typedef const struct rtf_filter* hfilter;
 
 //! create a digital filter 
-hfilter create_filter(unsigned int nchann, unsigned int proctype,
+hfilter rtf_create_filter(unsigned int nchann, unsigned int proctype,
                       unsigned int num_len, const void *num,
                       unsigned int denum_len, const void *denum,
                       unsigned int type);
 //! filter chunk of data
-void filter(hfilter filt, const void* x, void* y, unsigned int ns);
+void rtf_filter(hfilter filt, const void* x, void* y, unsigned int ns);
 //! initialize a filter with particular data
-void init_filter(hfilter filt, const void* data);
+void rtf_init_filter(hfilter filt, const void* data);
 //! destroy a filter
-void destroy_filter(hfilter filt);
+void rtf_destroy_filter(hfilter filt);
 
 
 

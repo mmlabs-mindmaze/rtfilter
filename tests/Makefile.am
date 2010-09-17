@@ -1,5 +1,5 @@
-EXTRA_DIST = cmp-aligned-float.sh cmp-unaligned-float.sh\
-             cmp-aligned-double.sh cmp-unaligned-double.sh\
+EXTRA_DIST = test-float.sh test-complex-float.sh\
+             test-double.sh test-complex-double.sh\
 	     checkfiltres.m
 AM_CFLAGS = -I$(top_srcdir)/src
 

@@ -24,12 +24,12 @@
 #include <complex.h>
 #include <math.h>
 #include <stdint.h>
-#include "filter.h"
+#include "rtfilter.h"
 #include "filter-internal.h"
 
 static size_t sizeof_data(int type)
 {
-	size_t dsize;
+	size_t dsize = 0;
 	if (type == RTF_FLOAT)
 		dsize = sizeof(float);
 	else if (type == RTF_DOUBLE)
@@ -75,17 +75,26 @@ DECLARE_COPY_PARAM_FN(copy_param_cdcd, complex double, complex double)
 typedef void (*copy_param_proc)(unsigned int, void*, const void*, const void*, int);
 
 static copy_param_proc convtab[4][4] = {
-	[RTF_FLOAT] = {[RTF_FLOAT] = copy_param_ff, [RTF_DOUBLE] = copy_param_fd, [RTF_CFLOAT] = copy_param_fcf, [RTF_CDOUBLE] = copy_param_fcd},
-	[RTF_DOUBLE] = {[RTF_FLOAT] = copy_param_df, [RTF_DOUBLE] = copy_param_dd, [RTF_CFLOAT] = copy_param_dcf, [RTF_CDOUBLE] = copy_param_dcd},
-	[RTF_CFLOAT] = {[RTF_CFLOAT] = copy_param_cfcf, [RTF_CDOUBLE] = copy_param_cfcd},
-	[RTF_CDOUBLE] = {[RTF_CFLOAT] = copy_param_cdcf, [RTF_CDOUBLE] = copy_param_cdcd},
+	[RTF_FLOAT] = {[RTF_FLOAT] = copy_param_ff, 
+	               [RTF_DOUBLE] = copy_param_fd,
+                       [RTF_CFLOAT] = copy_param_fcf,
+                       [RTF_CDOUBLE] = copy_param_fcd},
+	[RTF_DOUBLE] = {[RTF_FLOAT] = copy_param_df, 
+	                [RTF_DOUBLE] = copy_param_dd,
+			[RTF_CFLOAT] = copy_param_dcf, 
+			[RTF_CDOUBLE] = copy_param_dcd},
+	[RTF_CFLOAT] = {[RTF_CFLOAT] = copy_param_cfcf, 
+	                [RTF_CDOUBLE] = copy_param_cfcd},
+	[RTF_CDOUBLE] = {[RTF_CFLOAT] = copy_param_cdcf,
+	                 [RTF_CDOUBLE] = copy_param_cdcd},
 };
 
-typedef void (*filter_proc)(const struct _dfilter*, const void*, void*, unsigned int);
+typedef void (*filter_proc)(const struct rtf_filter*, 
+                            const void*, void*, unsigned int);
 
 static filter_proc filtproctab[4][4] = {
 	[RTF_FLOAT] = {[RTF_FLOAT] = filter_f, [RTF_CFLOAT] = filter_fcf},
-	[RTF_DOUBLE] = {[RTF_DOUBLE] = filter_d, [RTF_CDOUBLE] = filter_dcd},
+	[RTF_DOUBLE] = {[RTF_DOUBLE] = filter_d,[RTF_CDOUBLE] = filter_dcd},
 };
 
 
@@ -117,6 +126,7 @@ static void  align_free(void* memptr)
 	free(memptr);
 }
 
+
 static void define_types(int proctp, int paramtp, int* intp, int* outtp)
 {
 	int tpi, tpo;
@@ -129,7 +139,6 @@ static void define_types(int proctp, int paramtp, int* intp, int* outtp)
 
 	*intp = tpi;
 	*outtp = tpo;
-
 }
 
 /*!
@@ -137,7 +146,8 @@ static void define_types(int proctp, int paramtp, int* intp, int* outtp)
  * 
  * Destroy a filter that you don't use anymore. It will free all its associated resources. After calling this function, you cannot use the handle anymore.
  */
-void destroy_filter(hfilter filt)
+API_EXPORTED
+void rtf_destroy_filter(hfilter filt)
 {
 	if (!filt)
 		return;
@@ -162,7 +172,8 @@ void destroy_filter(hfilter filt)
  * The type should be the same than the type used for the creation of the filter. The number of values in the array should be the same as the number of channels of the filter.\n
  * The internal states will then be initialized as if we had constantly fed the filter during its past with the values provided for each channel.
  */
-void init_filter(hfilter filt, const void *data)
+API_EXPORTED
+void rtf_init_filter(hfilter filt, const void *data)
 {
 	void *dest;
 	int nc = filt->num_chann, itp = filt->intype, otp = filt->outtype;
@@ -211,12 +222,13 @@ void init_filter(hfilter filt, const void *data)
  * The arrays pointed by \c b and \c a can be either \c float or \c double values. This is specified by the \c paramtype parameter by taking the value \c RTF_FLOAT or \c RTF_DOUBLE.\n
  * The integer \c alen can also be \c 0 or the pointer \c a be \c NULL. In that case, the denominator is 1 thus specifying a filter with a finite impulse response.
  */
-hfilter create_filter(unsigned int nchann, unsigned int proctype, 
+API_EXPORTED
+hfilter rtf_create_filter(unsigned int nchann, unsigned int proctype, 
                       unsigned int blen, const void *b,
 		      unsigned int alen, const void *a,
 		      unsigned int paramtype)
 {
-	struct _dfilter *filt = NULL;
+	struct rtf_filter *filt = NULL;
 	void *num = NULL;
 	void *xoff = NULL;
 	void *denum = NULL;
@@ -276,7 +288,7 @@ hfilter create_filter(unsigned int nchann, unsigned int proctype,
 	filt->yoff = yoff;
 
 
-	init_filter(filt, NULL);
+	rtf_init_filter(filt, NULL);
 
 	return filt;
 }
@@ -299,9 +311,10 @@ hfilter create_filter(unsigned int nchann, unsigned int proctype,
  * | S1C1 | S1C2 | ... | S1Ck | S2C1 | S2C2 | .... | S2Ck | ... | SnCk |
  * where SiCj refers to the data in the i-th sample of the j-th channel.
  *
- * \sa create_filter()
+ * \sa rtf_create_filter()
  */
-void filter(hfilter filt, const void* x, void* y, unsigned int ns)
+API_EXPORTED
+void rtf_filter(hfilter filt, const void* x, void* y, unsigned int ns)
 {
 	filt->filter_fn(filt, x, y, ns);
 }

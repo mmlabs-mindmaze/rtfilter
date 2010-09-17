@@ -1,4 +1,4 @@
-#include "common-filters.h"
+#include "rtf_common.h"
 #include <stdio.h>
 #include <time.h>
 #include <sys/time.h>
@@ -89,8 +89,8 @@ int main(int argc, char *argv[])
 	}
 
 	// create filters
-	filt1 = create_butterworth_filter(nchann, RTF_FLOAT, 0.02, filtorder, 0);
-	filt2 = create_butterworth_filter(nchann, RTF_FLOAT, 0.02, filtorder, 0);
+	filt1 = rtf_create_butterworth(nchann, RTF_FLOAT, 0.02, filtorder, 0);
+	filt2 = rtf_create_butterworth(nchann, RTF_FLOAT, 0.02, filtorder, 0);
 	if (!filt1 || !filt2) {
 		fprintf(stderr,"Creation of filters failed (filt1:%i filt2:%i)\n",
 			filt1 ? 1 : 0,
@@ -134,8 +134,8 @@ int main(int argc, char *argv[])
 	printf("min time per sample: %i nsec\n",(int)(dt/(nsample*nchann)));
 
 out:
-	destroy_filter(filt1);
-	destroy_filter(filt2);
+	rtf_destroy_filter(filt1);
+	rtf_destroy_filter(filt2);
 	free(buff1);
 	free(buff2);
 	free(buff1b);

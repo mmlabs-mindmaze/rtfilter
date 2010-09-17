@@ -22,12 +22,17 @@
  *
  * This is the implementation of the functions that design filters.
  */
+
+#if HAVE_CONFIG_H
+# include <config.h>
+#endif
+
 #include <memory.h>
 #include <stdlib.h>
 #include <math.h>
 #include <complex.h>
-#include "filter.h"
-#include "common-filters.h"
+#include "rtfilter.h"
+#include "rtf_common.h"
 
 #define PId	3.1415926535897932384626433832795L
 #define PIf	3.1415926535897932384626433832795f
@@ -399,7 +404,8 @@ exit:
  * \param fir_length	number of sample used to compute the mean
  * \return	the handle of the newly created filter in case of success, \c NULL otherwise. 
  */
-hfilter create_fir_filter_mean(unsigned int nchann, unsigned int type,
+API_EXPORTED
+hfilter rtf_create_fir_mean(unsigned int nchann, unsigned int type,
                                unsigned int fir_length)
 {
 	unsigned int i;
@@ -415,7 +421,7 @@ hfilter create_fir_filter_mean(unsigned int nchann, unsigned int type,
 	for (i = 0; i < fir_length; i++)
 		fir[i] = 1.0f / (double) fir_length;
 	
-	filt = create_filter(nchann, type,
+	filt = rtf_create_filter(nchann, type,
 	                     fir_length, fir, 0, NULL,
 			     RTF_DOUBLE);
 
@@ -431,7 +437,8 @@ hfilter create_fir_filter_mean(unsigned int nchann, unsigned int type,
  * \param window	The type of the kernel wondow to use for designing the filter
  * \return	the handle of the newly created filter in case of success, \c NULL otherwise. 
  */
-hfilter create_fir_filter_lowpass(unsigned int nchann, unsigned int type,
+API_EXPORTED
+hfilter rtf_create_fir_lowpass(unsigned int nchann, unsigned int type,
                                   double fc, unsigned int half_length,
                                   KernelWindow window)
 {
@@ -449,7 +456,7 @@ hfilter create_fir_filter_lowpass(unsigned int nchann, unsigned int type,
 	apply_window(fir, fir_length, window);
 	normalize_fir(fir, fir_length);
 
-	filt = create_filter(nchann, type,
+	filt = rtf_create_filter(nchann, type,
 	                     fir_length, fir, 0, NULL,
 	                     RTF_DOUBLE);
 
@@ -466,7 +473,8 @@ hfilter create_fir_filter_lowpass(unsigned int nchann, unsigned int type,
  * \param window	The type of the kernel wondow to use for designing the filter
  * \return	the handle of the newly created filter in case of success, \c NULL otherwise. 
  */
-hfilter create_fir_filter_highpass(unsigned int nchann, unsigned int type,
+API_EXPORTED
+hfilter rtf_create_fir_highpass(unsigned int nchann, unsigned int type,
                                    double fc, unsigned int half_length,
                                    KernelWindow window)
 {
@@ -485,7 +493,7 @@ hfilter create_fir_filter_highpass(unsigned int nchann, unsigned int type,
 	normalize_fir(fir, fir_length);
 	reverse_fir(fir, fir_length);
 
-	filt = create_filter(nchann, type,
+	filt = rtf_create_filter(nchann, type,
 	                     fir_length, fir, 0, NULL,
 	                     RTF_DOUBLE);
 
@@ -503,7 +511,8 @@ hfilter create_fir_filter_highpass(unsigned int nchann, unsigned int type,
  * \param window	the type of the kernel wondow to use for designing the filter
  * \return	the handle of the newly created filter in case of success, \c null otherwise. 
  */
-hfilter create_fir_filter_bandpass(unsigned int nchann, unsigned int type,
+API_EXPORTED
+hfilter rtf_create_fir_bandpass(unsigned int nchann, unsigned int type,
                                    double fc_low, double fc_high,
 				   unsigned int half_length,
 				   KernelWindow window)
@@ -533,7 +542,7 @@ hfilter create_fir_filter_bandpass(unsigned int nchann, unsigned int type,
 	// compute the convolution product of the two FIR
 	compute_convolution(fir, fir_low, len, fir_high, len);
 
-	filt = create_filter(nchann, type,
+	filt = rtf_create_filter(nchann, type,
 	                     fir_length, fir, 0, NULL,
 	                     RTF_DOUBLE);
 
@@ -551,7 +560,8 @@ hfilter create_fir_filter_bandpass(unsigned int nchann, unsigned int type,
  * \param ripple	ripple
  * \return	the handle of the newly created filter in case of success, \c null otherwise. 
  */
-hfilter create_chebychev_filter(unsigned int nchann, unsigned int type,
+API_EXPORTED
+hfilter rtf_create_chebychev(unsigned int nchann, unsigned int type,
                                 double fc, unsigned int num_pole,
 				int highpass, double ripple)
 {
@@ -570,7 +580,7 @@ hfilter create_chebychev_filter(unsigned int nchann, unsigned int type,
 	if (!compute_cheby_iir(a, b, num_pole, highpass, ripple, fc))
 		goto out;
 
-	filt = create_filter(nchann, type,
+	filt = rtf_create_filter(nchann, type,
 	                     num_pole+1, a, num_pole+1, b,
 	                     RTF_DOUBLE);
 
@@ -588,11 +598,12 @@ out:
  * \param highpass	flag to specify the type of filter (0 for a lowpass, 1 for a highpass)
  * \return	the handle of the newly created filter in case of success, \c null otherwise. 
  */
-hfilter create_butterworth_filter(unsigned int nchann, unsigned int type,
+API_EXPORTED
+hfilter rtf_create_butterworth(unsigned int nchann, unsigned int type,
                                   double fc, unsigned int num_pole,
 				  int highpass)
 {
-	return create_chebychev_filter(nchann, type,
+	return rtf_create_chebychev(nchann, type,
 	                               fc, num_pole, highpass, 0.0);
 }
 
@@ -602,19 +613,20 @@ hfilter create_butterworth_filter(unsigned int nchann, unsigned int type,
  * \param fs		sampling frequency in Hz
  * \return	the handle of the newly created filter in case of success, \c null otherwise. 
  */
-hfilter create_integral_filter(unsigned int nchann, unsigned int type,
+API_EXPORTED
+hfilter rtf_create_integral(unsigned int nchann, unsigned int type,
                                double fs)
 {
 	hfilter filt;
 	double a = 1.0/fs, b[2] = {1.0, -1.0};
 
-	filt = create_filter(nchann, type, 1, &a, 2, &b, RTF_DOUBLE);
+	filt = rtf_create_filter(nchann, type, 1, &a, 2, &b, RTF_DOUBLE);
 
 	return filt;
 }
 
 /**
-	create_bandpass_analytic_filter:
+	rtf_create_bandpass_analytic:
 
 	Analytic filter: Is a complex filter generating a signal whose spectrum equals the positive spectrum from a (real) 		input signal. The resulting signal is said to be “analytic".	
 	The technique relies on the rotation of the pole-zero plot of a low pass filter.
@@ -626,8 +638,8 @@ hfilter create_integral_filter(unsigned int nchann, unsigned int type,
  * \param num_pole	The number of pole the z-transform of the filter should possess.
  * \return		The handle of the newly created filter in case of success, \c null otherwise. 
  */
-
-hfilter create_bandpass_analytic_filter(unsigned int nchann,
+API_EXPORTED
+hfilter rtf_create_bandpass_analytic(unsigned int nchann,
 					unsigned int type, 
 					double fl, double fh, 
 					unsigned int num_pole)
@@ -647,7 +659,7 @@ hfilter create_bandpass_analytic_filter(unsigned int nchann,
 	if (!compute_bandpass_complex_filter(b,a,num_pole,fl,fh))
 		goto out;
 
-	filt = create_filter(nchann, type,
+	filt = rtf_create_filter(nchann, type,
 	                     num_pole+1, b, num_pole+1, a,
 	                     RTF_CDOUBLE);
 out:

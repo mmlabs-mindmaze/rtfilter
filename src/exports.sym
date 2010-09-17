@@ -1,0 +1,12 @@
+rtf_create_filter
+rtf_filter
+rtf_init_filter
+rtf_destroy_filter
+rtf_create_fir_mean
+rtf_create_fir_lowpass
+rtf_create_fir_highpass
+rtf_create_fir_bandpass
+rtf_create_butterworth
+rtf_create_chebychev
+rtf_create_integral
+rtf_create_bandpass_analytic

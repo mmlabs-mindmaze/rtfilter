@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <complex.h>
-#include <common-filters.h>
-#include <filter.h>
+#include <rtf_common.h>
+#include <rtfilter.h>
 #include <math.h>
 
 
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 	X = malloc(buffsize);
 	Y = malloc(cbuffsize);
 
-	cfilt=create_bandpass_analytic_filter(nchann, RTF_FLOAT,
+	cfilt=rtf_create_bandpass_analytic(nchann, RTF_FLOAT,
 					      fl/fs, fh/fs, num_pole);
 
 	if (!X || !Y || !cfilt)
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	filter(cfilt,X,Y,nsample);
+	rtf_filter(cfilt,X,Y,nsample);
 
 
 	file= fopen(path_features,"w");
@@ -92,6 +92,6 @@ int main(int argc, char *argv[])
 exit:
 	free(X);
 	free(Y);
-	destroy_filter(cfilt);
+	rtf_destroy_filter(cfilt);
 	return 0;
 }

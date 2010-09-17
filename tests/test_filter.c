@@ -8,7 +8,7 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include "common-filters.h"
+#include "rtf_common.h"
 
 #define NCHANN	64
 #define NSAMPLE	6
@@ -94,9 +94,9 @@ int main(int argc, char *argv[])
 			buffin[j * nchann + i] = sin(6.28/(double)(i+1)*(double)j);//(float)j - ((float)(nsample-1))/2.0f;
 
 	// create filters
-//	filt = create_filter(nchann, RTF_FLOAT, sizeof(num)/sizeof(num[0]), num, sizeof(denum)/sizeof(denum[0]), denum, RTF_FLOAT);
-//	filt = create_butterworth_filter(nchann, RTF_FLOAT, fc, filtorder, 0);
-	filt = create_chebychev_filter(nchann, RTF_FLOAT, fc, filtorder, 0, 0.005);
+//	filt = rtf_create_filter(nchann, RTF_FLOAT, sizeof(num)/sizeof(num[0]), num, sizeof(denum)/sizeof(denum[0]), denum, RTF_FLOAT);
+//	filt = rtf_create_butterworth(nchann, RTF_FLOAT, fc, filtorder, 0);
+	filt = rtf_create_chebychev(nchann, RTF_FLOAT, fc, filtorder, 0, 0.005);
 //	filt = create_integrate_filter(nchann, RTF_FLOAT);
 	if (!filt) {
 		fprintf(stderr,"Creation of filter failed\n");
@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
 
 
 out:
-	destroy_filter(filt);
+	rtf_destroy_filter(filt);
 	free(buffin);
 	free(buffout);
 	if (filein)
