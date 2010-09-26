@@ -29,7 +29,6 @@ extern "C" {
 #endif
 
 #include <rtfilter.h>
-#include <complex.h>
 
 /**
  * Enumeration specifying some kernel windows
