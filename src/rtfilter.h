@@ -1,5 +1,5 @@
 /*
-      Copyright (C) 2008-2009 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+      Copyright (C) 2008-2010 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
 
     This file is part of the rtfilter library
 
@@ -49,10 +49,10 @@ extern "C" {
 typedef const struct rtf_filter* hfilter;
 
 //! create a digital filter 
-hfilter rtf_create_filter(unsigned int nchann, unsigned int proctype,
+hfilter rtf_create_filter(unsigned int nchann, int proctype,
                       unsigned int num_len, const void *num,
                       unsigned int denum_len, const void *denum,
-                      unsigned int type);
+                      int type);
 //! filter chunk of data
 void rtf_filter(hfilter filt, const void* x, void* y, unsigned int ns);
 //! initialize a filter with particular data

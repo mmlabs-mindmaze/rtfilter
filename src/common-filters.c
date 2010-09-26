@@ -405,7 +405,7 @@ exit:
  * \return	the handle of the newly created filter in case of success, \c NULL otherwise. 
  */
 API_EXPORTED
-hfilter rtf_create_fir_mean(unsigned int nchann, unsigned int type,
+hfilter rtf_create_fir_mean(unsigned int nchann, int proctype,
                                unsigned int fir_length)
 {
 	unsigned int i;
@@ -421,7 +421,7 @@ hfilter rtf_create_fir_mean(unsigned int nchann, unsigned int type,
 	for (i = 0; i < fir_length; i++)
 		fir[i] = 1.0f / (double) fir_length;
 	
-	filt = rtf_create_filter(nchann, type,
+	filt = rtf_create_filter(nchann, proctype,
 	                     fir_length, fir, 0, NULL,
 			     RTF_DOUBLE);
 
@@ -431,14 +431,14 @@ hfilter rtf_create_fir_mean(unsigned int nchann, unsigned int type,
 
 /**
  * \param nchann	number of channels the filter will process
- * \param type		type of data the filter will process (\c RTF_FLOAT or \c RTF_DOUBLE)
+ * \param proctype	type of data the filter will process (\c RTF_FLOAT or \c RTF_DOUBLE)
  * \param fc		Normalized cutoff frequency (the normal frequency divided by the sampling frequency)
  * \param half_length	the half size of the impulse response (in number of samples)
  * \param window	The type of the kernel wondow to use for designing the filter
  * \return	the handle of the newly created filter in case of success, \c NULL otherwise. 
  */
 API_EXPORTED
-hfilter rtf_create_fir_lowpass(unsigned int nchann, unsigned int type,
+hfilter rtf_create_fir_lowpass(unsigned int nchann, int proctype,
                                   double fc, unsigned int half_length,
                                   KernelWindow window)
 {
@@ -456,7 +456,7 @@ hfilter rtf_create_fir_lowpass(unsigned int nchann, unsigned int type,
 	apply_window(fir, fir_length, window);
 	normalize_fir(fir, fir_length);
 
-	filt = rtf_create_filter(nchann, type,
+	filt = rtf_create_filter(nchann, proctype,
 	                     fir_length, fir, 0, NULL,
 	                     RTF_DOUBLE);
 
@@ -467,14 +467,14 @@ hfilter rtf_create_fir_lowpass(unsigned int nchann, unsigned int type,
 
 /**
  * \param nchann	number of channels the filter will process
- * \param type		type of data the filter will process (\c RTF_FLOAT or \c RTF_DOUBLE)
+ * \param proctype	type of data the filter will process (\c RTF_FLOAT or \c RTF_DOUBLE)
  * \param fc		Normalized cutoff frequency (the normal frequency divided by the sampling frequency)
  * \param half_length	the half size of the impulse response (in number of samples)
  * \param window	The type of the kernel wondow to use for designing the filter
  * \return	the handle of the newly created filter in case of success, \c NULL otherwise. 
  */
 API_EXPORTED
-hfilter rtf_create_fir_highpass(unsigned int nchann, unsigned int type,
+hfilter rtf_create_fir_highpass(unsigned int nchann, int proctype,
                                    double fc, unsigned int half_length,
                                    KernelWindow window)
 {
@@ -493,7 +493,7 @@ hfilter rtf_create_fir_highpass(unsigned int nchann, unsigned int type,
 	normalize_fir(fir, fir_length);
 	reverse_fir(fir, fir_length);
 
-	filt = rtf_create_filter(nchann, type,
+	filt = rtf_create_filter(nchann, proctype,
 	                     fir_length, fir, 0, NULL,
 	                     RTF_DOUBLE);
 
@@ -504,7 +504,7 @@ hfilter rtf_create_fir_highpass(unsigned int nchann, unsigned int type,
 
 /**
  * \param nchann	number of channels the filter will process
- * \param type		type of data the filter will process (\c datatype_float or \c datatype_double)
+ * \param proctype	type of data the filter will process (\c datatype_float or \c datatype_double)
  * \param fc_low	normalized cutoff frequency of the lowpass part (the normal frequency divided by the sampling frequency)
  * \param fc_high	normalized cutoff frequency of the highpass part (the normal frequency divided by the sampling frequency)
  * \param half_length	the half size of the impulse response (in number of samples)
@@ -512,7 +512,7 @@ hfilter rtf_create_fir_highpass(unsigned int nchann, unsigned int type,
  * \return	the handle of the newly created filter in case of success, \c null otherwise. 
  */
 API_EXPORTED
-hfilter rtf_create_fir_bandpass(unsigned int nchann, unsigned int type,
+hfilter rtf_create_fir_bandpass(unsigned int nchann, int proctype,
                                    double fc_low, double fc_high,
 				   unsigned int half_length,
 				   KernelWindow window)
@@ -542,7 +542,7 @@ hfilter rtf_create_fir_bandpass(unsigned int nchann, unsigned int type,
 	// compute the convolution product of the two FIR
 	compute_convolution(fir, fir_low, len, fir_high, len);
 
-	filt = rtf_create_filter(nchann, type,
+	filt = rtf_create_filter(nchann, proctype,
 	                     fir_length, fir, 0, NULL,
 	                     RTF_DOUBLE);
 
@@ -553,7 +553,7 @@ hfilter rtf_create_fir_bandpass(unsigned int nchann, unsigned int type,
 
 /**
  * \param nchann	number of channels the filter will process
- * \param type		type of data the filter will process (\c datatype_float or \c datatype_double)
+ * \param proctype	type of data the filter will process (\c datatype_float or \c datatype_double)
  * \param fc		normalized cutoff frequency (the normal frequency divided by the sampling frequency)
  * \param num_pole	The number of pole the z-transform of the filter should possess
  * \param highpass	flag to specify the type of filter (0 for a lowpass, 1 for a highpass)
@@ -561,7 +561,7 @@ hfilter rtf_create_fir_bandpass(unsigned int nchann, unsigned int type,
  * \return	the handle of the newly created filter in case of success, \c null otherwise. 
  */
 API_EXPORTED
-hfilter rtf_create_chebychev(unsigned int nchann, unsigned int type,
+hfilter rtf_create_chebychev(unsigned int nchann, int proctype,
                                 double fc, unsigned int num_pole,
 				int highpass, double ripple)
 {
@@ -580,7 +580,7 @@ hfilter rtf_create_chebychev(unsigned int nchann, unsigned int type,
 	if (!compute_cheby_iir(a, b, num_pole, highpass, ripple, fc))
 		goto out;
 
-	filt = rtf_create_filter(nchann, type,
+	filt = rtf_create_filter(nchann, proctype,
 	                     num_pole+1, a, num_pole+1, b,
 	                     RTF_DOUBLE);
 
@@ -592,18 +592,18 @@ out:
 
 /**
  * \param nchann	number of channels the filter will process
- * \param type		type of data the filter will process (\c datatype_float or \c datatype_double)
+ * \param proctype	type of data the filter will process (\c datatype_float or \c datatype_double)
  * \param fc		normalized cutoff frequency (the normal frequency divided by the sampling frequency)
  * \param num_pole	The number of pole the z-transform of the filter should possess
  * \param highpass	flag to specify the type of filter (0 for a lowpass, 1 for a highpass)
  * \return	the handle of the newly created filter in case of success, \c null otherwise. 
  */
 API_EXPORTED
-hfilter rtf_create_butterworth(unsigned int nchann, unsigned int type,
+hfilter rtf_create_butterworth(unsigned int nchann, int proctype,
                                   double fc, unsigned int num_pole,
 				  int highpass)
 {
-	return rtf_create_chebychev(nchann, type,
+	return rtf_create_chebychev(nchann, proctype,
 	                               fc, num_pole, highpass, 0.0);
 }
 
@@ -614,8 +614,7 @@ hfilter rtf_create_butterworth(unsigned int nchann, unsigned int type,
  * \return	the handle of the newly created filter in case of success, \c null otherwise. 
  */
 API_EXPORTED
-hfilter rtf_create_integral(unsigned int nchann, unsigned int type,
-                               double fs)
+hfilter rtf_create_integral(unsigned int nchann, int type, double fs)
 {
 	hfilter filt;
 	double a = 1.0/fs, b[2] = {1.0, -1.0};
@@ -632,7 +631,7 @@ hfilter rtf_create_integral(unsigned int nchann, unsigned int type,
 	The technique relies on the rotation of the pole-zero plot of a low pass filter.
 	
  * \param nchann	number of channels the filter will process.
- * \param type		type of data the filter will process (\c datatype_float or \c datatype_double).
+ * \param proctype	type of data the filter will process (\c datatype_float or \c datatype_double).
  * \param fl		normalized low bandpass cutoff frequency (the normal frequency divided by the sampling frequency).
  * \param fh		normalized hihg bandpass cutoff frequency (the normal frequency divided by the sampling frequency).
  * \param num_pole	The number of pole the z-transform of the filter should possess.
@@ -640,7 +639,7 @@ hfilter rtf_create_integral(unsigned int nchann, unsigned int type,
  */
 API_EXPORTED
 hfilter rtf_create_bandpass_analytic(unsigned int nchann,
-					unsigned int type, 
+					int proctype, 
 					double fl, double fh, 
 					unsigned int num_pole)
 {
@@ -659,7 +658,7 @@ hfilter rtf_create_bandpass_analytic(unsigned int nchann,
 	if (!compute_bandpass_complex_filter(b,a,num_pole,fl,fh))
 		goto out;
 
-	filt = rtf_create_filter(nchann, type,
+	filt = rtf_create_filter(nchann, proctype,
 	                     num_pole+1, b, num_pole+1, a,
 	                     RTF_CDOUBLE);
 out:

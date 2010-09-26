@@ -223,10 +223,10 @@ void rtf_init_filter(hfilter filt, const void *data)
  * The integer \c alen can also be \c 0 or the pointer \c a be \c NULL. In that case, the denominator is 1 thus specifying a filter with a finite impulse response.
  */
 API_EXPORTED
-hfilter rtf_create_filter(unsigned int nchann, unsigned int proctype, 
+hfilter rtf_create_filter(unsigned int nchann, int proctype, 
                       unsigned int blen, const void *b,
 		      unsigned int alen, const void *a,
-		      unsigned int paramtype)
+		      int paramtype)
 {
 	struct rtf_filter *filt = NULL;
 	void *num = NULL;
