@@ -1,0 +1,48 @@
+.\"Copyright 2010 (c) EPFL
+.TH RTF_CREATE_CHEBYCHEV 3 2010 "EPFL" "rtfilter library"
+.SH NAME
+rtf_create_chebychev, rtf_create_butterworth
+- Creates IIR Chebychev and Butterwoth filters
+.SH SYNOPSIS
+.LP
+.B #include <rtf_common.h>
+.sp
+.BI "hfilter rtf_create_chebychev(unsigned int " nchann ", int " proctype ","
+.br
+.BI "                             double " fc ", unsigned int " num_pole ","
+.br
+.BI "                             int " highpass ", double " r ");"
+.br
+.BI "hfilter rtf_create_butterworth(unsigned int " nchann ", int " proctype ","
+.br
+.BI "                               double " fc ", unsigned int " num_pole ","
+.br
+.BI "                               int " highpass ");"
+.br
+.SH DESCRIPTION
+.LP
+\fBrtf_create_chebychev\fP() creates a IIR chebychev filter processing
+\fInchann\fP channels of data type specified by \fIproctype\fP with
+\fIfc\fP as normalized cutoff frequency, whose the Z-transform has
+\fInum_pole\fP poles and whose the impulse response has a ripple of \fIr\fP
+This latter is expressed as the ratio between the overshoot (difference
+between the max value of the response to a unit step and the unit length)
+and the unit length (ratio \fBnot\fP expressed in decibels).
+.LP
+\fBrtf_create_butterworth\fP() is the same as \fBrtf_create_chebychev\fP()
+but creates a butterworth filter (which a special case of a chebychev filter
+with a ripple of 0).
+.LP
+A normalized frequency is the ratio between the absolute frequency and the
+sampling frequency (i.e. a value of 1.0 refers to the sampling frequency).
+.LP
+If \fIhighpass\fP is 0, it specifies the filter should be a lowpass. If
+\fIhighpass\fP is non-zero, the should be a highpass.
+.SH "RETURN VALUE"
+.LP
+Returns the handle to the created filter in case of success, NULL otherwise.
+.SH "SEE ALSO"
+.BR rtf_create_filter (3),
+.BR rtf_destroy_filter (3)
+
+

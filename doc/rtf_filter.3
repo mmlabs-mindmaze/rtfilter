@@ -1,0 +1,35 @@
+.\"Copyright 2010 (c) EPFL
+.TH RTF_FILTER 3 2010 "EPFL" "rtfilter library"
+.SH NAME
+rtf_filter - filters a chunk of data
+.SH SYNOPSIS
+.LP
+.B #include <rtfilter.h>
+.sp
+.BI "void rtf_filter(hfilter " filt ", const void *" x ", void *" y ", unsigned int " ns ");"
+.br
+.SH DESCRIPTION
+.LP
+This function applies the filter referenced by \fIfilt\fP on \fIns\fP
+samples specified by the pointer \fIx\fP and writes the filtered data into
+the array pointed by \fIy\fP. The arrays pointed by \c x and \c y must be
+made of values whose correspond to the type specified at the creation of
+the filter. In addition, the two arrays \fBmust not overlap\fP (failing to
+comply will lead to undefined results).
+.LP
+Their number of elements have to be equal to \fIns\fP multiplied by the
+number of channels processed (specified at the creation of the filter). The
+arrays should be packed by channels with the following pattern:
+.ce
+|S1C1|S1C2|...|S1Ck|S2C1|S2C2|....|S2Ck|...|SnsCk|
+.br
+where SiCj refers to the data value of the i-th sample and the j-th channel
+and k refers to the number of channel specified at the creation of the
+filter.
+.SH "RETURN VALUE"
+.LP
+None
+.SH "SEE ALSO"
+.BR rtf_create_filter (3),
+.BR rtf_init_filter (3)
+

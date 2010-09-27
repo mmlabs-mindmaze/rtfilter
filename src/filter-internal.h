@@ -1,9 +1,9 @@
 /*
-      Copyright (C) 2008-2009 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+      Copyright (C) 2008-2010 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
 
     This file is part of the rtfilter library
 
-    The eegpanel library is free software: you can redistribute it and/or
+    The rtfilter library is free software: you can redistribute it and/or
     modify it under the terms of the version 3 of the GNU General Public
     License as published by the Free Software Foundation.
   
@@ -15,12 +15,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-/** \internal
- * \file filter-internal.h
- * \brief Definitions of implementation specifics of rtfilter library
- * \author Nicolas Bourdaud
- * \sa common-filter.h
- */
 #ifndef FILTER_INTERNAL_H
 #define FILTER_INTERNAL_H
 

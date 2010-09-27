@@ -3,7 +3,7 @@
 
     This file is part of the rtfilter library
 
-    The eegpanel library is free software: you can redistribute it and/or
+    The rtfilter library is free software: you can redistribute it and/or
     modify it under the terms of the version 3 of the GNU General Public
     License as published by the Free Software Foundation.
   
@@ -15,13 +15,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-/** \internal
- * \file templates.c
- * \brief Templates for implemention of data specific primitives
- * \author Nicolas Bourdaud
- *
- * This file includes the templates of the functions that are specific to certain data type
- */
 
 #include <assert.h>
 
@@ -69,7 +62,8 @@
 #endif /* USE_SIMD */
 
 LOCAL_FN
-void FILTER_FUNC(const struct rtf_filter* filt, const void* in, void* out, unsigned int nsamples)
+void FILTER_FUNC(const struct rtf_filter* filt, const void* in, void* out,
+                 unsigned int nsamples)
 {
 	assert(filt->intype == DINTYPE);
 	assert(filt->outtype == DOUTTYPE);
@@ -78,9 +72,11 @@ void FILTER_FUNC(const struct rtf_filter* filt, const void* in, void* out, unsig
 	if ( !((filt->num_chann%NELEM_VEC) 
 		|| ((uintptr_t)in % sizeof(TYPEIN_V)) 
 		|| ((uintptr_t)out % sizeof(TYPEOUT_V))) )
-		FILTER_ALIGNED_FUNC(filt, (const TYPEIN_V*)in, (TYPEOUT_V*)out, nsamples);
+		FILTER_ALIGNED_FUNC(filt, (const TYPEIN_V*)in, 
+		                    (TYPEOUT_V*)out, nsamples);
 	else
 #endif //USE_SIMD
-		FILTER_UNALIGNED_FUNC(filt, (const TYPEIN*)in, (TYPEOUT*)out, nsamples);
+		FILTER_UNALIGNED_FUNC(filt, (const TYPEIN*)in, 
+		                      (TYPEOUT*)out, nsamples);
 }
 

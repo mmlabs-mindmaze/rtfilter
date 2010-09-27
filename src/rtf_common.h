@@ -3,7 +3,7 @@
 
     This file is part of the rtfilter library
 
-    The eegpanel library is free software: you can redistribute it and/or
+    The rtfilter library is free software: you can redistribute it and/or
     modify it under the terms of the version 3 of the GNU General Public
     License as published by the Free Software Foundation.
   
@@ -15,12 +15,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-/** \file common-filters.h
- * \brief Definitions for designing filters
- * \author Nicolas Bourdaud
- * 
- * This header provides the definitions for function to design some of the usual filters. Those comprises some windowed sinc filters and some filters with an infinite impulse response (IIR). 
- */ 
 #ifndef COMMON_FILTERS_H
 #define COMMON_FILTERS_H
 

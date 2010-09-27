@@ -1,0 +1,21 @@
+.\"Copyright 2010 (c) EPFL
+.TH RTF_DESTROY_FILTER 3 2010 "EPFL" "rtfilter library"
+.SH NAME
+rtf_filter - destroys a filter
+.SH SYNOPSIS
+.LP
+.B #include <rtfilter.h>
+.sp
+.BI "void rtf_destroy_filter(hfilter " filt ");"
+.br
+.SH DESCRIPTION
+This function destroys the filter referenced by the handle \fIfilt\fP and
+free all the associated resources. After destruction, no reference to
+\fIfilt\fP should be made. If \fIfilt\fP is NULL, the function returns
+without doing anything.
+.SH "RETURN VALUE"
+.LP
+None
+.SH "SEE ALSO"
+.BR rtf_create_filter (3)
+

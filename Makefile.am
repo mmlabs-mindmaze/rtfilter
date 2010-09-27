@@ -1,2 +1,4 @@
 ACLOCAL_AMFLAGS=-I m4
 SUBDIRS = src tests doc
+
+doc_DATA = AUTHORS COPYING

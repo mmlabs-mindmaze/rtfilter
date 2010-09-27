@@ -3,7 +3,7 @@
 
     This file is part of the rtfilter library
 
-    The eegpanel library is free software: you can redistribute it and/or
+    The rtfilter library is free software: you can redistribute it and/or
     modify it under the terms of the version 3 of the GNU General Public
     License as published by the Free Software Foundation.
   
@@ -141,11 +141,7 @@ static void define_types(int proctp, int paramtp, int* intp, int* outtp)
 	*outtp = tpo;
 }
 
-/*!
- * \param filt \c handle of a filter 
- * 
- * Destroy a filter that you don't use anymore. It will free all its associated resources. After calling this function, you cannot use the handle anymore.
- */
+
 API_EXPORTED
 void rtf_destroy_filter(hfilter filt)
 {
@@ -160,18 +156,6 @@ void rtf_destroy_filter(hfilter filt)
 }
 
 
-/*!
- * \param filt \c handle of a filter 
- * \param data pointer to an array of values (float or double, depending on the filter). Can be \c NULL.
- * 
- * Initialize the internal states of the filter with provided data.
- *
- * If \c data is \c NULL, it will initialize the internal states with 0.0.
- *
- * If \c data is not \c NULL, it should point to an array of values whose the type and the number depends respectively on the type and the number of channels processed by the filter.\n
- * The type should be the same than the type used for the creation of the filter. The number of values in the array should be the same as the number of channels of the filter.\n
- * The internal states will then be initialized as if we had constantly fed the filter during its past with the values provided for each channel.
- */
 API_EXPORTED
 void rtf_init_filter(hfilter filt, const void *data)
 {
@@ -201,27 +185,7 @@ void rtf_init_filter(hfilter filt, const void *data)
 	}
 }
 
-/*!
- * \param nchann 	number of channel to process
- * \param proctype	constant representing the type of data processed by the filter (\c DATA_FLOAT or \c DATA_DOUBLE)
- * \param blen	 	length of the array representing the numerator of the z-transform
- * \param b 		array of values representing the numerator of the z-transform ordered increasingly with the powers of \f$z^{-1}\f$
- * \param alen	 	length of the array representing the denominator of the z-transform
- * \param a		array  of values representing the the denominator of the z-transform ordered increasingly with the powers of \f$z^{-1}\f$
- * \param paramtype	constant representing the type of data supplied as parameters (\c DATA_FLOAT or \c DATA_DOUBLE)
- * \return		Handle to the created filter
- *
- * This function create and initialize the necessary resources for a digital filter to process a number of channels specified by the parameter \c nchann.
- * 
- * The type of data the filter will process is specified once for all by the \c proctype parameter. Set it to \c RTF_FLOAT for processing \c float values or to \c RTF_DOUBLE for \c double values thus allowing to call respectively filter_f() or filter_d() with the filter handle returned by the function. 
- * 
- * The parameters \c b and \c a are used to specify the coefficients of the z-transform of the filter (\c blen and \c alen are respectively \f$nb+1\f$ and \f$na+1\f$):
- * \f[
- * H(z) = \frac{b_0 + b_1z^{-1} + b_2z^{-2}+\ldots+b_{nb}z^{-nb}}{a_0 + a_1z^{-1} + a_2z^{-2}+\ldots+a_{na}z^{-na}}
- * \f]
- * The arrays pointed by \c b and \c a can be either \c float or \c double values. This is specified by the \c paramtype parameter by taking the value \c RTF_FLOAT or \c RTF_DOUBLE.\n
- * The integer \c alen can also be \c 0 or the pointer \c a be \c NULL. In that case, the denominator is 1 thus specifying a filter with a finite impulse response.
- */
+
 API_EXPORTED
 hfilter rtf_create_filter(unsigned int nchann, int proctype, 
                       unsigned int blen, const void *b,
@@ -294,25 +258,6 @@ hfilter rtf_create_filter(unsigned int nchann, int proctype,
 }
 
 
-/** 
- * \param filt	handle to a digital filter resource
- * \param x	pointer to an array of input data
- * \param y	pointer to an array of output data
- * \param ns	number of time sample that should be processed
- *
- * This function apply the filter on the data specified by pointer \c x and
- * write the filter data on the array pointed by \c y. The arrays pointed by
- * \c x and \c y must be made of values whose correspond to the type
- * specified at the creation of the filter.
- *
- * Their number of elements have to be equal to \c ns multiplied by the
- * number of channels processed. The arrays should be packed by channels
- * with the following pattern:
- * | S1C1 | S1C2 | ... | S1Ck | S2C1 | S2C2 | .... | S2Ck | ... | SnCk |
- * where SiCj refers to the data in the i-th sample of the j-th channel.
- *
- * \sa rtf_create_filter()
- */
 API_EXPORTED
 void rtf_filter(hfilter filt, const void* x, void* y, unsigned int ns)
 {
