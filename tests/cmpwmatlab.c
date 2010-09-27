@@ -69,7 +69,6 @@ static void set_param(int ptype)
 	} else if (ptype == RTF_CDOUBLE) {
 		num = numcd;
 		denum = denumcd;
-		printf("use complex double param\n");
 	}
 }
 
@@ -222,7 +221,7 @@ int main(int argc, char *argv[])
 		goto out;
 	}
 
-	fprintf(stderr, "datin=%i datout=%i ptype=%i\n", datintype, datouttype, ptype );
+	fprintf(stdout, "datin=%i datout=%i ptype=%i\n", datintype, datouttype, ptype );
 	// write filter params on fileout
 	if (write(fileout, &ptype, sizeof(ptype)) == -1 ||
 	    write(fileout, &numlen, sizeof(numlen)) == -1 ||
