@@ -141,23 +141,8 @@ static void define_types(int proctp, int paramtp, int* intp, int* outtp)
 	*outtp = tpo;
 }
 
-
-API_EXPORTED
-void rtf_destroy_filter(hfilter filt)
-{
-	if (!filt)
-		return;
-
-	free((void *) (filt->a));
-	free((void *) (filt->b));
-	align_free(filt->xoff);
-	align_free(filt->yoff);
-	free((void*) filt);
-}
-
-
-API_EXPORTED
-void rtf_init_filter(hfilter filt, const void *data)
+LOCAL_FN
+void default_init_filter(const struct rtf_filter* filt, const void* data)
 {
 	void *dest;
 	int nc = filt->num_chann, itp = filt->intype, otp = filt->outtype;
@@ -183,6 +168,39 @@ void rtf_init_filter(hfilter filt, const void *data)
 			dest = (char *) dest + nc*osize;
 		}
 	}
+}
+
+
+LOCAL_FN
+void default_free_filter(const struct rtf_filter* filt)
+{
+	free((void *) (filt->a));
+	free((void *) (filt->b));
+	align_free(filt->xoff);
+	align_free(filt->yoff);
+}
+
+static
+void default_destroy_filter(const struct rtf_filter* filt)
+{
+	default_free_filter(filt);
+	free((void*) filt);
+}
+
+API_EXPORTED
+void rtf_destroy_filter(hfilter filt)
+{
+	if (!filt)
+		return;
+
+	filt->destroy_filter_fn(filt);
+}
+
+
+API_EXPORTED
+void rtf_init_filter(hfilter filt, const void *data)
+{
+	filt->init_filter_fn(filt, data);
 }
 
 
@@ -241,6 +259,8 @@ hfilter rtf_create_filter(unsigned int nchann, int proctype,
 	// prepare the filt struct
 	memset(filt, 0, sizeof(*filt));
 	filt->filter_fn = filtproctab[intype][outtype];
+	filt->init_filter_fn = default_init_filter;
+	filt->destroy_filter_fn = default_destroy_filter;
 	filt->num_chann = nchann;
 	filt->intype = intype;
 	filt->outtype = outtype;

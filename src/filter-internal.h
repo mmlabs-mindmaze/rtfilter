@@ -27,6 +27,8 @@
 struct rtf_filter
 {
 	void (*filter_fn)(const struct rtf_filter*, const void*, void*, unsigned int);
+	void (*init_filter_fn)(const struct rtf_filter*, const void*);
+	void (*destroy_filter_fn)(const struct rtf_filter*);
 	unsigned int num_chann, intype, outtype;
 	unsigned int a_len;
 	const void* a;
@@ -35,6 +37,11 @@ struct rtf_filter
 	void* xoff;
 	void* yoff;
 };
+
+LOCAL_FN
+void default_init_filter(const struct rtf_filter* filt, const void* data);
+LOCAL_FN
+void default_free_filter(const struct rtf_filter* filt);
 
 LOCAL_FN
 void filter_f(const struct rtf_filter* filt, const void* x, void* y, unsigned int ns);
