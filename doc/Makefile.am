@@ -9,6 +9,7 @@ nobase_dist_doc_DATA = examples/Makefile		\
                        examples/butterworth.c
 
 # Verify at least that the example compiles
+AM_CFLAGS=-I$(top_srcdir)/src
 check_PROGRAMS = butterworth
 butterworth_SOURCES = examples/butterworth.c
 butterworth_LDADD = $(top_builddir)/src/librtfilter.la
