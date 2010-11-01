@@ -1,3 +1,6 @@
+#if HAVE_CONFIG_H
+# include <config.h>
+#endif
 #include <stdio.h>
 #include <time.h>
 #include <sys/time.h>
@@ -21,7 +24,7 @@
 #define FC_DEF	0.2
 #define TYPE_DEF	RTF_FLOAT
 
-char infilename[256], outfilename[256], line[128], command[1024], tmpdir[128] = "/tmp";
+char *infilename, *outfilename, line[128], command[1024], tmpdir[128] = "/tmp";
 
 double numd[5] = {7.397301684767964e-04, 2.958920673907186e-03, 4.438381010860778e-03, 2.958920673907186e-03, 7.397301684767964e-04, };
 double denumd[5] = {1.000000000000000e+00, -3.152761111579526e+00, 3.860934099037117e+00, -2.161019850256067e+00, 4.647120978065145e-01, };
@@ -54,6 +57,33 @@ uint32_t numlen = sizeof(numd)/sizeof(numd[0]);
 uint32_t denumlen = sizeof(denumd)/sizeof(numd[0]);
 uint32_t ptype = RTF_DOUBLE;
 void *num = numd, *denum = denumd;
+
+static void* align_alloc(size_t alignment, size_t size)
+{
+#if HAVE_POSIX_MEMALIGN
+	void* memptr = NULL;
+	if (posix_memalign(&memptr, alignment, size))
+		return NULL;
+	return memptr;
+#else
+	void* origptr = malloc(sizeof(void*) + alignment + size);
+	char* ptr = ((char*)origptr) + sizeof(void*);
+	ptr += alignment - ((uintptr_t)ptr)%alignment;
+	*(void**)(ptr-sizeof(origptr)) = origptr;
+	return ptr;
+#endif
+}
+
+
+static void  align_free(void* memptr)
+{
+#if HAVE_POSIX_MEMALIGN
+	free(memptr);
+#else
+	free(((char*)memptr)-sizeof(void*));
+#endif
+}
+
 
 static void set_param(int ptype)
 {
@@ -199,10 +229,8 @@ int main(int argc, char *argv[])
 	nchan32 = nchann;
 
 	// Allocate buffers
-	if (posix_memalign((void **) &buffin, 16, buffinsize))
-		buffin = NULL;
-	if (posix_memalign((void **) &buffout, 16, buffoutsize))
-		buffout = NULL;
+	buffin = align_alloc(16, buffinsize);
+	buffout = align_alloc(16, buffoutsize);
 	if (!buffin || !buffout) {
 		fprintf(stderr, "buffer allocation failed\n");
 		goto out;
@@ -210,12 +238,10 @@ int main(int argc, char *argv[])
 
 
 	// Open files for writing
-	if (getenv("TMPDIR"))
-		strcpy(tmpdir, getenv("TMPDIR"));
-	sprintf(infilename, "%s/filein.XXXXXX", tmpdir);
-	sprintf(outfilename, "%s/fileout.XXXXXX", tmpdir);
-	filein = mkstemp(infilename);
-	fileout = mkstemp(outfilename);
+	infilename = tempnam(NULL, "filein.bin.");
+	outfilename = tempnam(NULL, "fileout.bin.");
+	filein = open(infilename, O_WRONLY|O_CREAT, S_IRWXU);
+	fileout = open(outfilename, O_WRONLY|O_CREAT, S_IRWXU);
 	if ((filein < 0) || (fileout < 0)) {
 		fprintf(stderr, "File opening failed\n");
 		goto out;
@@ -261,8 +287,8 @@ int main(int argc, char *argv[])
 
 out:
 	rtf_destroy_filter(filt);
-	free(buffin);
-	free(buffout);
+	align_free(buffin);
+	align_free(buffout);
 	if (filein != -1)
 		close(filein);
 	if (fileout != -1)
@@ -274,6 +300,8 @@ out:
 		unlink(infilename);
 		unlink(outfilename);
 	}
+	free(infilename);
+	free(outfilename);
 
 	return retval;
 }

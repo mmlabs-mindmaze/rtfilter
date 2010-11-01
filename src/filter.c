@@ -114,16 +114,28 @@ static void reset_filter(hfilter filt)
 
 static void* align_alloc(size_t alignment, size_t size)
 {
+#if HAVE_POSIX_MEMALIGN
 	void* memptr = NULL;
 	if (posix_memalign(&memptr, alignment, size))
 		return NULL;
 	return memptr;
+#else
+	void* origptr = malloc(sizeof(void*) + alignment + size);
+	char* ptr = ((char*)origptr) + sizeof(void*);
+	ptr += alignment - ((uintptr_t)ptr)%alignment;
+	*(void**)(ptr-sizeof(origptr)) = origptr;
+	return ptr;
+#endif
 }
 
 
 static void  align_free(void* memptr)
 {
+#if HAVE_POSIX_MEMALIGN
 	free(memptr);
+#else
+	free(((char*)memptr)-sizeof(void*));
+#endif
 }
 
 

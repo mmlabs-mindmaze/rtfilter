@@ -27,7 +27,6 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AC_CANONICAL_HOST
 AC_CANONICAL_BUILD
 
-
 AC_PROG_CC_C99
 AM_PROG_CC_C_O
 LT_INIT([win32-dll disable-static])
@@ -36,6 +35,7 @@ AC_SUBST(LIBTOOL_DEPS)
 AC_DEF_API_EXPORT_ATTRS
 
 AC_SEARCH_LIBS([cos], [m], [], AC_MSG_ERROR([The math library cannot be found.]))
+AC_CHECK_FUNCS([posix_memalign])
 
 AC_SUBST([CURRENT],[lib_current])
 AC_SUBST([REVISION],[lib_revision])
