@@ -29,6 +29,30 @@ filter.
 .SH "RETURN VALUE"
 .LP
 None
+.SH "PERFORMANCE CONSIDERATION"
+.LP
+On platform that support SIMD instructions, \fBrtf_filter\fP() is
+implemented in 2 different versions: one normal and one using SIMD
+instruction set which performs nearly 4x faster than the normal one when
+processing \fBfloat\fP data types. The SIMD version is automatically
+selected at runtime if the following conditions are met (otherwise, the
+implementation falls back to the normal version):
+.IP " -" 3
+The input \fIx\fP and output \fIy\fP are aligned on 16 bytes boundary
+(128 bits)
+.IP " -" 3
+The sample strides (the size of the data type multiplied by the number of
+channel) of the input and output are multiples of 16 bytes.
+.LP
+The first condition is easily met by allocating \fIx\fP and \fIy\fP using
+memory allocation function mandating a certain alignment (for example,
+\fBposix_memalign\fP(3) on POSIX platform).
+.LP
+The second condition is met if the number of channels is carefully chosen.
+Given the boost obtained with the SIMD version, it is often interesting to
+add unused channels into the input and output (when possible) just to make
+the strides multiple of 16 bytes (for example using always a multiple of 4
+channels when dealing with \fBfloat\fP and real values).
 .SH "SEE ALSO"
 .BR rtf_create_filter (3),
 .BR rtf_init_filter (3)
