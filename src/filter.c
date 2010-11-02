@@ -134,7 +134,7 @@ static void  align_free(void* memptr)
 #if HAVE_POSIX_MEMALIGN
 	free(memptr);
 #else
-	free(((char*)memptr)-sizeof(void*));
+	free(*(((void**)memptr)-1));
 #endif
 }
 
