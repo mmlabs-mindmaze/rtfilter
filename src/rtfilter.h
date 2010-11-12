@@ -39,7 +39,8 @@ hfilter rtf_create_filter(unsigned int nchann, int proctype,
                       unsigned int denum_len, const void *denum,
                       int type);
 //! filter chunk of data
-void rtf_filter(hfilter filt, const void* x, void* y, unsigned int ns);
+unsigned int rtf_filter(hfilter filt, const void* x, void* y,
+                        unsigned int ns);
 //! initialize a filter with particular data
 void rtf_init_filter(hfilter filt, const void* data);
 //! destroy a filter

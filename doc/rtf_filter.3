@@ -6,7 +6,9 @@ rtf_filter - filters a chunk of data
 .LP
 .B #include <rtfilter.h>
 .sp
-.BI "void rtf_filter(hfilter " filt ", const void *" x ", void *" y ", unsigned int " ns ");"
+.BI "unsigned int rtf_filter(hfilter " filt ", const void *" x ","
+.br
+.BI "                        void *" y ", unsigned int " ns ");"
 .br
 .SH DESCRIPTION
 .LP
@@ -28,10 +30,13 @@ and k refers to the number of channel specified at the creation of the
 filter.
 .SH "RETURN VALUE"
 .LP
-None
+Returns the number of samples written in the array pointer by \fIy\fP. For 
+most of the filters, this value will always be equal to \fIns\fP. This is
+however not the case of a downsampling filter whose the number of samples
+returned may vary from one call to another.
 .SH "PERFORMANCE CONSIDERATION"
 .LP
-On platform that support SIMD instructions, \fBrtf_filter\fP() is
+On platforms that support SIMD instructions, \fBrtf_filter\fP() is
 implemented in 2 different versions: one normal and one using SIMD
 instruction set which performs nearly 4x faster than the normal one when
 processing \fBfloat\fP data types. The SIMD version is automatically

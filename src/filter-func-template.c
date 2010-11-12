@@ -26,7 +26,8 @@
 #undef NELEM_DAT
 #define NELEM_DAT	(sizeof(TYPEOUT_LOCAL)/sizeof(TYPEOUT))
 
-static void FILTER_DATADEP_FUNC(hfilter filt, const TYPEIN_LOCAL *in, TYPEOUT_LOCAL *out, unsigned int nsamples)
+static void FILTER_DATADEP_FUNC(hfilter filt, const TYPEIN_LOCAL *in,
+                                TYPEOUT_LOCAL *out, unsigned int nsamples)
 {
 	unsigned int i;
 	int k, ichann, ii, len, midlen;

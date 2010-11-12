@@ -27,7 +27,8 @@
 #include "rtfilter.h"
 #include "filter-internal.h"
 
-static size_t sizeof_data(int type)
+LOCAL_FN
+size_t sizeof_data(int type)
 {
 	size_t dsize = 0;
 	if (type == RTF_FLOAT)
@@ -89,17 +90,17 @@ static copy_param_proc convtab[4][4] = {
 	                 [RTF_CDOUBLE] = copy_param_cdcd},
 };
 
-typedef void (*filter_proc)(const struct rtf_filter*, 
-                            const void*, void*, unsigned int);
 
-static filter_proc filtproctab[4][4] = {
+static
+filter_proc filtproctab[4][4] = {
 	[RTF_FLOAT] = {[RTF_FLOAT] = filter_f, [RTF_CFLOAT] = filter_fcf},
 	[RTF_DOUBLE] = {[RTF_DOUBLE] = filter_d,[RTF_CDOUBLE] = filter_dcd},
 };
 
 
 
-static void reset_filter(hfilter filt)
+static
+void reset_filter(hfilter filt)
 {
 	if (filt->xoff)
 		memset(filt->xoff, 0,
@@ -112,7 +113,8 @@ static void reset_filter(hfilter filt)
 }
 
 
-static void* align_alloc(size_t alignment, size_t size)
+LOCAL_FN
+void* align_alloc(size_t alignment, size_t size)
 {
 #if HAVE_POSIX_MEMALIGN
 	void* memptr = NULL;
@@ -121,6 +123,8 @@ static void* align_alloc(size_t alignment, size_t size)
 	return memptr;
 #else
 	void* origptr = malloc(sizeof(void*) + alignment + size);
+	if (origptr == NULL)
+		return NULL;
 	char* ptr = ((char*)origptr) + sizeof(void*);
 	ptr += alignment - ((uintptr_t)ptr)%alignment;
 	*(void**)(ptr-sizeof(origptr)) = origptr;
@@ -129,17 +133,21 @@ static void* align_alloc(size_t alignment, size_t size)
 }
 
 
-static void  align_free(void* memptr)
+LOCAL_FN
+void  align_free(void* memptr)
 {
 #if HAVE_POSIX_MEMALIGN
 	free(memptr);
 #else
+	if (memptr == NULL)
+		return;
 	free(*(((void**)memptr)-1));
 #endif
 }
 
 
-static void define_types(int proctp, int paramtp, int* intp, int* outtp)
+static
+void define_types(int proctp, int paramtp, int* intp, int* outtp)
 {
 	int tpi, tpo;
 
@@ -291,7 +299,7 @@ hfilter rtf_create_filter(unsigned int nchann, int proctype,
 
 
 API_EXPORTED
-void rtf_filter(hfilter filt, const void* x, void* y, unsigned int ns)
+unsigned int rtf_filter(hfilter filt, const void* x, void* y, unsigned int ns)
 {
-	filt->filter_fn(filt, x, y, ns);
+	return filt->filter_fn(filt, x, y, ns);
 }

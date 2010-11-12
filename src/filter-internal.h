@@ -18,17 +18,16 @@
 #ifndef FILTER_INTERNAL_H
 #define FILTER_INTERNAL_H
 
-
-#if HAVE_CONFIG_H
-# include <config.h>
-#endif
-
+typedef unsigned int (*filter_proc)(const struct rtf_filter*, 
+                            const void*, void*, unsigned int);
+typedef void (*init_filter_proc)(const struct rtf_filter*, const void*);
+typedef	void (*destroy_filter_proc)(const struct rtf_filter*);
 
 struct rtf_filter
 {
-	void (*filter_fn)(const struct rtf_filter*, const void*, void*, unsigned int);
-	void (*init_filter_fn)(const struct rtf_filter*, const void*);
-	void (*destroy_filter_fn)(const struct rtf_filter*);
+	filter_proc filter_fn;
+	init_filter_proc init_filter_fn;
+	destroy_filter_proc destroy_filter_fn;
 	unsigned int num_chann, intype, outtype;
 	unsigned int a_len;
 	const void* a;
@@ -43,13 +42,22 @@ void default_init_filter(const struct rtf_filter* filt, const void* data);
 LOCAL_FN
 void default_free_filter(const struct rtf_filter* filt);
 
+LOCAL_FN size_t sizeof_data(int type);
+LOCAL_FN void* align_alloc(size_t alignment, size_t size);
+LOCAL_FN void  align_free(void* memptr);
+
+
 LOCAL_FN
-void filter_f(const struct rtf_filter* filt, const void* x, void* y, unsigned int ns);
+unsigned int filter_f(const struct rtf_filter* filt, const void* x,
+                      void* y, unsigned int ns);
 LOCAL_FN
-void filter_d(const struct rtf_filter* filt, const void* x, void* y, unsigned int ns);
+unsigned int filter_d(const struct rtf_filter* filt, const void* x,
+                      void* y, unsigned int ns);
 LOCAL_FN
-void filter_fcf(const struct rtf_filter* filt, const void* x, void* y, unsigned int ns);
+unsigned int filter_fcf(const struct rtf_filter* filt, const void* x,
+                        void* y, unsigned int ns);
 LOCAL_FN
-void filter_dcd(const struct rtf_filter* filt, const void* x, void* y, unsigned int ns);
+unsigned int filter_dcd(const struct rtf_filter* filt, const void* x,
+                        void* y, unsigned int ns);
 
 #endif //FILTER_INTERNAL_H

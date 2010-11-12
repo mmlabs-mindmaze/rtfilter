@@ -62,8 +62,8 @@
 #endif /* USE_SIMD */
 
 LOCAL_FN
-void FILTER_FUNC(const struct rtf_filter* filt, const void* in, void* out,
-                 unsigned int nsamples)
+unsigned int FILTER_FUNC(const struct rtf_filter* filt, const void* in,
+                         void* out, unsigned int nsamples)
 {
 	assert(filt->intype == DINTYPE);
 	assert(filt->outtype == DOUTTYPE);
@@ -78,5 +78,7 @@ void FILTER_FUNC(const struct rtf_filter* filt, const void* in, void* out,
 #endif //USE_SIMD
 		FILTER_UNALIGNED_FUNC(filt, (const TYPEIN*)in, 
 		                      (TYPEOUT*)out, nsamples);
+
+	return nsamples;
 }
 
