@@ -226,14 +226,14 @@ void rtf_init_filter(hfilter filt, const void *data)
 
 API_EXPORTED
 hfilter rtf_create_filter(unsigned int nchann, int proctype, 
-                      unsigned int blen, const void *b,
-		      unsigned int alen, const void *a,
+                      unsigned int numlen, const void *num,
+		      unsigned int denlen, const void *den,
 		      int paramtype)
 {
 	struct rtf_filter *filt = NULL;
-	void *num = NULL;
+	void *a = NULL;
 	void *xoff = NULL;
-	void *denum = NULL;
+	void *b = NULL;
 	void *yoff = NULL;
 	int xoffsize, yoffsize;
 	int intype, outtype;
@@ -241,39 +241,39 @@ hfilter rtf_create_filter(unsigned int nchann, int proctype,
 	define_types(proctype, paramtype, &intype, &outtype);
 
 	// Check if a denominator exists
-	if ((alen==0) || (a==NULL)) {
-		alen = 0;
-		a = NULL;
+	if ((denlen==0) || (den==NULL)) {
+		denlen = 0;
+		den = NULL;
 	} else {
-		alen--;
+		denlen--;
 	}
 
-	xoffsize = (blen - 1) * nchann;
-	yoffsize = alen * nchann;
+	xoffsize = (numlen - 1) * nchann;
+	yoffsize = denlen * nchann;
 
 	filt = malloc(sizeof(*filt));
-	num = (blen > 0) ? malloc(blen * sizeof_data(outtype)) : NULL;
-	denum = (alen > 0) ? malloc(alen * sizeof_data(outtype)) : NULL;
+	a = (numlen > 0) ? malloc(numlen * sizeof_data(outtype)) : NULL;
+	b = (denlen > 0) ? malloc(denlen * sizeof_data(outtype)) : NULL;
 	if (xoffsize > 0) 
 		xoff = align_alloc(16, xoffsize * sizeof_data(intype));
 	if (yoffsize > 0) 
 		yoff = align_alloc(16, yoffsize * sizeof_data(outtype));
 
 	// handle memory allocation problem
-	if (!filt || ((blen > 0) && !num) || ((xoffsize > 0) && !xoff)
-	    || ((alen > 0) && !denum) || ((yoffsize > 0) && !yoff)) {
+	if (!filt || ((numlen > 0) && !a) || ((xoffsize > 0) && !xoff)
+	    || ((denlen > 0) && !b) || ((yoffsize > 0) && !yoff)) {
 		free(filt);
-		free(num);
+		free(a);
 		align_free(xoff);
-		free(denum);
+		free(b);
 		align_free(yoff);
 		return NULL;
 	}
 
-	// copy the numerator and denumerator 
+	// copy the numerator and denerator 
 	// (and normalize and convert to recursive rule)
-	convtab[paramtype][outtype](blen, num, b, a, 0);
-	convtab[paramtype][outtype](alen, denum, a, a, 1);
+	convtab[paramtype][outtype](numlen, a, num, den, 0);
+	convtab[paramtype][outtype](denlen, b, den, den, 1);
 
 
 	// prepare the filt struct
@@ -284,11 +284,11 @@ hfilter rtf_create_filter(unsigned int nchann, int proctype,
 	filt->num_chann = nchann;
 	filt->intype = intype;
 	filt->outtype = outtype;
-	filt->a = num;
-	filt->a_len = blen;
+	filt->a = a;
+	filt->a_len = numlen;
 	filt->xoff = xoff;
-	filt->b = denum;
-	filt->b_len = alen;
+	filt->b = b;
+	filt->b_len = denlen;
 	filt->yoff = yoff;
 
 

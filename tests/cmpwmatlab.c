@@ -24,7 +24,9 @@
 #define FC_DEF	0.2
 #define TYPE_DEF	RTF_FLOAT
 
-char *infilename, *outfilename, line[128], command[1024], tmpdir[128] = "/tmp";
+char line[128], command[1024];
+char infilename[] = "filein.bin.";
+char outfilename[] = "fileout.bin.";
 
 double numd[5] = {7.397301684767964e-04, 2.958920673907186e-03, 4.438381010860778e-03, 2.958920673907186e-03, 7.397301684767964e-04, };
 double denumd[5] = {1.000000000000000e+00, -3.152761111579526e+00, 3.860934099037117e+00, -2.161019850256067e+00, 4.647120978065145e-01, };
@@ -238,8 +240,6 @@ int main(int argc, char *argv[])
 
 
 	// Open files for writing
-	infilename = tempnam(NULL, "filein.bin.");
-	outfilename = tempnam(NULL, "fileout.bin.");
 	filein = open(infilename, O_WRONLY|O_CREAT, S_IRWXU);
 	fileout = open(outfilename, O_WRONLY|O_CREAT, S_IRWXU);
 	if ((filein < 0) || (fileout < 0)) {
@@ -300,8 +300,6 @@ out:
 		unlink(infilename);
 		unlink(outfilename);
 	}
-	free(infilename);
-	free(outfilename);
 
 	return retval;
 }

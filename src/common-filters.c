@@ -35,7 +35,8 @@
  *                     Helper functions                        *
  *                                                             *
  ***************************************************************/
-static void apply_window(double *fir, unsigned int length, KernelWindow window)
+static
+void apply_window(double *fir, unsigned int length, KernelWindow window)
 {
 	unsigned int i;
 	double M = length - 1;
@@ -60,7 +61,8 @@ static void apply_window(double *fir, unsigned int length, KernelWindow window)
 }
 
 
-static void normalize_fir(double *fir, unsigned int length)
+static
+void normalize_fir(double *fir, unsigned int length)
 {
 	unsigned int i;
 	double sum = 0.0;
@@ -72,7 +74,8 @@ static void normalize_fir(double *fir, unsigned int length)
 		fir[i] /= sum;
 }
 
-static void compute_convolution(double *product, double *sig1, unsigned int len1,
+static
+void compute_convolution(double *product, double *sig1, unsigned int len1,
 			 double *sig2, unsigned int len2)
 {
 	unsigned int i, j;
@@ -84,7 +87,8 @@ static void compute_convolution(double *product, double *sig1, unsigned int len1
 			product[i + j] += sig1[i] * sig2[j];
 }
 
-static void FFT(complex double *X, double *t, unsigned int length){
+static
+void FFT(complex double *X, double *t, unsigned int length){
 
 	unsigned int i,j;
 
@@ -97,7 +101,8 @@ static void FFT(complex double *X, double *t, unsigned int length){
 
 }
 
-static void compute_fir_lowpass(double *fir, unsigned int length, double fc)
+static
+void compute_fir_lowpass(double *fir, unsigned int length, double fc)
 {
 	unsigned int i;
 	double half_len = (double) ((unsigned int) (length / 2));
@@ -112,7 +117,8 @@ static void compute_fir_lowpass(double *fir, unsigned int length, double fc)
 			fir[i] = 2.0 * PIf * fc;
 }
 
-static void reverse_fir(double *fir, unsigned int length)
+static
+void reverse_fir(double *fir, unsigned int length)
 {
 	unsigned int i;
 
@@ -128,7 +134,8 @@ static void reverse_fir(double *fir, unsigned int length)
 	by  Julius O. Smith III, (September 2007 Edition). 
 	https://ccrma.stanford.edu/~jos/filters/Numerical_Computation_Group_Delay.html 
 */
-static double compute_IIR_filter_delay(double *num, double *den,
+static
+double compute_IIR_filter_delay(double *num, double *den,
 					unsigned int length)
 {
 	unsigned int i,length_c;
@@ -182,7 +189,8 @@ static double compute_IIR_filter_delay(double *num, double *den,
 /******************************
  * inspired by DSP guide ch33 *
  ******************************/
-static void get_pole_coefs(double p, double np, double fc, double r, int highpass, double a[3], double b[3])
+static
+void get_pole_coefs(double p, double np, double fc, double r, int highpass, double a[3], double b[3])
 {
 	double rp, ip, es, vx, kx, t, w, m, d, x0, x1, x2, y1, y2, k;
 
@@ -201,14 +209,14 @@ static void get_pole_coefs(double p, double np, double fc, double r, int highpas
 					   1.0));
 		kx = (exp(kx) + exp(-kx)) / 2.0;
 		rp = rp * ((exp(vx) - exp(-vx)) / 2.0) / kx;
-		ip = ip * ((exp(vx) + exp(-vx)) / 2.0) / kx;*/
-	
+		ip = ip * ((exp(vx) + exp(-vx)) / 2.0) / kx;
+	*/
 		es = sqrt(pow(1.0 / (1.0 - r), 2) - 1.0);
-		vx = asinh(1/es) / np;
-		kx = acosh(1/es) / np;
+		vx = asinh(1.0/es) / np;
+		kx = acosh(1.0/es) / np;
 		kx = cosh( kx );
-		rp = rp * sinh(vx) / kx;
-		ip = ip * cosh(vx) / kx;
+		rp *= sinh(vx) / kx;
+		ip *= cosh(vx) / kx;
 	}
 
 
@@ -243,7 +251,8 @@ static void get_pole_coefs(double p, double np, double fc, double r, int highpas
 /******************************
  * inspired by DSP guide ch33 *
  ******************************/
-static int compute_cheby_iir(double *num, double *den, unsigned int num_pole,
+static
+int compute_cheby_iir(double *num, double *den, unsigned int num_pole,
 		      int highpass, double ripple, double cutoff_freq)
 {
 	double *a, *b, *ta, *tb;
@@ -320,7 +329,8 @@ static int compute_cheby_iir(double *num, double *den, unsigned int num_pole,
 
 	This function creates a complex bandpass filter from a Chebyshev low pass filter.
 */
-static int compute_bandpass_complex_filter(complex double *num,
+static 
+int compute_bandpass_complex_filter(complex double *num,
 					   complex double *den,
 					   unsigned int num_pole,
 					   double fl, double fh)
@@ -558,28 +568,28 @@ hfilter rtf_create_chebychev(unsigned int nchann, int proctype,
                                 double fc, unsigned int num_pole,
 				int highpass, double ripple)
 {
-	double *a = NULL, *b = NULL;
+	double *num = NULL, *den = NULL;
 	hfilter filt = NULL;
 
 	if (num_pole % 2 != 0)
 		return NULL;
 
-	a = malloc( (num_pole+1)*sizeof(*a));
-	b = malloc( (num_pole+1)*sizeof(*b));
-	if (!a || !b)
+	num = malloc( (num_pole+1)*sizeof(*num));
+	den = malloc( (num_pole+1)*sizeof(*den));
+	if (!num || !den)
 		goto out;
 
 	// prepare the z-transform of the filter
-	if (!compute_cheby_iir(a, b, num_pole, highpass, ripple, fc))
+	if (!compute_cheby_iir(num, den, num_pole, highpass, ripple, fc))
 		goto out;
 
 	filt = rtf_create_filter(nchann, proctype,
-	                     num_pole+1, a, num_pole+1, b,
+	                     num_pole+1, num, num_pole+1, den,
 	                     RTF_DOUBLE);
 
 out:
-	free(a);
-	free(b);
+	free(num);
+	free(den);
 	return filt;
 }
 
