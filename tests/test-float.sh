@@ -7,3 +7,5 @@ fi
 if ! cmpwmatlab* -d 0 -p 0 -c 15 >test.log; then
 	return 1
 fi
+
+rm test.log
