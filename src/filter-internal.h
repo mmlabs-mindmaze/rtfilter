@@ -18,8 +18,10 @@
 #ifndef FILTER_INTERNAL_H
 #define FILTER_INTERNAL_H
 
-typedef unsigned int (*filter_proc)(const struct rtf_filter*, 
-                            const void*, void*, unsigned int);
+#include <stddef.h>
+
+typedef unsigned int (*filter_proc)(const struct rtf_filter*, const void*,
+                                    void*, unsigned int);
 typedef void (*init_filter_proc)(const struct rtf_filter*, const void*);
 typedef	void (*destroy_filter_proc)(const struct rtf_filter*);
 

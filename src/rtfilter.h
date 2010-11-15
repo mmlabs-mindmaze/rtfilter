@@ -46,6 +46,8 @@ void rtf_init_filter(hfilter filt, const void* data);
 //! destroy a filter
 void rtf_destroy_filter(hfilter filt);
 
+// Creates a filter that downsample signals
+hfilter rtf_create_downsampler(unsigned int nch, int type, unsigned int r);
 
 
 #ifdef __cplusplus
