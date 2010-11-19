@@ -1,0 +1,13 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: rtfilter
+Description: multichannel filtering library
+Version: @PACKAGE_VERSION@
+
+Libs: -L${libdir} -lrtfilter
+Libs.private: @LIBS@
+Cflags: -I${includedir}
+

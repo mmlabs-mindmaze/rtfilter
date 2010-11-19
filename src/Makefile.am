@@ -15,3 +15,5 @@ librtfilter_la_LDFLAGS = $(AM_LDFLAGS) \
 			 -export-symbols $(srcdir)/exports.sym  \
                          -version-info $(CURRENT):$(REVISION):$(AGE) 
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = rtfilter.pc
