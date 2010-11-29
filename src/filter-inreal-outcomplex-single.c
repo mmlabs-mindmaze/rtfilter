@@ -30,29 +30,14 @@
 
 /**************************************************************************
  *                                                                        *
- *                     Complex Single precision version                   *
- *                            ( complex float )                           *
+ *          complex output real input single precision version            *
+ *                      ( complex float out float in)                     *
  *                                                                        *
  **************************************************************************/
-#if 0
-#ifdef __SSE3__
-# include <pmmintrin.h>
-# define USE_SIMD
-#endif
-#endif
-
 typedef complex float cfloat;
 
-#define add_vec(v1,v2)			_mm_add_ps(v1,v2)
-#define mul_vec(v1,v2)			_mm_mul_ps(v1,v2)
-#define mul_in_vec(v1,v2)		_mm_mul_ps(v1,v2)
-#define zero_vec()			_mm_setzero_ps()
-#define set1_vec(data)			_mm_set1_ps(data)
 #define TYPEIN				float
-#define TYPEIN_V			__m128
 #define TYPEOUT				cfloat
-#define TYPEOUT_V			__m128
-#define FILTER_ALIGNED_FUNC		filter_fcfa
 #define FILTER_UNALIGNED_FUNC		filter_fcfu
 #define FILTER_FUNC			filter_fcf
 #define DINTYPE				RTF_FLOAT

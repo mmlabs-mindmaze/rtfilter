@@ -5,8 +5,8 @@ include_HEADERS = rtfilter.h rtf_common.h
 
 librtfilter_la_SOURCES = filter-internal.h\
                          rtfilter.h filter.c \
-			 filter-single.c filter-double.c\
-			 filter-complex-single.c filter-complex-double.c\
+			 filter-real-single.c filter-real-double.c\
+			 filter-inreal-outcomplex-single.c filter-inreal-outcomplex-double.c\
 			 downsampler.c	\
 			 rtf_common.h common-filters.c
 
