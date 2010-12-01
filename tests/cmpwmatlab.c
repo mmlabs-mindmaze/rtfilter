@@ -151,16 +151,26 @@ static void set_signals(unsigned int nchann, unsigned int nsample, unsigned int 
 {
 	unsigned int i, j;
 	
-	if (intype & RTF_DOUBLE) {
+	if (intype == RTF_DOUBLE) {
 		double* data = buff;
 		for (i = 0; i < nchann; i++)
 			for (j = 0; j < nsample; j++)
 				data[j * nchann + i] = sin(6.28/(double)(i+1)*(double)j);//(float)j - ((float)(nsample-1))/2.0f;
-	} else {
+	} else if (intype == RTF_FLOAT) {
 		float* data = buff;
 		for (i = 0; i < nchann; i++)
 			for (j = 0; j < nsample; j++)
 				data[j * nchann + i] = sin(6.28/(double)(i+1)*(double)j);//(float)j - ((float)(nsample-1))/2.0f;
+	} else if (intype == RTF_CDOUBLE) {
+		complex double* data = buff;
+		for (i = 0; i < nchann; i++)
+			for (j = 0; j < nsample; j++)
+				data[j * nchann + i] = (1.0+1.0*I)*sin(6.28/(double)(i+1)*(double)j);//(float)j - ((float)(nsample-1))/2.0f;
+	} else if (intype == RTF_CFLOAT) {
+		complex float* data = buff;
+		for (i = 0; i < nchann; i++)
+			for (j = 0; j < nsample; j++)
+				data[j * nchann + i] = (1.0+1.0*I)*sin(6.28/(double)(i+1)*(double)j);//(float)j - ((float)(nsample-1))/2.0f;
 	}
 }
 

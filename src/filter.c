@@ -95,6 +95,8 @@ static
 filter_proc filtproctab[4][4] = {
 	[RTF_FLOAT] = {[RTF_FLOAT] = filter_f, [RTF_CFLOAT] = filter_fcf},
 	[RTF_DOUBLE] = {[RTF_DOUBLE] = filter_d,[RTF_CDOUBLE] = filter_dcd},
+	[RTF_CFLOAT] = {[RTF_CFLOAT] = filter_cf},
+	[RTF_CDOUBLE] = {[RTF_CDOUBLE] = filter_cd}
 };
 
 
@@ -238,6 +240,14 @@ hfilter rtf_create_filter(unsigned int nchann, int proctype,
 	int xoffsize, yoffsize;
 	int intype, outtype;
 
+	// Processing complex data with real transfer function is equivalent
+	// (and faster) to process real and imaginary part as 2 channels
+	if ((proctype & RTF_PRECISION_MASK)
+	 && !(paramtype & RTF_PRECISION_MASK)) {
+	 	proctype &= ~RTF_PRECISION_MASK;
+		nchann *= 2;
+	}
+	
 	define_types(proctype, paramtype, &intype, &outtype);
 
 	// Check if a denominator exists

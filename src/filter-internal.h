@@ -61,5 +61,11 @@ unsigned int filter_fcf(const struct rtf_filter* filt, const void* x,
 LOCAL_FN
 unsigned int filter_dcd(const struct rtf_filter* filt, const void* x,
                         void* y, unsigned int ns);
+LOCAL_FN
+unsigned int filter_cf(const struct rtf_filter* filt, const void* x,
+                        void* y, unsigned int ns);
+LOCAL_FN
+unsigned int filter_cd(const struct rtf_filter* filt, const void* x,
+                        void* y, unsigned int ns);
 
 #endif //FILTER_INTERNAL_H
