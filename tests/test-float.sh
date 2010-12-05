@@ -1,11 +1,14 @@
 #!/bin/sh
 
-if ! cmpwmatlab* -d 0 -p 0 -c 16 >test.log; then
-	return 1
-fi
+LOGFILE=testf.log
 
-if ! cmpwmatlab* -d 0 -p 0 -c 15 >test.log; then
-	return 1
+if {
+     cmpwmatlab* -d 0 -p 0 -c 16 \
+  && cmpwmatlab* -d 0 -p 0 -c 15
+} > $LOGFILE
+then
+	rm $LOGFILE
+	exit 0
+else
+	exit 1
 fi
-
-rm test.log
