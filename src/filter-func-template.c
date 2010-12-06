@@ -26,8 +26,10 @@
 #undef NELEM_DAT
 #define NELEM_DAT	(sizeof(TYPEOUT_LOCAL)/sizeof(TYPEOUT))
 
-static void FILTER_DATADEP_FUNC(hfilter filt, const TYPEIN_LOCAL *in,
-                                TYPEOUT_LOCAL *out, unsigned int nsamples)
+static void FILTER_DATADEP_FUNC(hfilter filt,
+                                const TYPEIN_LOCAL * restrict in,
+                                TYPEOUT_LOCAL * restrict out,
+				unsigned int nsamples)
 {
 	unsigned int i;
 	int k, ichann, ii, len, midlen;
@@ -35,12 +37,12 @@ static void FILTER_DATADEP_FUNC(hfilter filt, const TYPEIN_LOCAL *in,
 	const TYPEOUT_LOCAL *y;
 
 	int a_len = filt->a_len;
-	const TYPEOUT *a = filt->a;
+	const TYPEOUT *restrict a = filt->a;
 	int b_len = filt->b_len;
-	const TYPEOUT *b = filt->b;
+	const TYPEOUT *restrict b = filt->b;
 	int nchann = filt->num_chann / NELEM_DAT;
-	const TYPEIN_LOCAL *xprev = (TYPEIN_LOCAL*)(filt->xoff) + (a_len - 1) * nchann;
-	const TYPEOUT_LOCAL *yprev = (TYPEOUT_LOCAL*)(filt->yoff) + b_len * nchann;
+	const TYPEIN_LOCAL *restrict xprev = (TYPEIN_LOCAL*)(filt->xoff) + (a_len - 1) * nchann;
+	const TYPEOUT_LOCAL *restrict yprev = (TYPEOUT_LOCAL*)(filt->yoff) + b_len * nchann;
 	TYPEOUT_LOCAL coef, *currout, *odest;
 	const TYPEOUT_LOCAL *osrc;
 	TYPEIN_LOCAL *idest;
@@ -70,8 +72,9 @@ static void FILTER_DATADEP_FUNC(hfilter filt, const TYPEIN_LOCAL *in,
 			// provided, use the stored ones
 			x = (ii >= 0) ? in : xprev;
 
-			for (ichann = 0; ichann < nchann; ichann++)
+			for (ichann = 0; ichann < nchann; ichann++) {
 				currout[ichann] = add_dat(mul_in_dat(coef,x[ii+ichann]),currout[ichann]);
+			}
 		}
 
 		// compute the convolution in the denominator

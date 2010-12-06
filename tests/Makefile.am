@@ -5,6 +5,10 @@ EXTRA_DIST = test-float.sh test-complex-float.sh\
 AM_CFLAGS = -I$(top_srcdir)/src
 
 check_PROGRAMS = cmpwmatlab downsample testchebyshev
+noinst_PROGRAMS = measure-rtfilter
+
+measure_rtfilter_SOURCES = measure-rtfilter.c
+measure_rtfilter_LDADD = $(top_builddir)/src/librtfilter.la -lrt
 
 cmpwmatlab_SOURCES = cmpwmatlab.c
 cmpwmatlab_LDADD = $(top_builddir)/src/librtfilter.la
