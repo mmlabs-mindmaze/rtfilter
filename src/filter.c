@@ -242,9 +242,9 @@ hfilter rtf_create_filter(unsigned int nchann, int proctype,
 
 	// Processing complex data with real transfer function is equivalent
 	// (and faster) to process real and imaginary part as 2 channels
-	if ((proctype & RTF_PRECISION_MASK)
-	 && !(paramtype & RTF_PRECISION_MASK)) {
-	 	proctype &= ~RTF_PRECISION_MASK;
+	if ((proctype & RTF_COMPLEX_MASK)
+	 && !(paramtype & RTF_COMPLEX_MASK)) {
+	 	proctype &= ~RTF_COMPLEX_MASK;
 		nchann *= 2;
 	}
 	
