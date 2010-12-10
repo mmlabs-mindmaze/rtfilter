@@ -68,16 +68,16 @@ void set_coeffs(unsigned int len, int type, void* coef,
 {
 	memset(coef, 0, sizeof_data(type)*2*len);
 	*num = coef;
-	if (type & RTF_FLOAT) {
+	if (type == RTF_FLOAT) {
 		((float*)coef)[len] = 1.0;
 		*den = ((float*)coef) + len;
-	} else if (type & RTF_DOUBLE) {
+	} else if (type == RTF_DOUBLE) {
 		((double*)coef)[len] = 1.0;
 		*den = ((double*)coef) + len;
-	} else if (type & RTF_CFLOAT) {
+	} else if (type == RTF_CFLOAT) {
 		((complex float*)coef)[len] = 1.0;
 		*den = ((complex float*)coef) + len;
-	} else if (type & RTF_CDOUBLE) {
+	} else if (type == RTF_CDOUBLE) {
 		((complex double*)coef)[len] = 1.0;
 		*den = ((complex double*)coef) + len;
 	}
