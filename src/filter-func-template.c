@@ -24,15 +24,19 @@
  */
 
 #undef NELEM_DAT
+#undef NELEM_DATIN
+#undef RATIO_INOUT
 #define NELEM_DAT	(sizeof(TYPEOUT_LOCAL)/sizeof(TYPEOUT))
+#define NELEM_DATIN	(sizeof(TYPEIN_LOCAL)/sizeof(TYPEIN))
+#define RATIO_INOUT	((int)(NELEM_DATIN/NELEM_DAT))
 
 static void FILTER_DATADEP_FUNC(hfilter filt,
                                 const TYPEIN_LOCAL * restrict in,
                                 TYPEOUT_LOCAL * restrict out,
 				unsigned int nsamples)
 {
-	unsigned int i;
-	int k, ichann, ii, len, midlen;
+	unsigned int i, p;
+	int k, ic, ii, len, midlen;
 	const TYPEIN_LOCAL *x;
 	const TYPEOUT_LOCAL *y;
 
@@ -40,63 +44,63 @@ static void FILTER_DATADEP_FUNC(hfilter filt,
 	const TYPEOUT *restrict a = filt->a;
 	int b_len = filt->b_len;
 	const TYPEOUT *restrict b = filt->b;
-	int nchann = filt->num_chann / NELEM_DAT;
-	const TYPEIN_LOCAL *restrict xprev = (TYPEIN_LOCAL*)(filt->xoff) + (a_len - 1) * nchann;
-	const TYPEOUT_LOCAL *restrict yprev = (TYPEOUT_LOCAL*)(filt->yoff) + b_len * nchann;
-	TYPEOUT_LOCAL coef, *currout, *odest;
+	int nch = filt->num_chann / NELEM_DAT;
+	int nchin = nch/RATIO_INOUT;
+	const TYPEIN_LOCAL *restrict xprev = (TYPEIN_LOCAL*)(filt->xoff) + (a_len - 1) * (nch/RATIO_INOUT);
+	const TYPEOUT_LOCAL *restrict yprev = (TYPEOUT_LOCAL*)(filt->yoff) + b_len * nch;
+	TYPEOUT_LOCAL h, *s, *odest;
 	const TYPEOUT_LOCAL *osrc;
 	TYPEIN_LOCAL *idest;
 	const TYPEIN_LOCAL *isrc;
 
-	if (!nchann)
+	if (!nch)
 		return;
-
-
 
 	// compute the product of convolution of the input with the infinite
 	// impulse response (iir)
 	for (i = 0; i < nsamples; i++) {
-		currout = out + i*nchann;
+		s = out + i*nch;
 
 		// Init to convolution to 0
-		for (ichann=0; ichann<nchann; ichann++)
-			currout[ichann] = zero_dat();
-
+		for (ic=0; ic<nch; ic++)
+			s[ic] = zero_dat();
 
 		// Compute the convolution with numerator
-		for (k = 0; k < a_len; k++) {
-			ii = (i - k) * nchann;
-			coef = set1_dat(a[k]);
+		for (k=0; k < a_len; k++) {
+			ii = (i - k) * nchin;
+			h = set1_dat(a[k]);
 
 			// If the convolution must be done with samples not
 			// provided, use the stored ones
 			x = (ii >= 0) ? in : xprev;
 
-			for (ichann = 0; ichann < nchann; ichann++) {
-				currout[ichann] = add_dat(mul_in_dat(coef,x[ii+ichann]),currout[ichann]);
-			}
+			for (ic=0; ic < nchin; ic++) 
+				for (p=0; p<RATIO_INOUT; p++) {
+					int ind = RATIO_INOUT*ic+p;
+					s[ind] = add_dat(mul_in_dat(h,x[ii+ic],p),s[ind]);
+				}
 		}
 
 		// compute the convolution in the denominator
 		for (k = 0; k < b_len; k++) {
-			ii = (i - k - 1) * nchann;
-			coef = set1_dat(b[k]);
+			ii = (i - k - 1) * nch;
+			h = set1_dat(b[k]);
 
 			// If the convolution must be done with samples not
 			// provided, use the stored ones
 			y = (ii >= 0) ? out : yprev;
 
-			for (ichann = 0; ichann < nchann; ichann++)
-				currout[ichann] = add_dat(mul_dat(coef,y[ii+ichann]),currout[ichann]);
+			for (ic = 0; ic < nch; ic++)
+				s[ic] = add_dat(mul_dat(h,y[ii+ic]),s[ic]);
 		}
 	}
 
 	// Store the latest input samples
 	idest = (TYPEIN_LOCAL*)(filt->xoff);
-	len = (a_len-1)*nchann;
-	midlen = (a_len-1-nsamples)*nchann;
+	len = (a_len-1)*nchin;
+	midlen = (a_len-1-nsamples)*nchin;
 	if (midlen > 0) {
-		isrc = idest + nsamples*nchann;
+		isrc = idest + nsamples*nchin;
 		memmove(idest, isrc, midlen*sizeof(*isrc));
 		idest += midlen;
 		len -= midlen;
@@ -108,10 +112,10 @@ static void FILTER_DATADEP_FUNC(hfilter filt,
 	
 	// Store the latest output samples
 	odest = (TYPEOUT_LOCAL*)(filt->yoff);
-	len = b_len*nchann;
-	midlen = (b_len-nsamples)*nchann;
+	len = b_len*nch;
+	midlen = (b_len-nsamples)*nch;
 	if (midlen > 0) {
-		osrc = odest + nsamples*nchann;
+		osrc = odest + nsamples*nch;
 		memmove(odest, osrc, midlen*sizeof(*osrc));
 		odest += midlen;
 		len -= midlen;

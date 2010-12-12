@@ -19,13 +19,14 @@
 #include <assert.h>
 
 #define NELEM_VEC	(sizeof(TYPEOUT_V)/sizeof(TYPEOUT))
+#define NELEM_VECIN	(sizeof(TYPEIN_V)/sizeof(TYPEIN))
 
 
 /*************************************************
  * Instanciate filter function on unaligned data *
  *************************************************/
 #define add_dat(d1,d2)		((d1)+(d2))
-#define mul_in_dat(d1,d2)	((d1)*(d2))
+#define mul_in_dat(d1,d2,part)	((d1)*(d2))
 #define mul_dat(d1,d2)		((d1)*(d2))
 #define zero_dat()		(0)
 #define set1_dat(data)		(data)
@@ -50,7 +51,7 @@
  * Instanciate filter function on vectorizable data *
  ****************************************************/
 #define add_dat(d1,d2)		add_vec(d1,d2)
-#define mul_in_dat(d1,d2)	mul_in_vec(d1,d2)
+#define mul_in_dat(d1,d2,part)	mul_in_vec(d1,d2,part)
 #define mul_dat(d1,d2)		mul_vec(d1,d2)
 #define zero_dat()		zero_vec()
 #define set1_dat(data)		set1_vec(data)
@@ -69,7 +70,7 @@ unsigned int FILTER_FUNC(const struct rtf_filter* filt, const void* in,
 	assert(filt->outtype == DOUTTYPE);
 #ifdef USE_SIMD
 	// Check that data is aligned on 16 byte boundaries
-	if ( !((filt->num_chann%NELEM_VEC) 
+	if ( !((filt->num_chann%NELEM_VECIN) 
 		|| ((uintptr_t)in % sizeof(TYPEIN_V)) 
 		|| ((uintptr_t)out % sizeof(TYPEOUT_V))) )
 		FILTER_ALIGNED_FUNC(filt, (const TYPEIN_V*)in, 

@@ -40,7 +40,7 @@
 
 #define add_vec(v1,v2)			_mm_add_pd(v1,v2)
 #define mul_vec(v1,v2)			_mm_mul_pd(v1,v2)
-#define mul_in_vec(v1,v2)		_mm_mul_pd(v1,v2)
+#define mul_in_vec(v1,v2,part)		_mm_mul_pd(v1,v2)
 #define zero_vec()			_mm_setzero_pd()
 #define set1_vec(data)			_mm_set1_pd(data)
 #define TYPEIN				double

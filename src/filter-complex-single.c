@@ -34,12 +34,24 @@
  *                            ( complex float )                           *
  *                                                                        *
  **************************************************************************/
+#ifdef __SSE3__
+# define USE_SIMD
+# include "complex-simd.h"
+#endif
+
 typedef complex float	cfloat;
+#define add_vec(v1,v2)			_mm_add_ps(v1,v2)
+#define mul_vec(v1,v2)			complex_mul_ps(v1,v2)
+#define mul_in_vec(v1,v2,part)		complex_mul_ps(v1,v2)
+#define zero_vec()			_mm_setzero_ps()
+#define set1_vec(data)			complex_set1_ps(data)
 #define TYPEIN				cfloat
 #define TYPEOUT				cfloat
 #define FILTER_UNALIGNED_FUNC		filter_cfu
+#define TYPEIN_V			__m128
+#define TYPEOUT_V			__m128
+#define FILTER_ALIGNED_FUNC		filter_cfa
 #define FILTER_FUNC			filter_cf
-#define COPY_NUMDENUM			copy_numdenum_cf
 #define DINTYPE				RTF_CFLOAT
 #define DOUTTYPE			RTF_CFLOAT
 
