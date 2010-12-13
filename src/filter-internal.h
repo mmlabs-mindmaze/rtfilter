@@ -51,21 +51,21 @@ LOCAL_FN void  align_free(void* memptr);
 
 LOCAL_FN
 unsigned int filter_f(const struct rtf_filter* filt, const void* x,
-                      void* y, unsigned int ns);
+                      void* y, unsigned int ns) HOTSPOT;
 LOCAL_FN
 unsigned int filter_d(const struct rtf_filter* filt, const void* x,
-                      void* y, unsigned int ns);
+                      void* y, unsigned int ns) HOTSPOT;
 LOCAL_FN
 unsigned int filter_fcf(const struct rtf_filter* filt, const void* x,
-                        void* y, unsigned int ns);
+                        void* y, unsigned int ns) HOTSPOT;
 LOCAL_FN
 unsigned int filter_dcd(const struct rtf_filter* filt, const void* x,
-                        void* y, unsigned int ns);
+                        void* y, unsigned int ns) HOTSPOT;
 LOCAL_FN
 unsigned int filter_cf(const struct rtf_filter* filt, const void* x,
-                        void* y, unsigned int ns);
+                        void* y, unsigned int ns) HOTSPOT;
 LOCAL_FN
 unsigned int filter_cd(const struct rtf_filter* filt, const void* x,
-                        void* y, unsigned int ns);
+                        void* y, unsigned int ns) HOTSPOT;
 
 #endif //FILTER_INTERNAL_H

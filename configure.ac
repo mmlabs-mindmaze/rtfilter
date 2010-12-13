@@ -32,6 +32,7 @@ AM_PROG_CC_C_O
 LT_INIT([win32-dll disable-static])
 AC_SUBST(LIBTOOL_DEPS)
 
+AC_DEF_HOTSPOT_ATTR
 AC_DEF_API_EXPORT_ATTRS
 
 AC_SEARCH_LIBS([cos], [m], [], AC_MSG_ERROR([The math library cannot be found.]))

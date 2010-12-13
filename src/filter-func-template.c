@@ -30,6 +30,7 @@
 #define NELEM_DATIN	(sizeof(TYPEIN_LOCAL)/sizeof(TYPEIN))
 #define RATIO_INOUT	((int)(NELEM_DATIN/NELEM_DAT))
 
+HOTSPOT
 static void FILTER_DATADEP_FUNC(hfilter filt,
                                 const TYPEIN_LOCAL * restrict in,
                                 TYPEOUT_LOCAL * restrict out,

@@ -308,7 +308,7 @@ hfilter rtf_create_filter(unsigned int nchann, int proctype,
 }
 
 
-API_EXPORTED
+API_EXPORTED HOTSPOT
 unsigned int rtf_filter(hfilter filt, const void* x, void* y, unsigned int ns)
 {
 	return filt->filter_fn(filt, x, y, ns);
