@@ -34,6 +34,7 @@ AC_SUBST(LIBTOOL_DEPS)
 
 AC_DEF_HOTSPOT_ATTR
 AC_DEF_API_EXPORT_ATTRS
+AC_CHECK_FASTMATH_FLAG
 
 AC_SEARCH_LIBS([cos], [m], [], AC_MSG_ERROR([The math library cannot be found.]))
 AC_CHECK_FUNCS([posix_memalign])
