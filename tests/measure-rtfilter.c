@@ -176,9 +176,9 @@ int main(int argc, char *argv[])
 	mintime = mintimev = LONG_MAX;
 	for (k=0; k<niter; k++) {
 		// Test normal version
-		clock_gettime(CLOCK_MONOTONIC, &start);
+		clock_gettime(CLOCK_REALTIME, &start);
 		rtf_filter(filt, buff1, buff2, ns);
-		clock_gettime(CLOCK_MONOTONIC, &stop);
+		clock_gettime(CLOCK_REALTIME, &stop);
 		timing = ((stop.tv_sec - start.tv_sec)*1000000000 + (stop.tv_nsec - start.tv_nsec)) - tc;
 		delay += timing;
 		mintime = mintime > timing ? timing : mintime;

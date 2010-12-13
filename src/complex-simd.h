@@ -57,4 +57,43 @@ __m128 complex_set1_ps(complex float a)
 	return _mm_castpd_ps(_mm_loaddup_pd((const void*)&a));
 }
 
+
+static inline 
+__m128d complex_mul_pd(__m128d a, __m128d b)
+{
+	//a0+ia1 * b0+ib1 = a0*(b0+ib1) + ia1*(b0+ib1)
+	//                = (a0b0-a1b1) + i(a1b0+a0b1)
+	__m128d pl, ph, coef;
+	coef = _mm_movedup_pd(a);
+	pl = _mm_mul_pd(coef, b);
+	coef = _mm_shuffle_pd(a, a, _MM_SHUFFLE2(1,1));
+	ph = _mm_mul_pd(coef, b);
+	ph = _mm_shuffle_pd(ph, ph, _MM_SHUFFLE2(0,1));
+	return _mm_addsub_pd(pl, ph);
+}
+
+
+static inline
+__m128d realcomp_mul_pd(__m128d a, __m128d b, int part)
+{
+	__m128d in;
+	if (part == 0)
+		in = _mm_shuffle_pd(b, b, _MM_SHUFFLE2(0,0));
+	else
+		in = _mm_shuffle_pd(b, b, _MM_SHUFFLE2(1,1));
+	return _mm_mul_pd(in, a);
+}
+
+
+static inline
+__m128d complex_set1_pd(complex double a)
+{
+	/*__m128 c;
+	c = _mm_loadl_pi(c, (const void*)&a);
+	c = _mm_loadh_pi(c, (const void*)&a);
+	return c;*/
+	return _mm_loadu_pd((const double*)&a);
+}
+
+
 #endif /* COMPLEX_SIMD_H */

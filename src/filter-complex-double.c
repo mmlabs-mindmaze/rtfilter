@@ -34,14 +34,26 @@
  *                            ( complex double )                          *
  *                                                                        *
  **************************************************************************/
+#ifdef __SSE3__
+# define USE_SIMD
+# include "complex-simd.h"
+#endif
+
 typedef complex double cdouble;
+#define add_vec(v1,v2)			_mm_add_pd(v1,v2)
+#define mul_vec(v1,v2)			complex_mul_pd(v1,v2)
+#define mul_in_vec(v1,v2,part)		complex_mul_pd(v1,v2)
+#define zero_vec()			_mm_setzero_pd()
+#define set1_vec(data)			complex_set1_pd(data)
 #define TYPEIN				cdouble
 #define TYPEOUT				cdouble
 #define FILTER_UNALIGNED_FUNC		filter_cdu
+#define TYPEIN_V			__m128d
+#define TYPEOUT_V			__m128d
+#define FILTER_ALIGNED_FUNC		filter_cda
 #define FILTER_FUNC			filter_cd
-#define COPY_NUMDENUM			copy_numdenum_cd
-#define DINTYPE				RTF_CDOUBLE
 #define DOUTTYPE			RTF_CDOUBLE
+#define DINTYPE				RTF_CDOUBLE
 
 #include "templates.c"
 
