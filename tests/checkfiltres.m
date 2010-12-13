@@ -32,8 +32,14 @@ if (nchannin ~= nchannout)
 end
 
 
-
+niter = 100;
+tic
+for k=1:niter
 datmatlab = filter(num,denum,datin,[],2);
+end
+dt = toc;
+samdt = dt/(niter*nchannin*size(datin,2));
+fprintf('time per sample: %f ns\n',samdt*1e9);
 
 
 % for ichann=1:6:nchann

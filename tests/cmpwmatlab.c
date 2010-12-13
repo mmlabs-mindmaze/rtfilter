@@ -124,12 +124,14 @@ static int compare_results(double thres)
 {
 	FILE *pipe;
 	double errval = DBL_MAX;
+	double matdt = 0.0;
 	int rval = 1;
-	
 
 	sprintf(command, "matlab -nojvm -nodisplay -nosplash -nodesktop -r \"addpath('%s');checkfiltres('%s','%s');exit;\"", getenv("srcdir"), infilename, outfilename);
 	pipe = popen(command, "r");
 	while (fgets(line, 127, pipe)) {
+		if (sscanf(line, " time per sample: %lg ns", &matdt) == 1)
+			continue;
 		if (sscanf(line, " Error value = %lg", &errval) == 1) {
 			rval = 0;
 			break;
@@ -139,7 +141,9 @@ static int compare_results(double thres)
 	if (rval)
 		return rval;
 
-	fprintf(stdout, "\t\tError value = %lg (thresehold = %lg)\n", errval, thres);
+	fprintf(stdout, "\t\tError value = %lg (thresehold = %lg)\n"
+	                "\t\tMatlab time process per sample: %lg ns\n",
+			errval, thres, matdt);
 
 	
 
