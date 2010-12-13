@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
 
 	dt = mintime;
 	printf("min time per call: %i nsec\n",(int)dt);
-	printf("min time per sample: %i nsec\n",(int)(dt/(ns*nch)));
+	printf("min time per sample: %lg nsec\n",(double)dt/(double)(ns*nch));
 out:
 	rtf_destroy_filter(filt);
 	align_free(origbuff);
