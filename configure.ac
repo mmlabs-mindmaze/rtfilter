@@ -39,6 +39,16 @@ AC_CHECK_FASTMATH_FLAG
 AC_SEARCH_LIBS([cos], [m], [], AC_MSG_ERROR([The math library cannot be found.]))
 AC_CHECK_FUNCS([posix_memalign])
 
+# Test optional library
+save_LIBS=$LIBS
+AC_SEARCH_LIBS([clock_gettime], [rt], [hasclockfn=true], [hasclockfn=false])
+OPTION_LIBS=$LIBS
+LIBS=$save_LIBS
+AC_SUBST([OPTION_LIBS])
+AC_SUBST([LIBS])
+
+AM_CONDITIONAL(HAVE_CLOCK_FN, test "x$hasclockfn" = "xtrue")
+
 AC_SUBST([CURRENT],[lib_current])
 AC_SUBST([REVISION],[lib_revision])
 AC_SUBST([AGE],[lib_age])
