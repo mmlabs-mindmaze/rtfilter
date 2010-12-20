@@ -22,9 +22,10 @@ by 3~4 the time spent in processing the data.
 Supported platforms
 ===================
 
-Any POSIX platform. The SIMD code is possible if the host CPU supports SSE2
-or later instruction sets (Intel pentium4, AMD k8 or later processors
-support SSE2).
+Any POSIX platform and windows. The SIMD code operating on real data is
+possible if the host CPU supports SSE2 instruction sets (Intel pentium4,
+AMD k8 or later processors support SSE2), and SIMD code operating on complex
+data is possible if host CPU supports SSE3.
 
 
 Compilation
@@ -32,3 +33,18 @@ Compilation
 
 This library is organized as a GNU package and can be compiled and
 installed in the same way (see INSTALL file for further information).
+
+In order the library to be compiled with SIMD version of the filter
+functions, make sure you specify the correct architecture (add -march to
+CFLAGS with gcc) or enable the necessary instruction set (add -msse2 or
+-msse3 to CFLAGS with gcc)
+
+On x86 family platform, the 387 floating point coprocessor is well known to
+introduce some numerical error whose symptoms may be seen in the filter
+design functions. Therefore it is recommended to generate floating point
+code using SSE instructions whenever possible. By default, the configure
+script will specify the necessary compiler flags if gcc is used. If you use
+another compiler you may need set manually CFLAGS at the invokation of the
+configure script (see your compiler documentation to know which flags should
+be passed).
+
