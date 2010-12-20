@@ -4,13 +4,13 @@ function checkfiltres(filein, fileout)
 
 fout = fopen(fileout);
 
-pdattype = fread(fout, 1, 'uint32');
+pdattype = fread(fout, 1, 'int32');
 numlen = fread(fout, 1, 'uint32');
 num = fread_array(fout, [1,numlen], pdattype);
 denumlen = fread(fout, 1, 'uint32');
 denum = fread_array(fout, [1,denumlen], pdattype);
 
-datouttype = fread(fout, 1, 'uint32');
+datouttype = fread(fout, 1, 'int32');
 nchannout = fread(fout, 1, 'uint32');
 datout = fread_array(fout, [nchannout, inf], datouttype);
 
@@ -20,7 +20,7 @@ fclose(fout);
 
 fin = fopen(filein);
 
-datintype = fread(fin, 1, 'uint32');
+datintype = fread(fin, 1, 'int32');
 nchannin = fread(fin, 1, 'uint32');
 datin = fread_array(fin, [nchannin, inf], datintype);
 

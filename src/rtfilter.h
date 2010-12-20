@@ -45,6 +45,8 @@ unsigned int rtf_filter(hfilter filt, const void* x, void* y,
 void rtf_init_filter(hfilter filt, const void* data);
 //! destroy a filter
 void rtf_destroy_filter(hfilter filt);
+//! Return the type of the input or output of a filter
+int rtf_get_type(hfilter filt, int in);
 
 // Creates a filter that downsample signals
 hfilter rtf_create_downsampler(unsigned int nch, int type, unsigned int r);

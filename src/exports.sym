@@ -2,6 +2,7 @@ rtf_create_filter
 rtf_filter
 rtf_init_filter
 rtf_destroy_filter
+rtf_get_type
 rtf_create_downsampler
 rtf_create_fir_mean
 rtf_create_fir_lowpass

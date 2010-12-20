@@ -30,7 +30,8 @@ struct rtf_filter
 	filter_proc filter_fn;
 	init_filter_proc init_filter_fn;
 	destroy_filter_proc destroy_filter_fn;
-	unsigned int num_chann, intype, outtype;
+	unsigned int num_chann;
+	int advertised_intype, advertised_outtype, intype, outtype;
 	unsigned int a_len;
 	const void* a;
 	unsigned int b_len;

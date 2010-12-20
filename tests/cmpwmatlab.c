@@ -57,7 +57,7 @@ complex double denumcd[5] = {
 
 uint32_t numlen = sizeof(numd)/sizeof(numd[0]);
 uint32_t denumlen = sizeof(denumd)/sizeof(numd[0]);
-uint32_t ptype = RTF_DOUBLE;
+int32_t ptype = RTF_DOUBLE;
 void *num = numd, *denum = denumd;
 
 static void* align_alloc(size_t alignment, size_t size)
@@ -189,7 +189,7 @@ int main(int argc, char *argv[])
 	float fc = FC_DEF;
 	size_t buffinsize, buffoutsize;
 	uint32_t nchan32;
-	uint32_t datintype, datouttype;
+	int32_t datintype, datouttype;
 	int retval = 1;
 	int keepfiles = 0;
 
@@ -283,6 +283,18 @@ int main(int argc, char *argv[])
 	filt = rtf_create_filter(nchann, datintype, numlen, num, denumlen, denum, ptype);
 	if (!filt) {
 		fprintf(stderr,"Creation of filter failed\n");
+		goto out;
+	}
+
+	// Test the type
+	if (datintype != rtf_get_type(filt, 1)
+	  || datouttype != rtf_get_type(filt, 0)) {
+		fprintf(stderr, "Unexpected data type\n"
+		                "expected: in=%i out=%i\n"
+				"returned: in=%i out=%i\n",
+				datintype, datouttype,
+				rtf_get_type(filt, 1),
+				rtf_get_type(filt, 0));
 		goto out;
 	}
 

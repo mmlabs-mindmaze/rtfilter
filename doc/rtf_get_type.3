@@ -1,0 +1,26 @@
+.\"Copyright 2010 (c) EPFL
+.TH RTF_GET_TYPE 3 2010 "EPFL" "rtfilter library"
+.SH NAME
+rtf_get_type - Gets the input or output data type of a filter
+.SH SYNOPSIS
+.LP
+.B #include <rtfilter.h>
+.sp
+.BI "int rtf_get_type(hfilter filt, int in);"
+.br
+.SH DESCRIPTION
+.LP
+This function returns the data type of the input or output of the filter
+\fIfilt\fP depending on \fIin\fP. If \fIin\fP is zero, then the returned
+type is the output data type. If \fIin\fP is non-zero, the function
+returns the input data type of the filter.
+.LP
+In case of the success, the returned type will be one of the constants
+(\fBRTF_FLOAT\fP, \fBRTF_DOUBLE\fP, \fBRTF_CFLOAT\fP or \fBRTF_CDOUBLE\fP)
+defined in the man page of \fBrtf_create_filter\fP(3).
+.SH "RETURN VALUE"
+.LP
+Returns the requested data type in case of success, -1 otherwise.
+.SH "SEE ALSO"
+.BR rtf_create_filter (3)
+

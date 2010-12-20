@@ -238,7 +238,9 @@ hfilter rtf_create_filter(unsigned int nchann, int proctype,
 	void *b = NULL;
 	void *yoff = NULL;
 	int xoffsize, yoffsize;
-	int intype, outtype;
+	int intype, outtype, adv_intype, adv_outtype;
+
+	define_types(proctype, paramtype, &adv_intype, &adv_outtype);
 
 	// Processing complex data with real transfer function is equivalent
 	// (and faster) to process real and imaginary part as 2 channels
@@ -247,7 +249,6 @@ hfilter rtf_create_filter(unsigned int nchann, int proctype,
 	 	proctype &= ~RTF_COMPLEX_MASK;
 		nchann *= 2;
 	}
-	
 	define_types(proctype, paramtype, &intype, &outtype);
 
 	// Check if a denominator exists
@@ -300,6 +301,8 @@ hfilter rtf_create_filter(unsigned int nchann, int proctype,
 	filt->b = b;
 	filt->b_len = denlen;
 	filt->yoff = yoff;
+	filt->advertised_intype = adv_intype;
+	filt->advertised_outtype = adv_outtype;
 
 
 	rtf_init_filter(filt, NULL);
@@ -313,3 +316,14 @@ unsigned int rtf_filter(hfilter filt, const void* x, void* y, unsigned int ns)
 {
 	return filt->filter_fn(filt, x, y, ns);
 }
+
+
+API_EXPORTED
+int rtf_get_type(hfilter filt, int in)
+{
+	if (filt == NULL)
+		return -1;
+
+	return (in ? filt->advertised_intype : filt->advertised_outtype);
+}
+
