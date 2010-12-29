@@ -18,6 +18,8 @@
 #ifndef RTFILTER_H
 #define RTFILTER_H
 
+#include <stddef.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -51,6 +53,8 @@ int rtf_get_type(hfilter filt, int in);
 // Creates a filter that downsample signals
 hfilter rtf_create_downsampler(unsigned int nch, int type, unsigned int r);
 
+//! Return the version of the library in a string
+size_t rtf_get_version(char* string, size_t len, unsigned int line);
 
 #ifdef __cplusplus
 }

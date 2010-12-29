@@ -24,6 +24,7 @@
 #include <complex.h>
 #include <math.h>
 #include <stdint.h>
+#include <string.h>
 #include "rtfilter.h"
 #include "filter-internal.h"
 
@@ -325,5 +326,27 @@ int rtf_get_type(hfilter filt, int in)
 		return -1;
 
 	return (in ? filt->advertised_intype : filt->advertised_outtype);
+}
+
+
+
+static const char rtf_version_string[] = PACKAGE_STRING
+#ifdef __SSE3__
+" (compiled with sse3)";
+#elif __SSE2__
+" (compiled with sse2)";
+#else
+" (compiled with no SIMD)";
+#endif
+
+
+API_EXPORTED
+size_t rtf_get_version(char* string, size_t len, unsigned int line)
+{
+	if (line > 0)
+		return 0;
+	strncpy(string, rtf_version_string, len-1);
+	string[len-1] = '\0';
+	return strlen(string);
 }
 

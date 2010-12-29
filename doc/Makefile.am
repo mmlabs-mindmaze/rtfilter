@@ -1,5 +1,6 @@
 dist_man_MANS = rtf_create_filter.3 rtf_init_filter.3 rtf_destroy_filter.3 \
                 rtf_filter.3 rtf_get_type.3	\
+		rtf_get_version.3	\
 		rtf_create_fir_lowpass.3 rtf_create_fir_highpass.3  \
 		rtf_create_fir_bandpass.3 \
 		rtf_create_chebychev.3 rtf_create_butterworth.3 \

@@ -12,3 +12,4 @@ rtf_create_butterworth
 rtf_create_chebychev
 rtf_create_integral
 rtf_create_bandpass_analytic
+rtf_get_version

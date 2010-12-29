@@ -83,6 +83,16 @@ void set_coeffs(unsigned int len, int type, void* coef,
 	}
 }
 
+static
+void print_version(void)
+{
+	unsigned int line = 0;
+	char version[128];
+
+	while (rtf_get_version(version, sizeof(version), line))
+		printf((line++ ? "       %s\n" : "version: %s\n"), version);
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -133,6 +143,8 @@ int main(int argc, char *argv[])
 			exit(EXIT_FAILURE);
 		}
 	}
+	
+	print_version();
 	printf("filter order: %i \tnumber of channels: %i \t\tlength of batch: %i\n",filtorder, nch, ns);
 
 	datouttype = datintype;
