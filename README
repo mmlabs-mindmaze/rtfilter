@@ -13,10 +13,10 @@ provided to design few usual filters: Butterworth, Chebyshev, windowed
 sinc...
 
 In addition, the filter functions have been especially optimized for
-multichannel signals. If data allows it (and if enabled at the
-configuration of the package), the library automatically switch to
-optimized SIMD (Single Instruction Multiple Data) code, allowing to reduce
-by 3~4 the time spent in processing the data.
+multichannel signals. If data allows it (and if possible with the
+compilation flags used), the library automatically switch to optimized SIMD
+(Single Instruction Multiple Data) code, allowing to reduce by 3~4 the time
+spent in processing the data.
 
 
 Supported platforms
@@ -35,9 +35,9 @@ This library is organized as a GNU package and can be compiled and
 installed in the same way (see INSTALL file for further information).
 
 In order the library to be compiled with SIMD version of the filter
-functions, make sure you specify the correct architecture (add -march to
-CFLAGS with gcc) or enable the necessary instruction set (add -msse2 or
--msse3 to CFLAGS with gcc)
+functions, make sure you specify the correct architecture (add 
+-march=target_arch to CFLAGS with gcc) or enable the necessary instruction
+set (add -msse2 or -msse3 to CFLAGS with gcc)
 
 On x86 family platform, the 387 floating point coprocessor is well known to
 introduce some numerical error whose symptoms may be seen in the filter

@@ -1,0 +1,20 @@
+librtfilter-1.0.0
+=================
+
+ * Adds complex type
+ * Provides analytic filter in the filter design functions
+ * Prefix all API functions with rtf_
+ * Provides a downsampler filter
+ * Adds rtf_get_type API function to check the input and output of a filter
+ * There is now only one filter function (rtf_filter) in the API 
+ * Small API changes
+
+ * As the version number indicates, this version is not API nor binary
+   compatible with the previous version. However, the logic is similar and
+   code using old version can be easily adapted.
+
+
+librtfilter-0.0.0
+==================
+
+ * Initial release
