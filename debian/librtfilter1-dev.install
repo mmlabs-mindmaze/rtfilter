@@ -1,0 +1,6 @@
+/usr/include/*
+/usr/lib/librtfilter.la
+/usr/lib/librtfilter.so
+/usr/lib/pkgconfig/*
+/usr/share/man/man3/*
+/usr/share/doc/rtfilter/*
