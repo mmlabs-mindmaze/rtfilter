@@ -1,142 +1,659 @@
-2009-09-17  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+2011-05-06 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
 
-  * README: Correct README (no more simd flags for configure)
+	* Makefile.am, configure.ac, debian/changelog,
+	debian/compat, debian/control, debian/copyright, debian/docs,
+	debian/librtfilter1-dev.install, debian/librtfilter1.install,
+	debian/postinst.ex, debian/postrm.ex, debian/preinst.ex,
+	debian/prerm.ex, debian/rules: Adds Debian packaging system
 
-  * src/Makefile.am, tests/Makefile.am, tests/checkfiltres.m,
-  tests/cmpwmatlab.c: Add forgotten files for package and robustify the tests
+	* commit 05f233e71f3828c12ee853b07bf5fea2add751f5
 
-  * doc/mainpage.dox, src/common-filters.c, src/common-filters.h,
-  src/filter-single.c, src/filter.h: Add more doc (Almost done)
+2011-01-02 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
 
-2009-09-16  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+	* Makefile.am, NEWS, README: prepare package for release
 
-  * src/filter-func-template.c, tests/Makefile.am, tests/checkfiltres.m,
-  tests/cmp-aligned-double.sh, tests/cmp-aligned-float.sh,
-  tests/cmp-unaligned-double.sh, tests/cmp-unaligned-float.sh,
-  tests/cmpwmatlab.c, tests/plotfilter.m: Add test and correct bug in unaligned
-  verion of filter
+	* commit b421943998bc5570044300df8fe078125d400287
 
-2009-09-08  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+2010-12-29 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
 
-  * tests/checkfiltres.m, tests/cmpwmatlab.c, tests/plotfilter.m: finish
-  comparison w/ MATLAB
+	* doc/Makefile.am, doc/rtf_get_version.3, src/exports.sym,
+	src/filter.c, src/rtfilter.h, tests/measure-rtfilter.c: Adds
+	rtf_get_version API function
 
-  * tests/checkfiltres.m, tests/cmpwmatlab.c: Continue test with matlab
+	* commit 6733f79ff208e3e27231b7aa1004bfecc81e59b5
 
-  * src/filter-internal.h, src/filter.h, tests/Makefile.am, tests/cmpwmatlab.c:
-  Modify tests
+2010-12-20 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
 
-  * src/common-filters.c, src/common-filters.h, src/filter-internal.h,
-  src/filter.c, src/templates.c, tests/test_filter.c, tests/test_timing.c: Use
-  only one template for filter function and make the common filters creations
-  consistent
+	* doc/Makefile.am, doc/rtf_get_type.3, src/exports.sym,
+	src/filter-internal.h, src/filter.c, src/rtfilter.h,
+	tests/checkfiltres.m, tests/cmpwmatlab.c: Adds rtf_get_type
+	API function
 
-2009-08-27  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+	This adds rtf_get_type to the API. This function allows to obtain
+	the data type of the input or output of a created filter.
 
-  * src/Makefile.am, src/common-filters.c, src/common-filters.h,
-  src/filter-double.c, src/filter-internal.h, src/filter-single.c,
-  src/filter-templates.c, src/filter.h, src/templates.c: Add more doc
+	* commit 3e6145c8957a3dbb60b045e91b921b9a3b503de9
 
-2009-08-26  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+2010-12-20 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
 
-  * src/filter-internal.h, src/filter-single.c, src/filter.c, src/filter.h:
-  Continued doc
+	* README, configure.ac, m4/fastmath.m4: Enable SSE code generation
+	by default
 
-2009-08-25  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+	* commit 3545a87bf594793fbf0ab139a3971802474cd165
 
-  * src/common-filters.c, src/filter-double.c, src/filter-internal.h,
-  src/filter-single.c, src/filter-templates.c, src/filter.c, src/filter.h,
-  tests/test_filter.c: Unified the API (only 1 function to create a filter)
+2010-12-16 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
 
-2009-08-21  bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+	* configure.ac, tests/Makefile.am: Make measure-rtfilter build
+	if clock_gettime is available
 
-  * Makefile.am, configure.ac, doc/Makefile.am, doc/doxygen.cfg.in,
-  src/filter-single.c, src/filter-templates.c, src/filter.c, src/filter.h:
-  Start doc 
+	* commit fc6a985d7966bd849b0cc6c079d331ff2cb25812
 
-  * src/common-filters.c, src/filter-templates.c: Make static all internal
-  functions 
+2010-12-16 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
 
-  * configure.ac, src/Makefile.am, src/common-filters.c, src/filter-double.c,
-  src/filter-internal.h, src/filter-single.c, src/filter.c,
-  tests/test_filter.c: Remove switch in configure script about SIMD 
+	* m4/hotspot.m4: Refine hotspot.m4 test
 
-  * src/common-filters.c, src/common-filters.h, src/filter-templates.c,
-  src/filter.c, src/filter.h: Make header file C++ compatible and add license
-  notices 
+	* commit f44d5bc7ded34887f2e9257ce8d4b51974f9c863
 
-  * src/filter.c, src/filter.h: Add init function 
+2010-12-13 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
 
-2009-08-18  bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+	* tests/measure-rtfilter.c: measure-rtfilter returns more precise
+	time per sample
 
-  * src/common-filters.c, tests/plotfilter.m: Fix generation of chebyshev
-  filter (bug due to the new specification of filter) 
+	* commit d247b00f2e0ee2650769e2262e297b4f3aa5b042
 
-  * src/Makefile.am: Export common filter header file 
+2010-12-13 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
 
-2009-07-14  bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+	* configure.ac, m4/fastmath.m4, src/Makefile.am: Enable fastmath
+	compiler flags for filter functions (only)
 
-  * README: Fill the README 
+	* commit 2a6055655ff50d728fe6d9ee2a5af8ae35c9deab
 
-2009-07-09  bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+2010-12-13 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
 
-  * configure.ac: Add switch to enable/disable SIMD code 
+	* configure.ac, m4/hotspot.m4, src/filter-func-template.c,
+	src/filter-internal.h, src/filter.c: Marks filter functions
+	as hotspot
 
-2009-07-09  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+	* commit a08ddf450c970f55e0e9bb86b52ec224b196ade7
 
-  * src/filter-templates.c, src/filter.c: Use USE_SIMD define to use SSE code
+2010-12-13 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
 
-2009-07-01  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+	* tests/checkfiltres.m, tests/cmpwmatlab.c: Test against matlab
+	returns performance measure
 
-  * COPYING, src/Makefile.am: Add missing src/Makefile.am and version license
-  file
+	* commit 573765660d09b722b244ce160860067c7a0bd2c8
 
-  * Makefile: Remove unecessary tracked Makefile
+2010-12-13 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
 
-  * AUTHORS, Makefile, Makefile.am, ccoeffilt.m, common-filters.c,
-  common-filters.h, configure.ac, filter-templates.c, filter.c, filter.h,
-  plotfilter.m, src/common-filters.c, src/common-filters.h,
-  src/filter-templates.c, src/filter.c, src/filter.h, test_filter.c,
-  test_timing.c, tests/Makefile.am, tests/ccoeffilt.m, tests/plotfilter.m,
-  tests/test_filter.c, tests/test_timing.c: Create a minimal working GNU
-  package (not tested on other platforms)
+	* src/complex-simd.h, src/filter-complex-double.c,
+	src/filter-inreal-outcomplex-double.c, tests/measure-rtfilter.c:
+	Implements SIMD versions of complex double functions
 
-  * ccoeffilt.m, common-filters.c, filter-templates.c, plotfilter.m,
-  test_filter.c: Change interface of create filter to be consistent with most
-  usual specification of a filter (like in MATLAB)
+	* commit a32e544d8dbf126b3294f83fcd6e57598654f9e8
 
-2009-06-09  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+2010-12-12 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
 
-  * Makefile, ccoeffilt.m, common-filters.c, filter-templates.c, filter.c,
-  plotfilter.m, test_filter.c: Correct bugs in: - FILTER_UNALIGNED_FUNC -
-  compute_chebychev_iir : now it works
+	* src/Makefile.am, src/complex-simd.h,
+	src/filter-complex-single.c, src/filter-func-template.c,
+	src/filter-inreal-outcomplex-single.c, src/filter-real-double.c,
+	src/filter-real-single.c, src/templates.c: Implements SIMD
+	versions of complex float functions
 
-2009-06-08  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+	* commit 2e2a3cb7792023a330610957bfe76b2ba59f9183
 
-  * Makefile, common-filters.c, common-filters.h, filter-sse.c,
-  filter-templates.c, filter.c, filter.h, test_filter.c, test_timing.c: Create
-  code for float and double (share the the same code base)
+2010-12-10 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
 
-  * Makefile, test_filter.c, test_timing.c: Create another test
+	* tests/measure-rtfilter.c: bugfix: measure-rtfilter doesn't
+	set parameter correctly
 
-  * filter-sse.c, filter.h, test_filter.c: switch automatically between aligned
-  and unaligned version of filter
+	* commit 887863765f6fce323ce8e69ee0efba8e87d534df
 
-2009-05-29  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+2010-12-10 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
 
-  * Makefile, common-filters.c, common-filters.h, filter-sse.c, filter.h,
-  test_filter.c: Change to datatype hfilter
+	* src/filter.c: bugfix: filtering function are not correctly
+	selected
 
-2009-05-27  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+	* commit ac510e1eb142949f5a5cf73d05b82e273a067048
 
-  * Makefile, common-filters.c, common-filters.h, filter-sse.c, filter.h,
-  test_filter.c: Implementat both double or float processing (based on a flag)
+2010-12-06 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
 
-2009-05-26  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+	* Makefile.am, src/filter-func-template.c, tests/Makefile.am,
+	tests/measure-rtfilter.c, tests/test_timing.c: Turns test_timing
+	into measure-rtfilter
 
-  * Makefile, common-filters.c, common-filters.h, filter-sse.c, filter.h,
-  test_filter.c: Add SIMD version and separate core from optional code
+	This is now an updated program that tests the performance of
+	the library.  It is exported in the distribution but not installed
 
-2009-05-20  Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+	* commit 2eae7759111a1103ad9f53cf6514241bcc7bded0
 
-  * filter.c, filter.h, test_filter.c: Initial Commit (code from plottk)
+2010-12-05 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* tests/test-complex-double.sh, tests/test-complex-float.sh,
+	tests/test-double.sh, tests/test-downsample.sh,
+	tests/test-float.sh: Dump output in case of failure of the test
+
+	* commit d4407badc0300952f1f047d0bd30ab1af494aa19
+
+2010-12-03 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* tests/test-complex-double.sh, tests/test-complex-float.sh:
+	Add more test for compplex filter
+
+	* commit c3b199d93a6a5769e1de066daabfa8eb27c79c58
+
+2010-12-01 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* src/Makefile.am, src/filter-complex-double.c,
+	src/filter-complex-single.c, src/filter-internal.h,
+	src/filter.c, tests/cmpwmatlab.c, tests/test-complex-double.sh,
+	tests/test-complex-float.sh: Implements all remaining complex,
+	real data combination
+
+	Implements complex param complex in and real param complex
+	in. The latter combination is actually implement using real input:
+	1 complex channel becomes 2 real channels.
+
+	* commit b13390ae9efc5034f8584137feadc76931bdd9ca
+
+2010-11-29 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* src/Makefile.am, src/filter-complex-double.c,
+	src/filter-complex-single.c, src/filter-double.c,
+	src/filter-inreal-outcomplex-double.c,
+	src/filter-inreal-outcomplex-single.c, src/filter-real-double.c,
+	src/filter-real-single.c, src/filter-single.c: Use more
+	descriptive filenames
+
+	* commit cb312965bd81c9f05a5e55fe878be7fb574ed974
+
+2010-11-19 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* configure.ac, src/Makefile.am, src/rtfilter.pc.in: export
+	pkg-config file
+
+	* commit 204a3c440bf6d032ec05dc6c3237438671167a6b
+
+2010-11-15 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* doc/Makefile.am, doc/rtf_create_downsampler.3, src/Makefile.am,
+	src/downsampler.c, src/exports.sym, src/filter-internal.h,
+	src/rtfilter.h, tests/Makefile.am, tests/checkdown.m,
+	tests/downsample.c, tests/test-downsample.sh: Add a new API call:
+	rtf_create_downsampler
+
+	* commit 1dfec8f5ea3461ecdc843969fac7fc903a1952f7
+
+2010-11-15 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* tests/test-complex-double.sh, tests/test-complex-float.sh,
+	tests/test-double.sh, tests/test-float.sh: Clean up test.log
+	after success
+
+	* commit 38955b23bb36c8067a9bda8c26cf76d133757126
+
+2010-11-15 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* src/common-filters.c, src/filter.c, tests/Makefile.am,
+	tests/cheby-table.h, tests/cmpwmatlab.c, tests/testchebyshev.c:
+	Add testchebyshev and use the correct convention in
+	rtf_create_filter
+
+	* commit 9c7a7b5984fa2862a65254f24c92fceecf0cda48
+
+2010-11-12 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* doc/rtf_filter.3, src/filter-func-template.c,
+	src/filter-internal.h, src/filter.c, src/rtfilter.h,
+	src/templates.c: Make rtf_filter return ns and prepare for sampler
+
+	* commit 2764640a26fccecf84c646475aa9bdd59a1f8250
+
+2010-11-02 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* src/filter.c, tests/cmpwmatlab.c: Bugfix: align_free if
+	posix_memalign not present
+
+	* commit 5d261e49ba4374eb00259ec4683a62b49738d766
+
+2010-11-01 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* configure.ac, src/filter.c, tests/cmpwmatlab.c,
+	tests/test-complex-double.sh, tests/test-complex-float.sh,
+	tests/test-double.sh, tests/test-float.sh: Check posix_memalign
+	or use an hack
+
+	* commit 90c017583336aeceff0ad95dada05ab940cca3ad
+
+2010-11-01 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* doc/rtf_create_filter.3, doc/rtf_filter.3: Add note in SIMD
+	optimization in manpages
+
+	* commit 4b07c7dc9d9a29b9c71e3b5a6a6b4317d5668c5e
+
+2010-10-05 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* doc/Makefile.am: Fix example compilation
+
+	* commit 267a74de1153a97e0ea51e5f27dd43a8dfd8fb2a
+
+2010-09-28 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* src/filter-internal.h, src/filter.c: Add hooks to init_filter
+	and destroy_filter
+
+	This allows extension to more complex filters, like downsampling
+	or cascades
+
+	* commit bc6f6aae3e28c7b651fc67b7ce17b89c26837425
+
+2010-09-27 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* tests/cmpwmatlab.c, tests/test-complex-double.sh,
+	tests/test-complex-float.sh, tests/test-double.sh,
+	tests/test-float.sh: test less verbose on make check
+
+	* commit 8865fc19470ee2b5c0eef5e9a74ff0d215f0dfb8
+
+2010-09-27 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* Makefile.am, configure.ac, doc/Makefile.am, doc/doxygen.cfg.in,
+	doc/examples/Makefile, doc/examples/butterworth.c,
+	doc/mainpage.dox, doc/rtf_create_bandpass_analytic.3,
+	doc/rtf_create_butterworth.3, doc/rtf_create_chebychev.3,
+	doc/rtf_create_filter.3, doc/rtf_create_fir_bandpass.3,
+	doc/rtf_create_fir_highpass.3, doc/rtf_create_fir_lowpass.3,
+	doc/rtf_destroy_filter.3, doc/rtf_filter.3, doc/rtf_init_filter.3,
+	src/common-filters.c, src/filter-complex-double.c,
+	src/filter-complex-single.c, src/filter-double.c,
+	src/filter-func-template.c, src/filter-internal.h,
+	src/filter-single.c, src/filter.c, src/rtf_common.h,
+	src/rtfilter.h, src/templates.c: Add documentation
+
+	Add manpages and one examples. Manpages have been written for
+	all exported function (excepted two useless filter creation
+	function). Removes doxygen documentation which was frankly
+	difficult to use and compile.
+
+	* commit 41247524ec183fb65612748625c8a225de13c11d
+
+2010-09-27 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* configure.ac, tests/Makefile.am: Remove useless testcomplex,
+	update library version to 1.0.0
+
+	* commit 319eb6549526cf8bed883559fa0f095bd9849f44
+
+2010-09-26 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* src/rtf_common.h: Remove unecessary include from rtf_common.h
+
+	* commit c695ea346c47e9d4c2737f8dd9640abe394fe15a
+
+2010-09-26 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* src/common-filters.c, src/filter.c, src/rtf_common.h,
+	src/rtfilter.h: Change data type specifier from unsigned int
+	to int
+
+	* commit f9445240a9a759c4e522424655273e7cb19d2646
+
+2010-09-24 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* tests/cmpwmatlab.c: Change complex filter coef in test function
+	(cmpwmatlab.c)
+
+	This allows to now test a stable filter thus having a fair
+	comparison with MATLAB
+
+	* commit 01b8b0f04f66a366bd9dbf357aaacabdadd686fd
+
+2010-09-17 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* AUTHORS, configure.ac, m4/api-exports.m4, src/Makefile.am,
+	src/common-filters.c, src/common-filters.h, src/exports.sym,
+	src/filter-complex-double.c, src/filter-complex-single.c,
+	src/filter-double.c, src/filter-internal.h, src/filter-single.c,
+	src/filter.c, src/filter.h, src/rtf_common.h, src/rtfilter.h,
+	src/templates.c, tests/Makefile.am, tests/cmpwmatlab.c,
+	tests/test_filter.c, tests/test_timing.c, tests/testcomplex.c:
+	Prefix all functions and specify visiblity
+
+	Add rtf_ prefix to all exported functions. All exported
+	functions from common_filters have dropped 'filter' from
+	the name. Visibility has been specified for all non-static
+	functions. Modernize the configure.ac file.  Rename filter.h
+	into rtfilter.h and common-filters.h into rtf_common.h
+
+	* commit becd667066f8e86a3427f1a59f92a484075c8962
+
+2010-08-05 Juan Felipe Restrepo <juanfelipe.restreporinckoar@epfl.ch>
+
+	* src/common-filters.c, src/common-filters.h, tests/Makefile.am,
+	tests/compute_complex_filter.m, tests/testcomplex.c,
+	tests/testcomplex.m: Add create_bandpass_analytic_filter
+
+	This implements a particular complex filter which returns the
+	analytical signal of a real input in a certain band.
+
+	* commit deddba75512102e137fcb267161e3293f8d6e9db
+
+2010-07-21 Juan Felipe Restrepo <juanfelipe.restreporinckoar@epfl.ch>
+
+	* tests/Makefile.am, tests/cmpwmatlab.c: fix bugs in the test
+	program
+
+	* commit f55cb6f9924dd036fd1823010bc77383591d60e0
+
+2010-07-16 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* src/Makefile.am, src/common-filters.c,
+	src/filter-complex-double.c, src/filter-complex-single.c,
+	src/filter-double.c, src/filter-func-template.c,
+	src/filter-internal.h, src/filter-single.c, src/filter.c,
+	src/filter.h, src/templates.c, tests/Makefile.am,
+	tests/checkfiltres.m, tests/cmp-aligned-double.sh,
+	tests/cmp-aligned-float.sh, tests/cmp-unaligned-double.sh,
+	tests/cmp-unaligned-float.sh, tests/cmpwmatlab.c,
+	tests/test-complex-double.sh, tests/test-complex-float.sh,
+	tests/test-double.sh, tests/test-float.sh, tests/test_filter.c,
+	tests/test_timing.c: Add minimal complex support to the core
+	library
+
+	Add two new types: complex float and complex double. The
+	z-transform provided at the creation of the filter can now be
+	complex (complex input is not yet supported). In that can, the
+	type of the output is expected to have the same precision than
+	the one processed (input) but become complex as well.
+
+	* commit a82f957517e08a9a07efee81d9ac131cb3c7f4f8
+
+2010-07-14 Juan Felipe Restrepo <juanfelipe.restreporinckoar@epfl.ch>
+
+	* src/Makefile.am, tests/Makefile.am: framework for complex
+	filter prepared
+
+	* commit e964b1c19af2cb80e0e06381a7fe6dbda2cc7d51
+
+2010-01-04 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* tests/checkfiltres.m, tests/cmpwmatlab.c: Change test function
+	(create tmp files in tmpdir)
+
+	* commit f200040072a2745ebaee950f40083b04a8ec6cc9
+
+2009-09-18 bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+	* tests/Makefile.am: Adjust PATH env for tests
+
+	git-svn-id:
+	https://svn.epfl.ch/svn/activetwotools/trunk/preprocessing/rtfilter@144
+	3b4714c8-b19d-487d-9711-26c957be2895
+
+	* commit 459a42b6b255f0c94c5c212df418e10b3bb40645
+
+2009-09-17 bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+	* ChangeLog: Release 0.0.0.0
+
+	git-svn-id:
+	https://svn.epfl.ch/svn/activetwotools/trunk/preprocessing/rtfilter@140
+	3b4714c8-b19d-487d-9711-26c957be2895
+
+	* commit ae186975b2b61843bb0007b631c78d06aebd98a2
+
+2009-09-17 bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+	* README: Correct README (no more simd flags for configure)
+
+	git-svn-id:
+	https://svn.epfl.ch/svn/activetwotools/trunk/preprocessing/rtfilter@139
+	3b4714c8-b19d-487d-9711-26c957be2895
+
+	* commit eba8abcabe9c0e2c74a11cd3ed38916d6a832543
+
+2009-09-17 bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+	* src/Makefile.am, tests/Makefile.am, tests/checkfiltres.m,
+	tests/cmpwmatlab.c: Add forgotten files for package and robustify
+	the tests
+
+	git-svn-id:
+	https://svn.epfl.ch/svn/activetwotools/trunk/preprocessing/rtfilter@138
+	3b4714c8-b19d-487d-9711-26c957be2895
+
+	* commit 73f4a3fa4fad0fe5fbb1184558ea75f019c047ad
+
+2009-09-17 bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+	* doc/mainpage.dox, src/common-filters.c, src/common-filters.h,
+	src/filter-single.c, src/filter.h: Add more doc (Almost done)
+
+	git-svn-id:
+	https://svn.epfl.ch/svn/activetwotools/trunk/preprocessing/rtfilter@137
+	3b4714c8-b19d-487d-9711-26c957be2895
+
+	* commit 0e0e79ca03e5f70de3a9383a90b9923b8ecbc5ac
+
+2009-09-17 bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+	* src/filter-func-template.c, tests/Makefile.am,
+	tests/checkfiltres.m, tests/cmp-aligned-double.sh,
+	tests/cmp-aligned-float.sh, tests/cmp-unaligned-double.sh,
+	tests/cmp-unaligned-float.sh, tests/cmpwmatlab.c,
+	tests/plotfilter.m: Add test and correct bug in unaligned verion
+	of filter
+
+	git-svn-id:
+	https://svn.epfl.ch/svn/activetwotools/trunk/preprocessing/rtfilter@136
+	3b4714c8-b19d-487d-9711-26c957be2895
+
+	* commit e8e4a20b1dfb0efaa726accf6721585eab66d8a0
+
+2009-09-17 bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+	* tests/checkfiltres.m, tests/cmpwmatlab.c, tests/plotfilter.m:
+	finish comparison w/ MATLAB
+
+	git-svn-id:
+	https://svn.epfl.ch/svn/activetwotools/trunk/preprocessing/rtfilter@135
+	3b4714c8-b19d-487d-9711-26c957be2895
+
+	* commit 2d732f3eeb6c3e3beea85e4a3866135be566b921
+
+2009-09-17 bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+	* tests/checkfiltres.m, tests/cmpwmatlab.c: Continue test
+	with matlab
+
+	git-svn-id:
+	https://svn.epfl.ch/svn/activetwotools/trunk/preprocessing/rtfilter@134
+	3b4714c8-b19d-487d-9711-26c957be2895
+
+	* commit 94c9ad761ff65bf29e9721674058703ac219be1c
+
+2009-09-17 bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+	* src/filter-internal.h, src/filter.h, tests/Makefile.am,
+	tests/cmpwmatlab.c: Modify tests
+
+	git-svn-id:
+	https://svn.epfl.ch/svn/activetwotools/trunk/preprocessing/rtfilter@133
+	3b4714c8-b19d-487d-9711-26c957be2895
+
+	* commit e8de192d29bda2510830527d89a4d96c4be8c52c
+
+2009-09-17 bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+	* src/filter-func-template.c: CRITICAL: forgot
+	filter-func-template.c and fix a bug in the filter template
+	(didn't exist 2 commits ago)
+
+	git-svn-id:
+	https://svn.epfl.ch/svn/activetwotools/trunk/preprocessing/rtfilter@132
+	3b4714c8-b19d-487d-9711-26c957be2895
+
+	* commit 8ae7fecd72a6f34da8b4ebb956faac5525a9efaf
+
+2009-09-17 bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+	* src/common-filters.c, src/common-filters.h,
+	src/filter-internal.h, src/filter.c, src/templates.c,
+	tests/test_filter.c, tests/test_timing.c: Use only one template
+	for filter function and make the common filters creations
+	consistent
+
+	git-svn-id:
+	https://svn.epfl.ch/svn/activetwotools/trunk/preprocessing/rtfilter@131
+	3b4714c8-b19d-487d-9711-26c957be2895
+
+	* commit c18deb30307daf0901f1f5b25da5e52b927990cc
+
+2009-09-17 bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+	* src/Makefile.am, src/common-filters.c, src/common-filters.h,
+	src/filter-double.c, src/filter-internal.h, src/filter-single.c,
+	src/filter-templates.c, src/filter.h, src/templates.c: Add
+	more doc
+
+	git-svn-id:
+	https://svn.epfl.ch/svn/activetwotools/trunk/preprocessing/rtfilter@130
+	3b4714c8-b19d-487d-9711-26c957be2895
+
+	* commit c86b8fe75df4fdf5fbf2ecb5001a158e9e55a858
+
+2009-09-17 bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+	* src/filter.c: bugfix: create_filter don't mess anymore with
+	the denominator pointer (bug introduced by the last commit)
+
+	git-svn-id:
+	https://svn.epfl.ch/svn/activetwotools/trunk/preprocessing/rtfilter@129
+	3b4714c8-b19d-487d-9711-26c957be2895
+
+	* commit 90341a953de4b0f12426f2976719276482128a45
+
+2009-09-17 bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+	* src/filter-internal.h, src/filter-single.c, src/filter.c,
+	src/filter.h: Continued doc
+
+	git-svn-id:
+	https://svn.epfl.ch/svn/activetwotools/trunk/preprocessing/rtfilter@128
+	3b4714c8-b19d-487d-9711-26c957be2895
+
+	* commit a4cc845232d274483bdeeb3f96ca6681d76dc1f3
+
+2009-09-17 bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+	* src/common-filters.c, src/filter-double.c,
+	src/filter-internal.h, src/filter-single.c,
+	src/filter-templates.c, src/filter.c, src/filter.h,
+	tests/test_filter.c: Unified the API (only 1 function to create
+	a filter)
+
+	git-svn-id:
+	https://svn.epfl.ch/svn/activetwotools/trunk/preprocessing/rtfilter@127
+	3b4714c8-b19d-487d-9711-26c957be2895
+
+	* commit 10b32889ec3fe3120e99ccde20b75ae925f872e4
+
+2009-08-21 bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+	* Makefile.am, configure.ac, doc/Makefile.am, doc/doxygen.cfg.in,
+	src/filter-single.c, src/filter-templates.c, src/filter.c,
+	src/filter.h: Start doc
+
+	git-svn-id:
+	https://svn.epfl.ch/svn/activetwotools/trunk/preprocessing/rtfilter@123
+	3b4714c8-b19d-487d-9711-26c957be2895
+
+	* commit bdbc6386b4842464f05e491fa0deb4ea32341152
+
+2009-08-21 bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+	* src/common-filters.c, src/filter-templates.c: Make static all
+	internal functions
+
+	git-svn-id:
+	https://svn.epfl.ch/svn/activetwotools/trunk/preprocessing/rtfilter@122
+	3b4714c8-b19d-487d-9711-26c957be2895
+
+	* commit 556cac80f50254a7a5af886e4beb142800ff8f5e
+
+2009-08-21 bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+	* configure.ac, src/Makefile.am, src/common-filters.c,
+	src/filter-double.c, src/filter-internal.h, src/filter-single.c,
+	src/filter.c, tests/test_filter.c: Remove switch in configure
+	script about SIMD
+
+	git-svn-id:
+	https://svn.epfl.ch/svn/activetwotools/trunk/preprocessing/rtfilter@121
+	3b4714c8-b19d-487d-9711-26c957be2895
+
+	* commit bcee4fe737aad0c1d75419d0c3aa5c9bf28d3c38
+
+2009-08-21 bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+	* src/common-filters.c, src/common-filters.h,
+	src/filter-templates.c, src/filter.c, src/filter.h: Make header
+	file C++ compatible and add license notices
+
+	git-svn-id:
+	https://svn.epfl.ch/svn/activetwotools/trunk/preprocessing/rtfilter@120
+	3b4714c8-b19d-487d-9711-26c957be2895
+
+	* commit aefbddd3dda6e1f28f4c32a7bc2077a6145d53e6
+
+2009-08-21 bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+	* src/filter.c, src/filter.h: Add init function
+
+	git-svn-id:
+	https://svn.epfl.ch/svn/activetwotools/trunk/preprocessing/rtfilter@119
+	3b4714c8-b19d-487d-9711-26c957be2895
+
+	* commit 1fef2df404aa91a7ba76c12b6c92f2c78337c3f8
+
+2009-08-18 bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+	* src/common-filters.c, tests/plotfilter.m: Fix generation of
+	chebyshev filter (bug due to the new specification of filter)
+
+	git-svn-id:
+	https://svn.epfl.ch/svn/activetwotools/trunk/preprocessing/rtfilter@106
+	3b4714c8-b19d-487d-9711-26c957be2895
+
+	* commit e74042ebf9b31cf42e100a7d4ed49b21dcbb217d
+
+2009-08-18 bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+	* src/Makefile.am: Export common filter header file
+
+	git-svn-id:
+	https://svn.epfl.ch/svn/activetwotools/trunk/preprocessing/rtfilter@105
+	3b4714c8-b19d-487d-9711-26c957be2895
+
+	* commit 4370ba74dbf31bb92e1b496dfeae6235375c1bcb
+
+2009-07-14 bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+	* README: Fill the README
+
+	git-svn-id:
+	https://svn.epfl.ch/svn/activetwotools/trunk/preprocessing/rtfilter@45
+	3b4714c8-b19d-487d-9711-26c957be2895
+
+	* commit fedde70436dd05a169c40eda0e57b475ee314899
+
+2009-07-09 bourdaud <bourdaud@3b4714c8-b19d-487d-9711-26c957be2895>
+
+	* configure.ac: Add switch to enable/disable SIMD code
+
+	git-svn-id:
+	https://svn.epfl.ch/svn/activetwotools/trunk/preprocessing/rtfilter@30
+	3b4714c8-b19d-487d-9711-26c957be2895
+
+	* commit 3d56093b6a967a501db6e388c95d96ca4f2c647b
+

@@ -1,5 +1,5 @@
-librtfilter-1.0.0
-=================
+rtfilter-1.0
+============
 
  * Adds complex type
  * Provides analytic filter in the filter design functions
@@ -9,12 +9,12 @@ librtfilter-1.0.0
  * There is now only one filter function (rtf_filter) in the API 
  * Small API changes
 
- * As the version number indicates, this version is not API nor binary
+ * As the version number indicates, this version is not API nor API
    compatible with the previous version. However, the logic is similar and
    code using old version can be easily adapted.
 
 
-librtfilter-0.0.0
-==================
+rtfilter-0.0.0
+==============
 
  * Initial release
