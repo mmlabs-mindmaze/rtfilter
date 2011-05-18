@@ -1,3 +1,9 @@
+rtfilter (1.0-0) lucid; urgency=low
+
+  * Remove dependency_libs from .la files.
+
+ -- Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>  Fri, 18 May 2011 16:38:26 +0200
+
 rtfilter (1.0) unstable; urgency=low
 
   * Initial Release.
