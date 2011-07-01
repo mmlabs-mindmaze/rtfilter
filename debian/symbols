@@ -1,0 +1,16 @@
+librtfilter.so.1 librtfilter1 #MINVER#
+ rtf_create_bandpass_analytic@Base 1.0
+ rtf_create_butterworth@Base 1.0
+ rtf_create_chebychev@Base 1.0
+ rtf_create_downsampler@Base 1.0
+ rtf_create_filter@Base 1.0
+ rtf_create_fir_bandpass@Base 1.0
+ rtf_create_fir_highpass@Base 1.0
+ rtf_create_fir_lowpass@Base 1.0
+ rtf_create_fir_mean@Base 1.0
+ rtf_create_integral@Base 1.0
+ rtf_destroy_filter@Base 1.0
+ rtf_filter@Base 1.0
+ rtf_get_type@Base 1.0
+ rtf_get_version@Base 1.0
+ rtf_init_filter@Base 1.0

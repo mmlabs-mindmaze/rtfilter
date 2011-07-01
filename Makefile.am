@@ -4,9 +4,7 @@ SUBDIRS = src doc tests
 doc_DATA = AUTHORS NEWS README COPYING
 
 EXTRA_DIST = debian/changelog debian/compat debian/control\
-		debian/copyright debian/docs		\
-		debian/postinst.ex debian/postrm.ex	\
-		debian/preinst.ex debian/prerm.ex	\
+		debian/copyright debian/symbols		\
 		debian/rules				\
 		debian/librtfilter1.install		\
 		debian/librtfilter1-dev.install		

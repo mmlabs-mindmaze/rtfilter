@@ -1,11 +1,8 @@
 #!/usr/bin/make -f
+# -*- makefile -*-
 
-include /usr/share/cdbs/1/rules/debhelper.mk
-include /usr/share/cdbs/1/class/autotools.mk
-include /usr/share/cdbs/1/rules/clean-la.mk
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
 
-
-# Add here any variable or target overrides you need.
-DEB_BUILDDIR = ./debian/build
-DEB_CONFIGURE_SCRIPT_ENV += CFLAGS="$(CFLAGS) -O3"
-
+%:
+	dh  $@
