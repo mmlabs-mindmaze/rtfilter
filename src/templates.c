@@ -15,7 +15,6 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include <assert.h>
 
 #define NELEM_VEC	(sizeof(TYPEOUT_V)/sizeof(TYPEOUT))
 #define NELEM_VECIN	(sizeof(TYPEIN_V)/sizeof(TYPEIN))
@@ -59,26 +58,39 @@
 #define FILTER_DATADEP_FUNC	FILTER_ALIGNED_FUNC
 #include "filter-func-template.c"
 
+
+static HOTSPOT
+unsigned int filtsimd(hfilter filt, const void* x, void* y, unsigned int ns)
+{
+	if ( !((uintptr_t)x % sizeof(TYPEIN_V))
+	  && !((uintptr_t)y % sizeof(TYPEOUT_V)))
+		FILTER_ALIGNED_FUNC(filt, x, y, ns);
+	else 
+		FILTER_UNALIGNED_FUNC(filt, x, y, ns);
+	return ns;
+}
+
 #endif /* USE_SIMD */
 
-LOCAL_FN
-unsigned int FILTER_FUNC(const struct rtf_filter* filt, const void* in,
-                         void* out, unsigned int nsamples)
-{
-	assert(filt->intype == DINTYPE);
-	assert(filt->outtype == DOUTTYPE);
-#ifdef USE_SIMD
-	// Check that data is aligned on 16 byte boundaries
-	if ( !((filt->num_chann%NELEM_VECIN) 
-		|| ((uintptr_t)in % sizeof(TYPEIN_V)) 
-		|| ((uintptr_t)out % sizeof(TYPEOUT_V))) )
-		FILTER_ALIGNED_FUNC(filt, (const TYPEIN_V*)in, 
-		                    (TYPEOUT_V*)out, nsamples);
-	else
-#endif //USE_SIMD
-		FILTER_UNALIGNED_FUNC(filt, (const TYPEIN*)in, 
-		                      (TYPEOUT*)out, nsamples);
 
-	return nsamples;
+static HOTSPOT
+unsigned int filtnoop(hfilter filt, const void* x, void* y, unsigned int ns)
+{
+	FILTER_UNALIGNED_FUNC(filt, x, y, ns);
+	return ns;
 }
+
+
+LOCAL_FN
+void SET_FILTER_FUNC(struct rtf_filter* filt)
+{
+	filt->filter_fn = filtnoop;
+
+#ifdef USE_SIMD
+	// Check that sample can be aligned on 16 byte boundaries
+	if (!(filt->num_chann%NELEM_VECIN))
+		filt->filter_fn = filtsimd;
+#endif //USE_SIMD
+}
+
 

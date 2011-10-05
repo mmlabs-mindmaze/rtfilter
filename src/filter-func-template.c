@@ -30,10 +30,10 @@
 #define NELEM_DATIN	(sizeof(TYPEIN_LOCAL)/sizeof(TYPEIN))
 #define RATIO_INOUT	((int)(NELEM_DATIN/NELEM_DAT))
 
-HOTSPOT
-static void FILTER_DATADEP_FUNC(hfilter filt,
-                                const TYPEIN_LOCAL * restrict in,
-                                TYPEOUT_LOCAL * restrict out,
+HOTSPOT static
+void FILTER_DATADEP_FUNC(const struct rtf_filter* filt,
+                                const TYPEIN_LOCAL* restrict in,
+                                TYPEOUT_LOCAL* restrict out,
 				unsigned int nsamples)
 {
 	unsigned int i, p;
@@ -124,5 +124,4 @@ static void FILTER_DATADEP_FUNC(hfilter filt,
 	} else
 		osrc = out-midlen;
 	memcpy(odest, osrc, len*sizeof(*osrc));
-
 }

@@ -76,7 +76,8 @@ DECLARE_COPY_PARAM_FN(copy_param_cdcd, complex double, complex double)
 
 typedef void (*copy_param_proc)(unsigned int, void*, const void*, const void*, int);
 
-static copy_param_proc convtab[4][4] = {
+static
+copy_param_proc convtab[4][4] = {
 	[RTF_FLOAT] = {[RTF_FLOAT] = copy_param_ff, 
 	               [RTF_DOUBLE] = copy_param_fd,
                        [RTF_CFLOAT] = copy_param_fcf,
@@ -93,11 +94,13 @@ static copy_param_proc convtab[4][4] = {
 
 
 static
-filter_proc filtproctab[4][4] = {
-	[RTF_FLOAT] = {[RTF_FLOAT] = filter_f, [RTF_CFLOAT] = filter_fcf},
-	[RTF_DOUBLE] = {[RTF_DOUBLE] = filter_d,[RTF_CDOUBLE] = filter_dcd},
-	[RTF_CFLOAT] = {[RTF_CFLOAT] = filter_cf},
-	[RTF_CDOUBLE] = {[RTF_CDOUBLE] = filter_cd}
+set_filterfn_proc setfiltfnproctab[4][4] = {
+	[RTF_FLOAT] = {[RTF_FLOAT] = set_filterfn_f,
+	               [RTF_CFLOAT] = set_filterfn_fcf},
+	[RTF_DOUBLE] = {[RTF_DOUBLE] = set_filterfn_d,
+	                [RTF_CDOUBLE] = set_filterfn_dcd},
+	[RTF_CFLOAT] = {[RTF_CFLOAT] = set_filterfn_cf},
+	[RTF_CDOUBLE] = {[RTF_CDOUBLE] = set_filterfn_cd}
 };
 
 
@@ -164,6 +167,7 @@ void define_types(int proctp, int paramtp, int* intp, int* outtp)
 	*outtp = tpo;
 }
 
+
 LOCAL_FN
 void default_init_filter(const struct rtf_filter* filt, const void* data)
 {
@@ -203,12 +207,14 @@ void default_free_filter(const struct rtf_filter* filt)
 	align_free(filt->yoff);
 }
 
+
 static
 void default_destroy_filter(const struct rtf_filter* filt)
 {
 	default_free_filter(filt);
 	free((void*) filt);
 }
+
 
 API_EXPORTED
 void rtf_destroy_filter(hfilter filt)
@@ -290,7 +296,6 @@ hfilter rtf_create_filter(unsigned int nchann, int proctype,
 
 	// prepare the filt struct
 	memset(filt, 0, sizeof(*filt));
-	filt->filter_fn = filtproctab[intype][outtype];
 	filt->init_filter_fn = default_init_filter;
 	filt->destroy_filter_fn = default_destroy_filter;
 	filt->num_chann = nchann;
@@ -304,6 +309,8 @@ hfilter rtf_create_filter(unsigned int nchann, int proctype,
 	filt->yoff = yoff;
 	filt->advertised_intype = adv_intype;
 	filt->advertised_outtype = adv_outtype;
+
+	setfiltfnproctab[intype][outtype](filt);
 
 
 	rtf_init_filter(filt, NULL);
@@ -329,8 +336,8 @@ int rtf_get_type(hfilter filt, int in)
 }
 
 
-
-static const char rtf_version_string[] = PACKAGE_STRING
+static
+const char rtf_version_string[] = PACKAGE_STRING
 #ifdef __SSE3__
 " (compiled with sse3)";
 #elif __SSE2__

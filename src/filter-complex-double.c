@@ -51,7 +51,7 @@ typedef complex double cdouble;
 #define TYPEIN_V			__m128d
 #define TYPEOUT_V			__m128d
 #define FILTER_ALIGNED_FUNC		filter_cda
-#define FILTER_FUNC			filter_cd
+#define SET_FILTER_FUNC			set_filterfn_cd
 #define DOUTTYPE			RTF_CDOUBLE
 #define DINTYPE				RTF_CDOUBLE
 

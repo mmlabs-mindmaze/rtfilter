@@ -22,22 +22,24 @@
 
 typedef unsigned int (*filter_proc)(const struct rtf_filter*, const void*,
                                     void*, unsigned int);
+typedef void (*set_filterfn_proc)(struct rtf_filter*);
 typedef void (*init_filter_proc)(const struct rtf_filter*, const void*);
 typedef	void (*destroy_filter_proc)(const struct rtf_filter*);
 
 struct rtf_filter
 {
 	filter_proc filter_fn;
-	init_filter_proc init_filter_fn;
-	destroy_filter_proc destroy_filter_fn;
 	unsigned int num_chann;
-	int advertised_intype, advertised_outtype, intype, outtype;
 	unsigned int a_len;
 	const void* a;
 	unsigned int b_len;
 	const void* b;
 	void* xoff;
 	void* yoff;
+
+	init_filter_proc init_filter_fn;
+	destroy_filter_proc destroy_filter_fn;
+	int advertised_intype, advertised_outtype, intype, outtype;
 };
 
 LOCAL_FN
@@ -49,24 +51,11 @@ LOCAL_FN size_t sizeof_data(int type);
 LOCAL_FN void* align_alloc(size_t alignment, size_t size);
 LOCAL_FN void  align_free(void* memptr);
 
-
-LOCAL_FN
-unsigned int filter_f(const struct rtf_filter* filt, const void* x,
-                      void* y, unsigned int ns) HOTSPOT;
-LOCAL_FN
-unsigned int filter_d(const struct rtf_filter* filt, const void* x,
-                      void* y, unsigned int ns) HOTSPOT;
-LOCAL_FN
-unsigned int filter_fcf(const struct rtf_filter* filt, const void* x,
-                        void* y, unsigned int ns) HOTSPOT;
-LOCAL_FN
-unsigned int filter_dcd(const struct rtf_filter* filt, const void* x,
-                        void* y, unsigned int ns) HOTSPOT;
-LOCAL_FN
-unsigned int filter_cf(const struct rtf_filter* filt, const void* x,
-                        void* y, unsigned int ns) HOTSPOT;
-LOCAL_FN
-unsigned int filter_cd(const struct rtf_filter* filt, const void* x,
-                        void* y, unsigned int ns) HOTSPOT;
+LOCAL_FN void set_filterfn_f(struct rtf_filter* filt);
+LOCAL_FN void set_filterfn_d(struct rtf_filter* filt);
+LOCAL_FN void set_filterfn_fcf(struct rtf_filter* filt);
+LOCAL_FN void set_filterfn_dcd(struct rtf_filter* filt);
+LOCAL_FN void set_filterfn_cf(struct rtf_filter* filt);
+LOCAL_FN void set_filterfn_cd(struct rtf_filter* filt);
 
 #endif //FILTER_INTERNAL_H

@@ -49,7 +49,7 @@
 #define TYPEOUT_V			__m128
 #define FILTER_ALIGNED_FUNC		filter_fa
 #define FILTER_UNALIGNED_FUNC		filter_fu
-#define FILTER_FUNC			filter_f
+#define SET_FILTER_FUNC			set_filterfn_f
 #define COPY_NUMDENUM			copy_numdenum_f
 #define DINTYPE				RTF_FLOAT
 #define DOUTTYPE			RTF_FLOAT

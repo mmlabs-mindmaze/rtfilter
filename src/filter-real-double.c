@@ -49,7 +49,7 @@
 #define TYPEOUT_V			__m128d
 #define FILTER_ALIGNED_FUNC		filter_da
 #define FILTER_UNALIGNED_FUNC		filter_du
-#define FILTER_FUNC			filter_d
+#define SET_FILTER_FUNC			set_filterfn_d
 #define COPY_NUMDENUM			copy_numdenum_d
 #define DINTYPE				RTF_DOUBLE
 #define DOUTTYPE			RTF_DOUBLE

@@ -51,7 +51,7 @@ typedef complex float	cfloat;
 #define TYPEIN_V			__m128
 #define TYPEOUT_V			__m128
 #define FILTER_ALIGNED_FUNC		filter_cfa
-#define FILTER_FUNC			filter_cf
+#define SET_FILTER_FUNC			set_filterfn_cf
 #define DINTYPE				RTF_CFLOAT
 #define DOUTTYPE			RTF_CFLOAT
 
