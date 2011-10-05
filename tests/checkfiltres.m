@@ -12,7 +12,8 @@ denum = fread_array(fout, [1,denumlen], pdattype);
 
 datouttype = fread(fout, 1, 'int32');
 nchannout = fread(fout, 1, 'uint32');
-datout = fread_array(fout, [nchannout, inf], datouttype);
+ntotout = fread(fout, 1, 'uint32');
+datout = fread_array(fout, [nchannout, ntotout], datouttype);
 
 fclose(fout);
 
@@ -22,7 +23,8 @@ fin = fopen(filein);
 
 datintype = fread(fin, 1, 'int32');
 nchannin = fread(fin, 1, 'uint32');
-datin = fread_array(fin, [nchannin, inf], datintype);
+ntotin = fread(fin, 1, 'uint32');
+datin = fread_array(fin, [nchannin, ntotin], datintype);
 
 fclose(fin);
 

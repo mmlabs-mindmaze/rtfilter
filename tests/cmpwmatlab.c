@@ -142,7 +142,7 @@ static int compare_results(double thres)
 	double matdt = 0.0;
 	int rval = 1;
 
-	sprintf(command, "matlab -nojvm -nodisplay -nosplash -nodesktop -r \"addpath('%s');checkfiltres('%s','%s');exit;\"", getenv("srcdir"), infilename, outfilename);
+	sprintf(command, "exec matlab -nojvm -nodisplay -nosplash -nodesktop -r \"addpath('%s');checkfiltres('%s','%s');exit;\"", getenv("srcdir"), infilename, outfilename);
 	pipe = popen(command, "r");
 	while (fgets(line, 127, pipe)) {
 		if (sscanf(line, " time per sample: %lg ns", &matdt) == 1)
@@ -203,7 +203,7 @@ int main(int argc, char *argv[])
 	int filein = -1, fileout = -1;
 	float fc = FC_DEF;
 	size_t buffinsize, buffoutsize;
-	uint32_t nchan32;
+	uint32_t nchan32, ntotsample32;
 	int32_t datintype, datouttype;
 	int retval = 1;
 	int keepfiles = 0;
@@ -258,6 +258,7 @@ int main(int argc, char *argv[])
 	buffinsize = sizeof_data(datintype) * nchann * nsample;
 	buffoutsize = sizeof_data(datouttype) * nchann * nsample;
 	nchan32 = nchann;
+	ntotsample32 = nsample*niter;
 
 	// Allocate buffers
 	buffin = align_alloc(16, buffinsize);
@@ -285,8 +286,10 @@ int main(int argc, char *argv[])
 	    write(fileout, denum, denumlen*sizeof_data(ptype)) == -1 ||
 	    write(filein, &datintype, sizeof(datintype)) == -1 ||
 	    write(filein, &nchan32, sizeof(nchan32)) == -1 ||
+	    write(filein, &ntotsample32, sizeof(ntotsample32)) == -1 ||
 	    write(fileout, &datouttype, sizeof(datouttype)) == -1 ||
-	    write(fileout, &nchan32, sizeof(nchan32)) == -1 )
+	    write(fileout, &nchan32, sizeof(nchan32)) == -1 ||
+	    write(fileout, &ntotsample32, sizeof(ntotsample32)) == -1)
 		goto out;
 
 
