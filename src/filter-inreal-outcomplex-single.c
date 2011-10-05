@@ -19,43 +19,56 @@
 # include <config.h>
 #endif
 
-#include <memory.h>
+#include <string.h>
 #include <stdlib.h>
-#include <complex.h>
 #include <math.h>
+#include <complex.h>
 #include <stdint.h>
 #include "rtfilter.h"
 #include "filter-internal.h"
+#include "filter-funcs.h"
 
 
 /**************************************************************************
- *                                                                        *
  *          complex output real input single precision version            *
  *                      ( complex float out float in)                     *
- *                                                                        *
  **************************************************************************/
-#ifdef __SSE3__
-# define USE_SIMD
-# include "complex-simd.h"
-#endif
-
-typedef complex float cfloat;
-#define add_vec(v1,v2)			_mm_add_ps(v1,v2)
-#define mul_vec(v1,v2)			complex_mul_ps(v1,v2)
-#define mul_in_vec(v1,v2,part)		realcomp_mul_ps(v1,v2,part)
-#define zero_vec()			_mm_setzero_ps()
-#define set1_vec(data)			complex_set1_ps(data)
 #define TYPEIN				float
 #define TYPEOUT				cfloat
-#define FILTER_UNALIGNED_FUNC		filter_fcfu
-#define TYPEIN_V			__m128
-#define TYPEOUT_V			__m128
-#define FILTER_ALIGNED_FUNC		filter_fcfa
-#define SET_FILTER_FUNC			set_filterfn_fcf
-#define DINTYPE				RTF_FLOAT
-#define DOUTTYPE			RTF_CFLOAT
+#define add_dat(d1,d2)			((d1)+(d2))
+#define mul_in_dat(d1,d2,part)		((d1)*(d2))
+#define mul_dat(d1,d2)			((d1)*(d2))
+#define zero_dat()			(0)
+#define set1_dat(data)			(data)
+#define TYPEIN_LOCAL			TYPEIN
+#define TYPEOUT_LOCAL			TYPEOUT
+#define FILTER_DATADEP_FUNC		filter_fcf_noop
+#include "filter-func-template.c"
+
+static HOTSPOT
+unsigned int filtfunc(hfilter filt, const void* x, void* y, unsigned int ns)
+{
+#ifdef __SSE3__
+	if ( (filt->dispatch_code == 1)
+	  && !(((uintptr_t)x) % (4*sizeof(float)))
+	  && !(((uintptr_t)y) % (4*sizeof(float))) )
+		filter_fcf_sse3(filt, x, y, ns);
+	else 
+#endif /* __SSE3__ */
+	filter_fcf_noop(filt, x, y, ns);
+	return ns;
+}
 
 
+LOCAL_FN
+void set_filterfn_fcf(struct rtf_filter* filt)
+{
+	filt->filter_fn = filtfunc;
 
-#include "templates.c"
+#ifdef __SSE3__
+	// Check that sample can be aligned on 16 byte boundaries
+	if (!(filt->num_chann%4))
+		filt->dispatch_code = 1;
+#endif //__SSE3__
+}
 

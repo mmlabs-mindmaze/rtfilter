@@ -19,40 +19,57 @@
 # include <config.h>
 #endif
 
-#include <memory.h>
+#include <string.h>
 #include <stdlib.h>
 #include <math.h>
 #include <stdint.h>
 #include "rtfilter.h"
 #include "filter-internal.h"
+#include "filter-funcs.h"
 
 
 /**************************************************************************
- *                                                                        *
  *                     Real double precision version                      *
  *                               ( double )                               *
- *                                                                        *
  **************************************************************************/
-#ifdef __SSE2__
-# include <emmintrin.h>
-# define USE_SIMD
-#endif
-
-#define add_vec(v1,v2)			_mm_add_pd(v1,v2)
-#define mul_vec(v1,v2)			_mm_mul_pd(v1,v2)
-#define mul_in_vec(v1,v2,part)		_mm_mul_pd(v1,v2)
-#define zero_vec()			_mm_setzero_pd()
-#define set1_vec(data)			_mm_set1_pd(data)
 #define TYPEIN				double
-#define TYPEIN_V			__m128d
 #define TYPEOUT				double
-#define TYPEOUT_V			__m128d
-#define FILTER_ALIGNED_FUNC		filter_da
-#define FILTER_UNALIGNED_FUNC		filter_du
-#define SET_FILTER_FUNC			set_filterfn_d
-#define COPY_NUMDENUM			copy_numdenum_d
-#define DINTYPE				RTF_DOUBLE
-#define DOUTTYPE			RTF_DOUBLE
+#define add_dat(d1,d2)			((d1)+(d2))
+#define mul_in_dat(d1,d2,part)		((d1)*(d2))
+#define mul_dat(d1,d2)			((d1)*(d2))
+#define zero_dat()			(0)
+#define set1_dat(data)			(data)
+#define TYPEIN_LOCAL			TYPEIN
+#define TYPEOUT_LOCAL			TYPEOUT
+#define FILTER_DATADEP_FUNC		filter_d_noop
+#include "filter-func-template.c"
 
-#include "templates.c"
+
+static HOTSPOT
+unsigned int filtfunc(hfilter filt, const void* x, void* y, unsigned int ns)
+{
+#ifdef __SSE2__
+	if ( (filt->dispatch_code == 1)
+	  && !(((uintptr_t)x) % (2*sizeof(double)))
+	  && !(((uintptr_t)y) % (2*sizeof(double))) )
+		filter_d_sse2(filt, x, y, ns);
+	else 
+#endif /* __SSE2__ */
+	filter_d_noop(filt, x, y, ns);
+	return ns;
+}
+
+
+
+LOCAL_FN
+void set_filterfn_d(struct rtf_filter* filt)
+{
+	filt->filter_fn = filtfunc;
+
+#ifdef __SSE2__
+	// Check that sample can be aligned on 16 byte boundaries
+	if (!(filt->num_chann%2))
+		filt->dispatch_code = 1;
+#endif // __SSE2__
+}
 

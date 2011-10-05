@@ -309,6 +309,7 @@ hfilter rtf_create_filter(unsigned int nchann, int proctype,
 	filt->yoff = yoff;
 	filt->advertised_intype = adv_intype;
 	filt->advertised_outtype = adv_outtype;
+	filt->dispatch_code = 0;
 
 	setfiltfnproctab[intype][outtype](filt);
 

@@ -19,57 +19,37 @@
 # include <config.h>
 #endif
 
+#ifdef __SSE2__
+
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
-#include <complex.h>
 #include <stdint.h>
+
+#include <emmintrin.h>
+
 #include "rtfilter.h"
 #include "filter-internal.h"
 #include "filter-funcs.h"
 
 
 /**************************************************************************
- *                     Complex single precision version                   *
- *                            ( complex float )                           *
+ *                   Real double precision version : SSE2                 *
+ *                               ( double )                               *
  **************************************************************************/
-#define TYPEIN				cfloat
-#define TYPEOUT				cfloat
-#define add_dat(d1,d2)			((d1)+(d2))
-#define mul_in_dat(d1,d2,part)		((d1)*(d2))
-#define mul_dat(d1,d2)			((d1)*(d2))
-#define zero_dat()			(0)
-#define set1_dat(data)			(data)
-#define TYPEIN_LOCAL			TYPEIN
-#define TYPEOUT_LOCAL			TYPEOUT
-#define FILTER_DATADEP_FUNC		filter_cf_noop
+
+#define TYPEIN				double
+#define TYPEOUT				double
+#define add_dat(d1,d2)			_mm_add_pd(d1,d2)
+#define mul_in_dat(d1,d2,part)		_mm_mul_pd(d1,d2)
+#define mul_dat(d1,d2)			_mm_mul_pd(d1,d2)
+#define zero_dat()			_mm_setzero_pd()
+#define set1_dat(data)			_mm_set1_pd(data)
+#define TYPEIN_LOCAL			__m128d
+#define TYPEOUT_LOCAL			__m128d
+#define FILTER_DATADEP_FUNC		filter_d_sse2
 #include "filter-func-template.c"
 
-static HOTSPOT
-unsigned int filtfunc(hfilter filt, const void* x, void* y, unsigned int ns)
-{
-#ifdef __SSE3__
-	// Check that sample can be aligned on 16 byte boundaries
-	if ( (filt->dispatch_code == 1)
-	  && !(((uintptr_t)x) % (4*sizeof(float)))
-	  && !(((uintptr_t)y) % (4*sizeof(float))) )
-		filter_cf_sse3(filt, x, y, ns);
-	else 
-#endif //__SSE3__
-	filter_cf_noop(filt, x, y, ns);
-	return ns;
-}
 
-
-LOCAL_FN
-void set_filterfn_cf(struct rtf_filter* filt)
-{
-	filt->filter_fn = filtfunc;
-
-#ifdef __SSE3__
-	// Check that sample can be aligned on 16 byte boundaries
-	if (!(filt->num_chann%4))
-		filt->dispatch_code = 1;
-#endif //__SSE3__
-}
+#endif // __SSE2__
 
