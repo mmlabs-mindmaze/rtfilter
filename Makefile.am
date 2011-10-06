@@ -17,6 +17,6 @@ REMOVE_DISTDIR = \
 dist-deb: distdir
 	am__cwd=`pwd` \
 	&& cd $(distdir) \
-	&& CFLAGS="$(CFLAGS)" CXXFLAGS="$(CXXFLAGS)" FFLAGS="$(FFLAGS)" CPPFLAGS="$(CPPFLAGS)" LDFLAGS="$(LDFLAGS)" dpkg-buildpackage \
+	&& dpkg-buildpackage $(DPKG_BUILDPACKAGE_FLAGS) \
 	&& cd "$$am__cwd" 
 	$(REMOVE_DISTDIR)
