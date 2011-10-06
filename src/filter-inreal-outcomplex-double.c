@@ -48,13 +48,13 @@
 static HOTSPOT
 unsigned int filtfunc(hfilter filt, const void* x, void* y, unsigned int ns)
 {
-#ifdef __SSE3__
+#if SUPPORT_SSE3_SET
 	if ( (filt->dispatch_code == 1)
 	  && !(((uintptr_t)x) % (2*sizeof(double)))
 	  && !(((uintptr_t)y) % (2*sizeof(double))) )
 		filter_dcd_sse3(filt, x, y, ns);
 	else 
-#endif /* __SSE3__ */
+#endif //SUPPORT_SSE3_SET
 	filter_dcd_noop(filt, x, y, ns);
 	return ns;
 }
@@ -65,10 +65,10 @@ void set_filterfn_dcd(struct rtf_filter* filt)
 {
 	filt->filter_fn = filtfunc;
 
-#ifdef __SSE3__
+#if SUPPORT_SSE3_SET
 	// Check that sample can be aligned on 16 byte boundaries
 	if (!(filt->num_chann%4))
 		filt->dispatch_code = 1;
-#endif //__SSE3__
+#endif //SUPPORT_SSE3_SET
 }
 

@@ -48,12 +48,12 @@
 static HOTSPOT
 unsigned int filtfunc(hfilter filt, const void* x, void* y, unsigned int ns)
 {
-#ifdef __SSE3__
+#if SUPPORT_SSE3_SET
 	if ( !(((uintptr_t)x) % (2*sizeof(double)))
 	  && !(((uintptr_t)y) % (2*sizeof(double))) )
 		filter_cd_sse3(filt, x, y, ns);
 	else 
-#endif //__SSE3__
+#endif //SUPPORT_SSE3_SET
 	filter_cd_noop(filt, x, y, ns);
 	return ns;
 }

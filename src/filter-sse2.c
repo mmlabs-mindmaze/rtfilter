@@ -19,8 +19,6 @@
 # include <config.h>
 #endif
 
-#ifdef __SSE2__
-
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
@@ -49,7 +47,4 @@
 #define TYPEOUT_LOCAL			__m128d
 #define FILTER_DATADEP_FUNC		filter_d_sse2
 #include "filter-func-template.c"
-
-
-#endif // __SSE2__
 

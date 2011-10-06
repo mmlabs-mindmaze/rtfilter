@@ -19,8 +19,6 @@
 # include <config.h>
 #endif
 
-#ifdef __SSE__
-
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
@@ -51,4 +49,3 @@
 #include "filter-func-template.c"
 
 
-#endif // __SSE__

@@ -19,8 +19,6 @@
 # include <config.h>
 #endif
 
-#ifdef __SSE3__
-
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
@@ -221,4 +219,3 @@ __m128d complex_set1_pd(complex double a)
 #undef FILTER_DATADEP_FUNC
 
 
-#endif // __SSE3__

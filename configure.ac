@@ -36,6 +36,10 @@ AC_DEF_API_EXPORT_ATTRS
 AC_CHECK_FASTMATH_FLAG
 AC_USE_SSEMATH
 
+AC_SUPPORT_SSE([has_sse=yes], [has_sse=no])
+AC_SUPPORT_SSE2([has_sse2=yes], [has_sse2=no])
+AC_SUPPORT_SSE3([has_sse3=yes], [has_sse3=no])
+
 AC_SEARCH_LIBS([cos], [m], [], AC_MSG_ERROR([The math library cannot be found.]))
 AC_CHECK_FUNCS([posix_memalign])
 
@@ -48,6 +52,9 @@ AC_SUBST([OPTION_LIBS])
 AC_SUBST([LIBS])
 
 AM_CONDITIONAL(HAVE_CLOCK_FN, test "x$hasclockfn" = "xtrue")
+AM_CONDITIONAL(BUILD_SSE_SUPPORT, test "x$has_sse" = "xyes")
+AM_CONDITIONAL(BUILD_SSE2_SUPPORT, test "x$has_sse2" = "xyes")
+AM_CONDITIONAL(BUILD_SSE3_SUPPORT, test "x$has_sse3" = "xyes")
 
 AC_SUBST([CURRENT],[lib_current])
 AC_SUBST([REVISION],[lib_revision])
