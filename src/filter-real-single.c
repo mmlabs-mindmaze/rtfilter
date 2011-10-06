@@ -26,6 +26,7 @@
 #include "rtfilter.h"
 #include "filter-internal.h"
 #include "filter-funcs.h"
+#include "probesimd.h"
 
 
 /**************************************************************************
@@ -67,7 +68,7 @@ void set_filterfn_f(struct rtf_filter* filt)
 
 #if SUPPORT_SSE_SET
 	// Check that sample can be aligned on 16 byte boundaries
-	if (!(filt->num_chann%4))
+	if (cputest_sse() && !(filt->num_chann%4))
 		filt->dispatch_code = 1;
 #endif //SUPPORT_SSE_SET
 }

@@ -339,9 +339,13 @@ int rtf_get_type(hfilter filt, int in)
 
 static
 const char rtf_version_string[] = PACKAGE_STRING
-#ifdef __SSE3__
+#if HAVE_CPUID
+" (compiled with cpu detection)";
+#elif __SSE3__
 " (compiled with sse3)";
 #elif __SSE2__
+" (compiled with sse2)";
+#elif __SSE__
 " (compiled with sse2)";
 #else
 " (compiled with no SIMD)";

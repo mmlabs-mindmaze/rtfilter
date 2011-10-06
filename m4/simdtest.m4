@@ -79,3 +79,20 @@ AC_DEFUN([AC_SUPPORT_SSE3],
 	$1], [$2])])
 ])
 
+
+# AC_CHECK_CPUID([ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
+# --------------------------------------------------------
+# Check that the host can use cpuid intrinsics
+AC_DEFUN([AC_CHECK_CPUID],
+ [AC_REQUIRE([AC_PROG_CC])
+  AC_MSG_CHECKING([for cpuid instruction])
+  AC_TRY_COMPILE(
+        [#include <cpuid.h>],
+        [__get_cpuid(1, 0, 0, 0, 0);],
+        gl_cv_cc_cpuid=yes, gl_cv_cc_cpuid=no)
+  AS_IF([test "$gl_cv_cc_cpuid" != no],
+        [AC_DEFINE(HAVE_CPUID, [1], [Define to 1 if cpuid can be used])
+         $1], [$2])
+  AC_MSG_RESULT([$gl_cv_cc_cpuid])
+ ])
+

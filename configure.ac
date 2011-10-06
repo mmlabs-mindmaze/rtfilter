@@ -36,9 +36,10 @@ AC_DEF_API_EXPORT_ATTRS
 AC_CHECK_FASTMATH_FLAG
 AC_USE_SSEMATH
 
-AC_SUPPORT_SSE([has_sse=yes], [has_sse=no])
-AC_SUPPORT_SSE2([has_sse2=yes], [has_sse2=no])
-AC_SUPPORT_SSE3([has_sse3=yes], [has_sse3=no])
+AC_CHECK_CPUID([tryaddsimd=yes], [tryaddsimd=no])
+AC_SUPPORT_SSE([has_sse=yes], [has_sse=no], tryaddsimd)
+AC_SUPPORT_SSE2([has_sse2=yes], [has_sse2=no], tryaddsimd)
+AC_SUPPORT_SSE3([has_sse3=yes], [has_sse3=no], tryaddsimd)
 
 AC_SEARCH_LIBS([cos], [m], [], AC_MSG_ERROR([The math library cannot be found.]))
 AC_CHECK_FUNCS([posix_memalign])

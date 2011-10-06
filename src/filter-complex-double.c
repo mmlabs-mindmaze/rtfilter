@@ -27,6 +27,7 @@
 #include "rtfilter.h"
 #include "filter-internal.h"
 #include "filter-funcs.h"
+#include "probesimd.h"
 
 
 /**************************************************************************
@@ -61,7 +62,8 @@ unsigned int filtfunc(hfilter filt, const void* x, void* y, unsigned int ns)
 
 LOCAL_FN
 void set_filterfn_cd(struct rtf_filter* filt)
-{
+{	
 	filt->filter_fn = filtfunc;
+	filt->dispatch_code = cputest_sse3() ? 1 : 0;
 }
 

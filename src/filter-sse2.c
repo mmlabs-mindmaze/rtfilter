@@ -29,6 +29,7 @@
 #include "rtfilter.h"
 #include "filter-internal.h"
 #include "filter-funcs.h"
+#include "probesimd.h"
 
 
 /**************************************************************************

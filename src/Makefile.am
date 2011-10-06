@@ -8,6 +8,7 @@ libcommonfilt_la_SOURCES = rtf_common.h common-filters.c
 
 librtfilter_la_SOURCES = filter-internal.h filter-funcs.h\
                          rtfilter.h filter.c \
+			 probesimd.h \
 			 filter-real-single.c filter-real-double.c\
 			 filter-complex-single.c filter-complex-double.c\
 			 filter-inreal-outcomplex-single.c\
