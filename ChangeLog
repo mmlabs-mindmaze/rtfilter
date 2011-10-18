@@ -1,3 +1,145 @@
+2011-10-18 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* configure.ac, tests/Makefile.am, tests/cmpwmatlab.c,
+	tests/downsample.c: Tests against matlab only if matlab is present
+
+	* commit 77b8afd4aaff1b1b4dd7f2fc29cc2b29bce729ef
+
+2011-10-06 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* Makefile.am, debian/rules: debian: set the compilation flags
+	in debian/rules
+
+	Flag -O3 is added by default to make the package. As consequence,
+	compilation flags are no longer passed to dpkg-buildpackage when
+	invoked with 'make dist-deb'. Instead flags are passed with the
+	mean of DPKG_BUILDPACKAGE_FLAGS environment variable.
+
+	* commit 76884d3ad649abfd5346162c6892e8dc3678eaf5
+
+2011-10-06 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* configure.ac, m4/simdtest.m4, src/Makefile.am,
+	src/filter-complex-double.c, src/filter-complex-single.c,
+	src/filter-inreal-outcomplex-double.c,
+	src/filter-inreal-outcomplex-single.c, src/filter-real-double.c,
+	src/filter-real-single.c, src/filter-sse.c, src/filter-sse2.c,
+	src/filter-sse3.c, src/filter.c, src/probesimd.h: Add cpuid to
+	detect at runtime which subarch to use
+
+	Each subarchitecture specific code is now built into rtfilter lib
+	if the configure script can determine the compilation flags to
+	use. The cpuid instruction is then used at runtime to select the
+	correct version of the filter function to use. If cpuid intrinsic
+	cannot be found at configure time, the function selection is
+	done at compile time (as before).
+
+	* commit 9728ecf3dbcc51d593c424949c937faa6c1b5b42
+
+2011-10-06 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* configure.ac, m4/simdtest.m4, src/Makefile.am,
+	src/filter-complex-double.c, src/filter-complex-single.c,
+	src/filter-inreal-outcomplex-double.c,
+	src/filter-inreal-outcomplex-single.c, src/filter-real-double.c,
+	src/filter-real-single.c, src/filter-sse.c, src/filter-sse2.c,
+	src/filter-sse3.c: Compile subarchitecture specific code
+	separately
+
+	Move all subarchitecture specific code in separate convenience
+	libraries.  This will allow to compile the subarchitecture code
+	with compilation flags different from the core library. For the
+	moment, the different convenience libs are compiled if the global
+	compilation flags allows to use the subarchitecture.
+
+	* commit 422be38a8fe389941356247c1fdf242c8adf8836
+
+2011-10-05 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* tests/checkfiltres.m, tests/cmpwmatlab.c: Fix tests
+
+	* commit faf9a83eaacc86f90a81ba60684122899a2da4a3
+
+2011-10-05 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* src/Makefile.am, src/complex-simd.h,
+	src/filter-complex-double.c, src/filter-complex-single.c,
+	src/filter-func-template.c, src/filter-funcs.h,
+	src/filter-inreal-outcomplex-double.c,
+	src/filter-inreal-outcomplex-single.c, src/filter-internal.h,
+	src/filter-real-double.c, src/filter-real-single.c,
+	src/filter-sse.c, src/filter-sse2.c, src/filter-sse3.c,
+	src/filter.c, src/templates.c: Separate subarchitecture code in
+	different files
+
+	Code compiled for different subarchitectures is separated,
+	i.e. functions compiled for SSE, SSE2 and SSE3 have been
+	separated from the rest. Thus, a simple dispatching system
+	has been implemented to use the correct variant when the
+	subarchitecture is supported.
+
+	* commit b7cc25ca2add25485e4acba6285ffceeb95af8ae
+
+2011-10-05 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* src/filter-complex-double.c, src/filter-complex-single.c,
+	src/filter-func-template.c, src/filter-inreal-outcomplex-double.c,
+	src/filter-inreal-outcomplex-single.c, src/filter-internal.h,
+	src/filter-real-double.c, src/filter-real-single.c, src/filter.c,
+	src/templates.c: Adds datatype specific initialization
+
+	When a filter is created, an initialization function specific
+	to the data type is called (set_filterfn_*) to setup the method
+	and possibly initialize the last bits of the filter. This will
+	provide better flexibility for future development.
+
+	* commit d9aa15782d153837456951d06cd7fc159ce2cd45
+
+2011-08-05 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* AUTHORS, COPYING, debian/copyright, doc/examples/butterworth.c,
+	src/common-filters.c, src/complex-simd.h, src/downsampler.c,
+	src/filter-complex-double.c, src/filter-complex-single.c,
+	src/filter-func-template.c, src/filter-inreal-outcomplex-double.c,
+	src/filter-inreal-outcomplex-single.c, src/filter-internal.h,
+	src/filter-real-double.c, src/filter-real-single.c,
+	src/filter.c, src/rtf_common.h, src/rtfilter.h,
+	src/templates.c, tests/cheby-table.h, tests/cmpwmatlab.c,
+	tests/downsample.c, tests/measure-rtfilter.c, tests/test_filter.c,
+	tests/testchebyshev.c, tests/testcomplex.c: Relicense the library
+	into LGPL3
+
+	* commit 2d7e868540554e60b4b8818d6920c9a2f22dd537
+
+2011-07-01 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* Makefile.am, debian/control, debian/docs,
+	debian/librtfilter1-dev.install, debian/postinst.ex,
+	debian/postrm.ex, debian/preinst.ex, debian/prerm.ex,
+	debian/rules, debian/symbols: debian: stop using cdbs and package
+	symbols file
+
+	* commit e67870e96837aff4dec9540b4d8804d57684bde0
+
+2011-06-06 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* src/Makefile.am, src/exports.sym: remove useless exports.sym
+
+	* commit 0dc622c5f1e35596a4df83c715273a3bd70ff818
+
+2011-05-18 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* debian/changelog, debian/rules: debian: remove dependency_libs
+	from installed .la
+
+	* commit b2d0975c62ff7b244f72771ec85275a27fcc4549
+
+2011-05-06 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+
+	* ChangeLog, NEWS: Release 1.0
+
+	* commit b6aaef40599b19c630fecfb45bea19ba272ab9f4
+
 2011-05-06 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
 
 	* Makefile.am, configure.ac, debian/changelog,

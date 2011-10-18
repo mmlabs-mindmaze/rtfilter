@@ -1,3 +1,13 @@
+rtfilter (1.1-0) lucid; urgency=low
+
+  * Relicense in LGPL3
+  * Use runtime selection of optimal filter routine (use of cpuid)
+  * Use debhelper instead of cdbs
+  * Force -O3 compilation flags in debian/rules
+  * Check for matlab presence to tests
+
+ -- Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>  Tue, 18 Oct 2011 13:34:34 +0200
+
 rtfilter (1.0-0) lucid; urgency=low
 
   * Remove dependency_libs from .la files.
