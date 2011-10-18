@@ -40,6 +40,15 @@ AC_CHECK_CPUID([tryaddsimd=yes], [tryaddsimd=no])
 AC_SUPPORT_SSE([has_sse=yes], [has_sse=no], tryaddsimd)
 AC_SUPPORT_SSE2([has_sse2=yes], [has_sse2=no], tryaddsimd)
 AC_SUPPORT_SSE3([has_sse3=yes], [has_sse3=no], tryaddsimd)
+AM_CONDITIONAL(BUILD_SSE_SUPPORT, test "x$has_sse" = "xyes")
+AM_CONDITIONAL(BUILD_SSE2_SUPPORT, test "x$has_sse2" = "xyes")
+AM_CONDITIONAL(BUILD_SSE3_SUPPORT, test "x$has_sse3" = "xyes")
+
+# Test for MATLAB
+AC_CHECK_PROG([has_matlab], [matlab], [yes], [no])
+AS_IF([test "x$has_matlab" = "xyes"],
+      [AC_DEFINE(HAVE_MATLAB, [1], [Define to 1 if matlab is available])])
+
 
 AC_SEARCH_LIBS([cos], [m], [], AC_MSG_ERROR([The math library cannot be found.]))
 AC_CHECK_FUNCS([posix_memalign])
@@ -51,11 +60,8 @@ OPTION_LIBS=$LIBS
 LIBS=$save_LIBS
 AC_SUBST([OPTION_LIBS])
 AC_SUBST([LIBS])
-
 AM_CONDITIONAL(HAVE_CLOCK_FN, test "x$hasclockfn" = "xtrue")
-AM_CONDITIONAL(BUILD_SSE_SUPPORT, test "x$has_sse" = "xyes")
-AM_CONDITIONAL(BUILD_SSE2_SUPPORT, test "x$has_sse2" = "xyes")
-AM_CONDITIONAL(BUILD_SSE3_SUPPORT, test "x$has_sse3" = "xyes")
+
 
 AC_SUBST([CURRENT],[lib_current])
 AC_SUBST([REVISION],[lib_revision])

@@ -84,6 +84,7 @@ static size_t sizeof_data(int type)
 }
 
 
+#if HAVE_MATLAB
 static int compare_results(double thres)
 {
 	FILE *pipe;
@@ -111,6 +112,7 @@ static int compare_results(double thres)
 	rval = (errval < thres) ? 0 : 1;
 	return rval;
 }
+#endif
 
 
 static void set_signals(unsigned int nchann, unsigned int nsample, unsigned int intype, void* buff)
@@ -258,8 +260,10 @@ out:
 	if (fileout != -1)
 		close(fileout);
 
+#if HAVE_MATLAB
 	if (retval == 0)
 		retval = compare_results(0.02);
+#endif
 	if (!keepfiles) {
 		unlink(infilename);
 		unlink(outfilename);

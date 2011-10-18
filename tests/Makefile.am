@@ -23,7 +23,7 @@ testchebyshev_LDADD = $(top_builddir)/src/librtfilter.la
 
 TESTS_ENVIRONMENT = PATH=$(PATH):$(buildir)
 
-TESTS = test-float.sh test-complex-float.sh 	\
-	test-double.sh test-complex-double.sh   \
-	test-downsample.sh			\
-	testchebyshev
+TESTS = testchebyshev \
+	 test-float.sh test-complex-float.sh 	\
+	 test-double.sh test-complex-double.sh   \
+	 test-downsample.sh
