@@ -8,7 +8,9 @@ if {
 } > $LOGFILE
 then
 	rm $LOGFILE
+	stty echo
 	exit 0
 else
+	stty echo
 	exit 1
 fi
