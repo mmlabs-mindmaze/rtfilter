@@ -45,9 +45,16 @@ AM_CONDITIONAL(BUILD_SSE2_SUPPORT, test "x$has_sse2" = "xyes")
 AM_CONDITIONAL(BUILD_SSE3_SUPPORT, test "x$has_sse3" = "xyes")
 
 # Test for MATLAB
-AC_CHECK_PROG([has_matlab], [matlab], [yes], [no])
-AS_IF([test "x$has_matlab" = "xyes"],
-      [AC_DEFINE(HAVE_MATLAB, [1], [Define to 1 if matlab is available])])
+AC_ARG_ENABLE([matlab-tests],
+              AC_HELP_STRING([--enable-matlab-tests], [Try running matlab tests @<:@default=check@:>@]),
+	      [], [enable_matlab_tests=check])
+
+AS_IF([test "x$enable_matlab_tests" = "xcheck"],
+      [AC_CHECK_PROG([has_matlab], [matlab], [yes], [no])
+       enable_matlab_tests="$has_matlab"])
+
+AS_IF([test "x$enable_matlab_tests" = "xyes"],
+      [AC_DEFINE(HAVE_MATLAB, [1], [Define to 1 to run matlab tests])])
 
 
 AC_SEARCH_LIBS([cos], [m], [], AC_MSG_ERROR([The math library cannot be found.]))
