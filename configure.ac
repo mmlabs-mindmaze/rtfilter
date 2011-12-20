@@ -13,7 +13,7 @@ m4_define([lib_age],0)
 
 
 # Setup Automake
-AC_INIT(rtfilter, [lib_current.lib_revision],[nicolas.bourdaud@epfl.ch])
+AC_INIT(rtfilter, [lib_current.lib_revision],[nicolas.bourdaud@gmail.com])
 AC_CONFIG_SRCDIR([src/filter.c])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
