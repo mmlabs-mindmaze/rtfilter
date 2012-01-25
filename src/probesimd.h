@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2011 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+    Copyright (C) 2011-2012 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
 
     This file is part of the rtfilter library
 
@@ -34,7 +34,7 @@ static inline
 int cputest_sse2(void)
 {
 	unsigned int eax, ebx, ecx, edx;
-	if (__get_cpuid(1, &eax, &ebx, &ecx, &edx) && (edx & bit_SSE))
+	if (__get_cpuid(1, &eax, &ebx, &ecx, &edx) && (edx & bit_SSE2))
 		return 1;
 	return 0;
 }
@@ -43,7 +43,7 @@ static inline
 int cputest_sse3(void)
 {
 	unsigned int eax, ebx, ecx, edx;
-	if (__get_cpuid(1, &eax, &ebx, &ecx, &edx) && (edx & bit_SSE))
+	if (__get_cpuid(1, &eax, &ebx, &ecx, &edx) && (ecx & bit_SSE3))
 		return 1;
 	return 0;
 }
