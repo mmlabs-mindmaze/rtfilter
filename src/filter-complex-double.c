@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2010-2011 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+    Copyright (C) 2010-2012 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
 
     This file is part of the rtfilter library
 
@@ -50,7 +50,8 @@ static HOTSPOT
 unsigned int filtfunc(hfilter filt, const void* x, void* y, unsigned int ns)
 {
 #if SUPPORT_SSE3_SET
-	if ( !(((uintptr_t)x) % (2*sizeof(double)))
+	if ( (filt->dispatch_code == 1)
+	  && !(((uintptr_t)x) % (2*sizeof(double)))
 	  && !(((uintptr_t)y) % (2*sizeof(double))) )
 		filter_cd_sse3(filt, x, y, ns);
 	else 
