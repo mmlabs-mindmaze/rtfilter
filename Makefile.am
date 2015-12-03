@@ -2,3 +2,5 @@ ACLOCAL_AMFLAGS=-I m4
 SUBDIRS = src doc tests
 
 doc_DATA = AUTHORS NEWS README COPYING
+
+EXTRA_DIST = autogen.sh
