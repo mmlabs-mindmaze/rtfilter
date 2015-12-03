@@ -17,7 +17,7 @@ if test $HAVE_VISIBILITY = 1 -a $os_support !=  "win32"; then
      	[attribute of the symbols exported in the API])
 else
      AC_DEFINE(LOCAL_FN, [], [attribute of the non-exported symbols])
-     AC_DEFINE(API_EXPORTED, [], [attribute of the symbols exported in the API])
+     AC_DEFINE(API_EXPORTED, [__declspec(dllexport)], [attribute of the symbols exported in the API])
 fi
 ])
 
