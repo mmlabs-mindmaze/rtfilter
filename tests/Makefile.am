@@ -21,7 +21,7 @@ downsample_LDADD = $(top_builddir)/src/librtfilter.la
 testchebyshev_SOURCES = testchebyshev.c cheby-table.h
 testchebyshev_LDADD = $(top_builddir)/src/librtfilter.la
 
-TESTS_ENVIRONMENT = PATH=$(PATH):$(buildir)
+TESTS_ENVIRONMENT = PATH="$(PATH):$(buildir)"
 
 TESTS = testchebyshev \
 	 test-float.sh test-complex-float.sh 	\
