@@ -135,7 +135,13 @@ static size_t sizeof_data(int type)
 }
 
 
+#if ENABLE_MATLAB_TESTS
 #if HAVE_MATLAB
+#define MPROG_CMD       "matlab -nojvm -nodisplay -nosplash -nodesktop -r "
+#elif HAVE_OCTAVE
+#define MPROG_CMD       "octave --no-gui --eval "
+#endif
+
 static int compare_results(double thres)
 {
 	FILE *pipe;
@@ -143,7 +149,7 @@ static int compare_results(double thres)
 	double matdt = 0.0;
 	int rval = 1;
 
-	sprintf(command, "exec matlab -nojvm -nodisplay -nosplash -nodesktop -r \"addpath('%s');checkfiltres('%s','%s');exit;\"", getenv("srcdir"), infilename, outfilename);
+	sprintf(command, MPROG_CMD"\"addpath('%s');checkfiltres('%s','%s');exit;\"", getenv("srcdir"), infilename, outfilename);
 	pipe = popen(command, "r");
 	while (fgets(line, 127, pipe)) {
 		if (sscanf(line, " time per sample: %lg ns", &matdt) == 1)
@@ -157,7 +163,7 @@ static int compare_results(double thres)
 	if (rval)
 		return rval;
 
-	fprintf(stdout, "\t\tError value = %lg (thresehold = %lg)\n"
+	fprintf(stderr, "\t\tError value = %lg (thresehold = %lg)\n"
 	                "\t\tMatlab time process per sample: %lg ns\n",
 			errval, thres, matdt);
 
@@ -340,7 +346,7 @@ out:
 	if (fileout != -1)
 		close(fileout);
 
-#if HAVE_MATLAB
+#if ENABLE_MATLAB_TESTS
 	if (retval == 0)
 		retval = compare_results( (datintype & RTF_PRECISION_MASK) ? 1e-12 : 1e-4);
 #endif
