@@ -30,6 +30,7 @@
 #include "filter-internal.h"
 #include "filter-funcs.h"
 #include "probesimd.h"
+#include "complex-arithmetic.h"
 
 
 static inline 
@@ -60,7 +61,7 @@ __m128 realcomp_mul_ps(__m128 a, __m128 b, int part)
 
 
 static inline
-__m128 complex_set1_ps(complex float a)
+__m128 complex_set1_ps(complex_float_t a)
 {
 	/*__m128 c;
 	c = _mm_loadl_pi(c, (const void*)&a);
@@ -98,7 +99,7 @@ __m128d realcomp_mul_pd(__m128d a, __m128d b, int part)
 
 
 static inline
-__m128d complex_set1_pd(complex double a)
+__m128d complex_set1_pd(complex_double_t a)
 {
 	/*__m128 c;
 	c = _mm_loadl_pi(c, (const void*)&a);
@@ -114,7 +115,7 @@ __m128d complex_set1_pd(complex double a)
  *                      ( complex float out float in)                     *
  **************************************************************************/
 #define TYPEIN				float
-#define TYPEOUT				cfloat
+#define TYPEOUT				complex_float_t
 #define add_dat(d1,d2)			_mm_add_ps(d1,d2)
 #define mul_in_dat(d1,d2,part)		realcomp_mul_ps(d1,d2,part)
 #define mul_dat(d1,d2)			complex_mul_ps(d1,d2)
@@ -142,7 +143,7 @@ __m128d complex_set1_pd(complex double a)
  *                    ( complex double out double in)                     *
  **************************************************************************/
 #define TYPEIN				double
-#define TYPEOUT				cdouble
+#define TYPEOUT				complex_double_t
 #define add_dat(d1,d2)			_mm_add_pd(d1,d2)
 #define mul_in_dat(d1,d2,part)		realcomp_mul_pd(d1,d2,part)
 #define mul_dat(d1,d2)			complex_mul_pd(d1,d2)
@@ -168,8 +169,8 @@ __m128d complex_set1_pd(complex double a)
  *                  Complex single precision version : SSE3               *
  *                            ( complex float )                           *
  **************************************************************************/
-#define TYPEIN				cfloat
-#define TYPEOUT				cfloat
+#define TYPEIN				complex_float_t
+#define TYPEOUT				complex_float_t
 #define add_dat(d1,d2)			_mm_add_ps(d1,d2)
 #define mul_in_dat(d1,d2,part)		complex_mul_ps(d1,d2)
 #define mul_dat(d1,d2)			complex_mul_ps(d1,d2)
@@ -196,8 +197,8 @@ __m128d complex_set1_pd(complex double a)
  *                  Complex double precision version : SSE3               *
  *                            ( complex double )                          *
  **************************************************************************/
-#define TYPEIN				cdouble
-#define TYPEOUT				cdouble
+#define TYPEIN				complex_double_t
+#define TYPEOUT				complex_double_t
 #define add_dat(d1,d2)			_mm_add_pd(d1,d2)
 #define mul_in_dat(d1,d2,part)		complex_mul_pd(d1,d2)
 #define mul_dat(d1,d2)			complex_mul_pd(d1,d2)

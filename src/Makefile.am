@@ -4,11 +4,12 @@ lib_LTLIBRARIES = librtfilter.la
 noinst_LTLIBRARIES = libcommonfilt.la
 include_HEADERS = rtfilter.h rtf_common.h
 
-libcommonfilt_la_SOURCES = rtf_common.h common-filters.c
+libcommonfilt_la_SOURCES = rtf_common.h common-filters.c complex-arithmetic.h
 
 librtfilter_la_SOURCES = filter-internal.h filter-funcs.h\
                          rtfilter.h filter.c \
 			 probesimd.h \
+			 complex-arithmetic.h \
 			 filter-real-single.c filter-real-double.c\
 			 filter-complex-single.c filter-complex-double.c\
 			 filter-inreal-outcomplex-single.c\

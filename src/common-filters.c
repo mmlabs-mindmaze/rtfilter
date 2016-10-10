@@ -22,9 +22,9 @@
 #include <memory.h>
 #include <stdlib.h>
 #include <math.h>
-#include <complex.h>
 #include "rtfilter.h"
 #include "rtf_common.h"
+#include "complex-arithmetic.h"
 
 #define PId	3.1415926535897932384626433832795L
 #define PIf	3.1415926535897932384626433832795f
@@ -87,17 +87,33 @@ void compute_convolution(double *product, double *sig1, unsigned int len1,
 }
 
 static
-void FFT(complex double *X, double *t, unsigned int length){
+complex_double_t cexp_d(complex_double_t x)
+{
+	double modulus;
+	complex_double_t r;
+
+	modulus = exp(x.real);
+	r.real = modulus*cos(x.imag);
+	r.imag = modulus*sin(x.imag);
+
+	return r;
+}
+
+static
+void FFT(complex_double_t *X, double *t, unsigned int length){
 
 	unsigned int i,j;
+	complex_double_t cfreq;
+	complex_double_t c_Id = {0.0, 1.0};
 
 	for(i=0; i<length; i++){
-		X[i]=0;
-		for(j=0; j<length; j++){
-			X[i]=X[i] + t[j]*cexp((-2.0*I*M_PI)*(j)*(i)/length);				
+		X[i].real = 0.0;
+		X[i].imag = 0.0;
+		for(j=0; j<length; j++) {
+			cfreq = cexp_d(cscale_d(c_Id, -2.0*M_PI*(j)*(i)/length));
+			X[i] = cadd_d(X[i], cscale_d(cfreq, t[j]));
 		}
-	}	
-
+	}
 }
 
 static
@@ -139,7 +155,7 @@ double compute_IIR_filter_delay(double *num, double *den,
 {
 	unsigned int i,length_c;
 	double *a,*b,*c,*cr; 
-	complex double *X,*Y;
+	complex_double_t *X,*Y;
 	double Delay = 0.0, d = 0.0;	
 
 	length_c=2*length-1;
@@ -168,7 +184,7 @@ double compute_IIR_filter_delay(double *num, double *den,
 	FFT(X,cr,length_c);
 
 	for (i=0;i<length_c;i++) {
-		d = creal(X[i]/Y[i]);
+		d = creal_d(cdiv_d(X[i], Y[i]));
 		
 		if (d > Delay)
 		     Delay = d;
@@ -329,15 +345,16 @@ int compute_cheby_iir(double *num, double *den, unsigned int num_pole,
 	This function creates a complex bandpass filter from a Chebyshev low pass filter.
 */
 static 
-int compute_bandpass_complex_filter(complex double *num,
-					   complex double *den,
-					   unsigned int num_pole,
-					   double fl, double fh)
+int compute_bandpass_complex_filter(complex_double_t *num,
+                                    complex_double_t *den,
+                                    unsigned int num_pole,
+                                    double fl, double fh)
 {
 	double *a=NULL, *b=NULL;	
-	complex double *ac,*bc;
+	complex_double_t *ac,*bc;
 	double ripple,fc,alpha,Delay;
 	unsigned int i,retval=1;
+	complex_double_t c_Id = {0.0, 1.0};
 
 	// Allocate temporary arrays
 	a = malloc( (num_pole+1)*sizeof(*a));
@@ -374,11 +391,12 @@ int compute_bandpass_complex_filter(complex double *num,
 	// compute complex coefficients (rotating poles and zeros). 
 	for(i=0;i<num_pole + 1; i++) {
 		// complex numerator
-		ac[i]= 2.0*cexp(-1.0*I*alpha*Delay)
-		     *b[i]*cexp(1.0*I*alpha*(i+1));
+		ac[i]= cexp_d(cscale_d(c_Id, alpha*(i+1-Delay)));
+		ac[i] = cscale_d(ac[i], 2.0*b[i]);
 
 		// complex denominator
-		bc[i]= a[i]*cexp(1.0*I*alpha*(i+1));
+		bc[i]= cexp_d(cscale_d(c_Id, alpha*(i+1)));
+		bc[i] = cscale_d(bc[i], a[i]);
 	}
 
 	for(i=0;i<num_pole + 1; i++){
@@ -645,7 +663,7 @@ hfilter rtf_create_bandpass_analytic(unsigned int nchann,
 					double fl, double fh, 
 					unsigned int num_pole)
 {
-	complex double *a = NULL, *b = NULL;
+	complex_double_t *a = NULL, *b = NULL;
 	hfilter filt = NULL;
 
 	if (num_pole % 2 != 0)
