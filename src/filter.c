@@ -400,6 +400,8 @@ const char rtf_version_string[] = PACKAGE_STRING
 " (compiled with sse2)";
 #elif __SSE__
 " (compiled with sse2)";
+#elif __ARM_NEON__
+" (compiled with NEON)";
 #else
 " (compiled with no SIMD)";
 #endif
