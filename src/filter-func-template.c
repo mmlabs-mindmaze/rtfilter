@@ -68,7 +68,7 @@ void FILTER_DATADEP_FUNC(const struct rtf_filter* filt,
 			s[ic] = zero_dat();
 
 		// Compute the convolution with numerator
-		for (k=0; k < a_len; k++) {
+		for (k = a_len-1; k >= 0; k--) {
 			ii = (i - k) * nchin;
 			h = set1_dat(a[k]);
 
@@ -84,7 +84,7 @@ void FILTER_DATADEP_FUNC(const struct rtf_filter* filt,
 		}
 
 		// compute the convolution in the denominator
-		for (k = 0; k < b_len; k++) {
+		for (k = b_len-1; k >= 0; k--) {
 			ii = (i - k - 1) * nch;
 			h = set1_dat(b[k]);
 
