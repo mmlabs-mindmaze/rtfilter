@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <sys/time.h>
-#include <memory.h>
+#include <string.h>
 #include <limits.h>
 #include <float.h>
 #include <unistd.h>
