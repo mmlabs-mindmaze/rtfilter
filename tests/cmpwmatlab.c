@@ -210,7 +210,6 @@ int main(int argc, char *argv[])
 	hfilter filt = NULL;
 	void *buffin, *buffout;
 	int filein = -1, fileout = -1;
-	float fc = FC_DEF;
 	size_t buffinsize, buffoutsize;
 	uint32_t nchan32, ntotsample32;
 	int32_t datintype, datouttype;
@@ -224,7 +223,7 @@ int main(int argc, char *argv[])
 	niter = NITER;
 	filtorder = FILTORDER;
 	datouttype = datintype = TYPE_DEF;
-	while ((opt = getopt(argc, argv, "hc:s:i:o:f:d:p:k:")) != -1) {
+	while ((opt = getopt(argc, argv, "hc:s:i:o:d:p:k:")) != -1) {
 		switch (opt) {
 		case 'c':
 			nchann = atoi(optarg);
@@ -237,9 +236,6 @@ int main(int argc, char *argv[])
 			break;
 		case 'o':
 			filtorder = atoi(optarg);
-			break;
-		case 'f':
-			fc = atof(optarg);
 			break;
 		case 'd':
 			datintype = atoi(optarg);
