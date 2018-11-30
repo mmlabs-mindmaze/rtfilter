@@ -70,17 +70,18 @@ static void  align_free(void* memptr)
 
 static size_t sizeof_data(int type)
 {
-	size_t dsize;
-	if (type == RTF_FLOAT)
-		dsize = sizeof(float);
-	else if (type == RTF_DOUBLE)
-		dsize = sizeof(double);
-	else if (type == RTF_CFLOAT)
-		dsize = sizeof(complex float);
-	else if (type == RTF_CDOUBLE)
-		dsize = sizeof(complex double);
-
-	return dsize;
+	switch (type) {
+		case RTF_FLOAT:
+			return sizeof(float);
+		case RTF_DOUBLE:
+			return sizeof(double);
+		case RTF_CFLOAT:
+			return sizeof(complex float);
+		case RTF_CDOUBLE:
+			return sizeof(complex double);
+		default:
+			return 0;
+	}
 }
 
 
