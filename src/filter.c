@@ -19,6 +19,7 @@
 # include <config.h>
 #endif
 
+#include <complex.h>
 #include <stdlib.h>
 #include <math.h>
 #include <stdint.h>
@@ -416,3 +417,99 @@ size_t rtf_get_version(char* string, size_t len, unsigned int line)
 	return strlen(string);
 }
 
+
+/**
+ * rtf_coeffs_destroy() - destroy rtf_coeffs structure
+ * @coeffs: rtf_coeffs structure to destroy
+ */
+void rtf_coeffs_destroy(struct rtf_coeffs * coeffs)
+{
+	if (coeffs != NULL) {
+		if (coeffs->is_complex) {
+			free(coeffs->complex_coeffs.num);
+			free(coeffs->complex_coeffs.denum);
+		} else {
+			free(coeffs->real_coeffs.num);
+			free(coeffs->real_coeffs.denum);
+		}
+		free(coeffs);
+	}
+}
+
+
+static inline
+int is_complex_filter(const struct rtf_filter * filt)
+{
+	return (filt->outtype == RTF_CFLOAT || filt->outtype == RTF_CDOUBLE);
+}
+
+
+/**
+ * rtf_get_coeffs() - get filter coeffs
+ * @filt: initialized rtfilter
+ *
+ * Note: the copy function we get from convtab is a tad too specific for our use:
+ * it expects a flag specifying whether we copy the num/denum, but processes and
+ * transforms the denum in a way we do not want here: we wand the raw values.
+ * However, we still need to multiply their values by -1 so as to ensure their
+ * values are the same as with scipy.
+ *
+ * Return: newly allocated rtf_coeffs structure on success, NULL on error
+ */
+API_EXPORTED
+struct rtf_coeffs * rtf_get_coeffs(const struct rtf_filter * filt)
+{
+	int i;
+	struct rtf_coeffs * coeffs;
+	copy_param_proc copy_fn;
+
+	coeffs = malloc(sizeof(*coeffs));
+	if (coeffs == NULL)
+		return NULL;
+	memset(coeffs, 0, sizeof(*coeffs));
+
+	coeffs->is_complex = is_complex_filter(filt);
+	if (coeffs->is_complex) {
+		coeffs->complex_coeffs.num_len = filt->a_len;
+		coeffs->complex_coeffs.denum_len = filt->b_len + 1;
+		coeffs->complex_coeffs.num = malloc(coeffs->complex_coeffs.denum_len * sizeof(rtf_cdouble));
+		coeffs->complex_coeffs.denum = malloc(coeffs->complex_coeffs.num_len * sizeof(rtf_cdouble));
+		if (coeffs->complex_coeffs.num == NULL
+		    || coeffs->complex_coeffs.denum == NULL)
+			goto enomem;
+
+		copy_fn = convtab[filt->outtype][RTF_CDOUBLE];
+		copy_fn(filt->a_len, coeffs->complex_coeffs.num, filt->a, NULL, 0);
+		coeffs->complex_coeffs.denum[0] = (rtf_cdouble) {1.};
+		copy_fn(filt->b_len, coeffs->complex_coeffs.denum + 1, filt->b, NULL, 0);
+		for (i = 1 ; i < coeffs->complex_coeffs.denum_len ; i++) {
+#ifdef _MSC_VER
+			coeffs->complex_coeffs.denum[i] = cmul_d(coeffs->complex_coeffs.denum[i], -1.);
+#else
+			coeffs->complex_coeffs.denum[i] *= -1.;
+#endif
+		}
+	} else {
+		coeffs->real_coeffs.num_len = filt->a_len;
+		coeffs->real_coeffs.denum_len = filt->b_len + 1;
+		coeffs->real_coeffs.num = malloc(coeffs->real_coeffs.num_len * sizeof(double));
+		coeffs->real_coeffs.denum = malloc(coeffs->real_coeffs.denum_len * sizeof(double));
+		if (coeffs->real_coeffs.num == NULL
+				|| coeffs->real_coeffs.denum == NULL)
+			goto enomem;
+
+		copy_fn = convtab[filt->outtype][RTF_DOUBLE];
+		copy_fn(filt->a_len, coeffs->real_coeffs.num, filt->a, NULL, 0);
+		coeffs->real_coeffs.denum[0] = 1.;
+		copy_fn(filt->b_len, coeffs->real_coeffs.denum + 1, filt->b, NULL, 0);
+		for (int i = 1 ; i < coeffs->real_coeffs.denum_len ; i++) {
+			coeffs->real_coeffs.denum[i] *= -1.;
+		}
+	}
+
+	return coeffs;
+
+enomem:
+	rtf_coeffs_destroy(coeffs);
+	return NULL;
+}

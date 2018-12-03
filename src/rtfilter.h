@@ -56,6 +56,38 @@ hfilter rtf_create_downsampler(unsigned int nch, int type, unsigned int r);
 //! Return the version of the library in a string
 size_t rtf_get_version(char* string, size_t len, unsigned int line);
 
+#ifdef _MSC_VER
+typedef complex_double_t rtf_cdouble;
+#else
+#include <complex.h>
+typedef complex double rtf_cdouble;
+#endif
+
+struct real_coeffs {
+	int num_len;
+	int denum_len;
+	double * num;
+	double * denum;
+};
+struct complex_coeffs {
+	int num_len;
+	int denum_len;
+	rtf_cdouble * num;
+	rtf_cdouble * denum;
+};
+
+struct rtf_coeffs {
+	int is_complex;
+	union {
+		struct real_coeffs real_coeffs;
+		struct complex_coeffs complex_coeffs;
+	};
+};
+
+
+void rtf_coeffs_destroy(struct rtf_coeffs * coeffs);
+struct rtf_coeffs * rtf_get_coeffs(hfilter filt);
+
 #ifdef __cplusplus
 }
 #endif
