@@ -28,7 +28,6 @@
 #include "filter-internal.h"
 #include "filter-funcs.h"
 #include "probesimd.h"
-#include "complex-arithmetic.h"
 
 
 /**************************************************************************
@@ -36,11 +35,11 @@
  *                    ( complex double out double in)                     *
  **************************************************************************/
 #define TYPEIN				double
-#define TYPEOUT				complex_double_t
-#define add_dat(d1,d2)			cadd_d(d1, d2)
-#define mul_in_dat(d1,d2,part)		cscale_d(d1, d2)
-#define mul_dat(d1,d2)			cmul_d(d1, d2)
-#define zero_dat()			(complex_double_t){0.0}
+#define TYPEOUT				cdouble
+#define add_dat(d1,d2)			((d1)+(d2))
+#define mul_in_dat(d1,d2,part)		((d1)*(d2))
+#define mul_dat(d1,d2)			((d1)*(d2))
+#define zero_dat()			(0)
 #define set1_dat(data)			(data)
 #define TYPEIN_LOCAL			TYPEIN
 #define TYPEOUT_LOCAL			TYPEOUT

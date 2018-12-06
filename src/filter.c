@@ -21,12 +21,12 @@
 
 #include <complex.h>
 #include <stdlib.h>
+#include <complex.h>
 #include <math.h>
 #include <stdint.h>
 #include <string.h>
 #include "rtfilter.h"
 #include "filter-internal.h"
-#include "complex-arithmetic.h"
 
 LOCAL_FN
 size_t sizeof_data(int type)
@@ -37,9 +37,9 @@ size_t sizeof_data(int type)
 	else if (type == RTF_DOUBLE)
 		dsize = sizeof(double);
 	else if (type == RTF_CFLOAT)
-		dsize = sizeof(complex_float_t);
+		dsize = sizeof(complex float);
 	else if (type == RTF_CDOUBLE)
-		dsize = sizeof(complex_double_t);
+		dsize = sizeof(complex double);
 
 	return dsize;
 }
@@ -61,71 +61,18 @@ static void copy_param_fn(unsigned int len, void* dst, const void* src, const vo
 			tdst[i] = -tsrc[i+1] / normfactor;		\
 }		
 
-#define DECLARE_COPY_COMPOUT_PARAM_FN(copy_param_fn, in_t, out_t)		\
-static void copy_param_fn(unsigned int len, void* dst, const void* src, const void* factor, int isdenum)	\
-{									\
-	unsigned int i;							\
-	const in_t *tsrc = src;						\
-	out_t *tdst = dst;						\
-	in_t normfactor = (!factor) ? 1.0 : *((const in_t*)factor);	\
-									\
-	if (!isdenum) {							\
-		for (i=0; i<len; i++) {					\
-			tdst[i].real = tsrc[i] / normfactor;		\
-			tdst[i].imag = 0.0;				\
-		}							\
-	} else {							\
-		for (i=0; i<len; i++) {					\
-			tdst[i].real = -tsrc[i+1] / normfactor;		\
-			tdst[i].imag = 0.0;				\
-		}							\
-	}								\
-}
-
-#define DECLARE_COPY_COMPIN_COMPOUT_PARAM_FN(copy_param_fn, in_t, out_t)		\
-static void copy_param_fn(unsigned int len, void* dst, const void* src, const void* factor, int isdenum)	\
-{									\
-	unsigned int i;							\
-	const in_t *tsrc = src;						\
-	out_t *tdst = dst;						\
-	complex_double_t n = {1.0, 0.0};				\
-	complex_double_t inv_n;						\
-									\
-	if (factor) {							\
-		n.real = ((const in_t*)factor)->real;			\
-		n.imag = ((const in_t*)factor)->imag;			\
-	}								\
-	inv_n = cinv_d(n);						\
-									\
-	if (!isdenum) {							\
-		for (i=0; i<len; i++) {					\
-			complex_double_t v = {tsrc[i].real, tsrc[i].imag}; \
-			v = cmul_d(v, inv_n);				\
-			tdst[i].real = v.real;				\
-			tdst[i].imag = v.imag;				\
-		}							\
-	} else {							\
-		for (i=0; i<len; i++) {					\
-			complex_double_t v = {-tsrc[i+1].real, -tsrc[i+1].imag}; \
-			v = cmul_d(v, inv_n);				\
-			tdst[i].real = v.real;				\
-			tdst[i].imag = v.imag;				\
-		}							\
-	}								\
-}
-
 DECLARE_COPY_PARAM_FN(copy_param_ff, float, float)
 DECLARE_COPY_PARAM_FN(copy_param_fd, float, double)
 DECLARE_COPY_PARAM_FN(copy_param_df, double, float)
 DECLARE_COPY_PARAM_FN(copy_param_dd, double, double)
-DECLARE_COPY_COMPOUT_PARAM_FN(copy_param_fcf, float, complex_float_t)
-DECLARE_COPY_COMPOUT_PARAM_FN(copy_param_fcd, float, complex_double_t)
-DECLARE_COPY_COMPOUT_PARAM_FN(copy_param_dcf, double, complex_float_t)
-DECLARE_COPY_COMPOUT_PARAM_FN(copy_param_dcd, double, complex_double_t)
-DECLARE_COPY_COMPIN_COMPOUT_PARAM_FN(copy_param_cfcf, complex_float_t, complex_float_t)
-DECLARE_COPY_COMPIN_COMPOUT_PARAM_FN(copy_param_cfcd, complex_float_t, complex_double_t)
-DECLARE_COPY_COMPIN_COMPOUT_PARAM_FN(copy_param_cdcf, complex_double_t, complex_float_t)
-DECLARE_COPY_COMPIN_COMPOUT_PARAM_FN(copy_param_cdcd, complex_double_t, complex_double_t)
+DECLARE_COPY_PARAM_FN(copy_param_fcf, float, complex float)
+DECLARE_COPY_PARAM_FN(copy_param_fcd, float, complex double)
+DECLARE_COPY_PARAM_FN(copy_param_dcf, double, complex float)
+DECLARE_COPY_PARAM_FN(copy_param_dcd, double, complex double)
+DECLARE_COPY_PARAM_FN(copy_param_cfcf, complex float, complex float)
+DECLARE_COPY_PARAM_FN(copy_param_cfcd, complex float, complex double)
+DECLARE_COPY_PARAM_FN(copy_param_cdcf, complex double, complex float)
+DECLARE_COPY_PARAM_FN(copy_param_cdcd, complex double, complex double)
 
 typedef void (*copy_param_proc)(unsigned int, void*, const void*, const void*, int);
 

@@ -28,7 +28,6 @@
 #include "filter-internal.h"
 #include "filter-funcs.h"
 #include "probesimd.h"
-#include "complex-arithmetic.h"
 
 
 /**************************************************************************
@@ -36,11 +35,11 @@
  *                      ( complex float out float in)                     *
  **************************************************************************/
 #define TYPEIN				float
-#define TYPEOUT				complex_float_t
-#define add_dat(d1,d2)			cadd_f(d1, d2)
-#define mul_in_dat(d1,d2,part)		cscale_f(d1, d2)
-#define mul_dat(d1,d2)			cmul_f(d1, d2)
-#define zero_dat()			(complex_float_t){0.0f}
+#define TYPEOUT				cfloat
+#define add_dat(d1,d2)			((d1)+(d2))
+#define mul_in_dat(d1,d2,part)		((d1)*(d2))
+#define mul_dat(d1,d2)			((d1)*(d2))
+#define zero_dat()			(0)
 #define set1_dat(data)			(data)
 #define TYPEIN_LOCAL			TYPEIN
 #define TYPEOUT_LOCAL			TYPEOUT
