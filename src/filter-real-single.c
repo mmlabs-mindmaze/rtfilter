@@ -43,7 +43,9 @@
 #define TYPEIN_LOCAL			TYPEIN
 #define TYPEOUT_LOCAL			TYPEOUT
 #define FILTER_DATADEP_FUNC		filter_f_noop
+#define INIT_DATADEP_FUNC		init_filter_f
 #include "filter-func-template.c"
+#include "init-filter-func-template.c"
 
 
 static HOTSPOT

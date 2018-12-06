@@ -1,4 +1,4 @@
-EXTRA_DIST=filter-func-template.c
+EXTRA_DIST=filter-func-template.c init-filter-func-template.c
 
 lib_LTLIBRARIES = librtfilter.la
 noinst_LTLIBRARIES = libcommonfilt.la

@@ -63,4 +63,11 @@ LOCAL_FN void set_filterfn_dcd(struct rtf_filter* filt);
 LOCAL_FN void set_filterfn_cf(struct rtf_filter* filt);
 LOCAL_FN void set_filterfn_cd(struct rtf_filter* filt);
 
+LOCAL_FN void init_filter_f(const struct rtf_filter* filt, const void* data);
+LOCAL_FN void init_filter_d(const struct rtf_filter* filt, const void* data);
+LOCAL_FN void init_filter_fcf(const struct rtf_filter* filt, const void* data);
+LOCAL_FN void init_filter_dcd(const struct rtf_filter* filt, const void* data);
+LOCAL_FN void init_filter_cf(const struct rtf_filter* filt, const void* data);
+LOCAL_FN void init_filter_cd(const struct rtf_filter* filt, const void* data);
+
 #endif //FILTER_INTERNAL_H

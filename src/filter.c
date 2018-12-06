@@ -104,6 +104,19 @@ set_filterfn_proc setfiltfnproctab[4][4] = {
 };
 
 
+typedef void (*init_filter_proc)(const struct rtf_filter*, const void*);
+
+static
+const init_filter_proc init_filter_proc_tab[4][4] = {
+	[RTF_FLOAT] = {[RTF_FLOAT] = init_filter_f,
+	               [RTF_CFLOAT] = init_filter_fcf},
+	[RTF_DOUBLE] = {[RTF_DOUBLE] = init_filter_d,
+	                [RTF_CDOUBLE] = init_filter_dcd},
+	[RTF_CFLOAT] = {[RTF_CFLOAT] = init_filter_cf},
+	[RTF_CDOUBLE] = {[RTF_CDOUBLE] = init_filter_cd}
+};
+
+
 
 static
 void reset_filter(hfilter filt)
@@ -172,29 +185,14 @@ LOCAL_FN
 void default_init_filter(const struct rtf_filter* filt, const void* data)
 {
 	void *dest;
-	int nc = filt->num_chann, itp = filt->intype, otp = filt->outtype;
-	unsigned int i, isize = sizeof_data(itp), osize = sizeof_data(otp);
+	int itp = filt->intype, otp = filt->outtype;
 
 	if (data == NULL) {
 		reset_filter(filt);
 		return;
 	}
 
-	dest = filt->xoff;
-	if (dest) {
-		for (i = 0; i < (filt->a_len - 1); i++) {
-			convtab[itp][itp](nc, dest, data, NULL, 0);
-			dest = (char *) dest + nc*isize;
-		}
-	}
-
-	dest = filt->yoff;
-	if (dest) {
-		for (i = 0; i < filt->b_len; i++) {
-			convtab[itp][otp](nc, dest, data, NULL, 0);
-			dest = (char *) dest + nc*osize;
-		}
-	}
+	init_filter_proc_tab[itp][otp](filt, data);
 }
 
 

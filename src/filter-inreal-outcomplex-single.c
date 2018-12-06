@@ -44,7 +44,9 @@
 #define TYPEIN_LOCAL			TYPEIN
 #define TYPEOUT_LOCAL			TYPEOUT
 #define FILTER_DATADEP_FUNC		filter_fcf_noop
+#define INIT_DATADEP_FUNC		init_filter_fcf
 #include "filter-func-template.c"
+#include "init-filter-func-template.c"
 
 static HOTSPOT
 unsigned int filtfunc(hfilter filt, const void* x, void* y, unsigned int ns)
