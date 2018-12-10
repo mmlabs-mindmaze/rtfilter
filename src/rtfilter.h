@@ -21,6 +21,22 @@
 #include <stddef.h>
 
 #ifdef __cplusplus
+	#include <complex>
+	typedef std::complex<double> rtf_cdouble;
+#else /* __cplusplus */
+#ifdef _MSC_VER
+	typedef struct {
+		double real;
+		double img;
+	} rtf_cdouble;
+#else
+#include <complex.h>
+	typedef complex double rtf_cdouble;
+#endif /* _MSC_VER */
+#endif /* __cplusplus */
+
+
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -55,13 +71,6 @@ hfilter rtf_create_downsampler(unsigned int nch, int type, unsigned int r);
 
 //! Return the version of the library in a string
 size_t rtf_get_version(char* string, size_t len, unsigned int line);
-
-#ifdef _MSC_VER
-typedef complex_double_t rtf_cdouble;
-#else
-#include <complex.h>
-typedef complex double rtf_cdouble;
-#endif
 
 struct real_coeffs {
 	int num_len;
