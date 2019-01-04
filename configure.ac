@@ -35,6 +35,7 @@ AC_DEF_HOTSPOT_ATTR
 AC_DEF_API_EXPORT_ATTRS
 AC_CHECK_FASTMATH_FLAG
 AC_USE_SSEMATH
+gl_LD_OUTPUT_DEF
 
 AC_CHECK_CPUID([tryaddsimd=yes], [tryaddsimd=no])
 AC_SUPPORT_SSE([has_sse=yes], [has_sse=no], tryaddsimd)

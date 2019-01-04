@@ -21,6 +21,14 @@ librtfilter_la_LIBADD = libcommonfilt.la
 librtfilter_la_LDFLAGS = $(AM_LDFLAGS) -no-undefined	\
                          -version-info $(CURRENT):$(REVISION):$(AGE) 
 
+if HAVE_LD_OUTPUT_DEF
+librtfilter_la_LDFLAGS += -Wl,--output-def,librtfilter-$(CURRENT).def
+defexecdir = $(bindir)
+defexec_DATA = librtfilter-$(CURRENT).def
+CLEANFILES = $(defexec_DATA)
+$(defexec_DATA): librtfilter.la
+endif
+
 if BUILD_SSE_SUPPORT
 noinst_LTLIBRARIES += libfiltersse.la
 librtfilter_la_LIBADD += libfiltersse.la
