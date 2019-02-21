@@ -2,7 +2,7 @@ general:
     name: rtfilter
     version: 1.1
     maintainer: Nicolas Bourdaud <nicolas.bourdaud@gmail.com>
-    url: ssh://git@intranet.mindmaze.ch:7999/ed/rtfilter.git
+    url: ssh://intranet.mindmaze.ch:29418/rtfilter
     description: |
       This package provides a library written in C implementing realtime digital
       filtering functions for multichannel signals (i.e. filtering multiple
