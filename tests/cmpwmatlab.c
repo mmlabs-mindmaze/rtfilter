@@ -102,18 +102,18 @@ static void  align_free(void* memptr)
 }
 
 
-static void set_param(int ptype)
+static void set_param(int type)
 {
-	if (ptype == RTF_FLOAT) {
+	if (type == RTF_FLOAT) {
 		num = numf;
 		denum = denumf;
-	} else if (ptype == RTF_DOUBLE) {
+	} else if (type == RTF_DOUBLE) {
 		num = numd;
 		denum = denumd;
-	}else if (ptype == RTF_CFLOAT) {
+	}else if (type == RTF_CFLOAT) {
 		num = numcf;
 		denum = denumcf;
-	} else if (ptype == RTF_CDOUBLE) {
+	} else if (type == RTF_CDOUBLE) {
 		num = numcd;
 		denum = denumcd;
 	}
