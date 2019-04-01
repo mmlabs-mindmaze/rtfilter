@@ -19,17 +19,16 @@
 # include <config.h>
 #endif
 
-#include <string.h>
-#include <stdlib.h>
+#include <emmintrin.h>
 #include <math.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include <emmintrin.h>
-
-#include "rtfilter.h"
-#include "filter-internal.h"
 #include "filter-funcs.h"
+#include "filter-internal.h"
 #include "probesimd.h"
+#include "rtfilter.h"
 
 
 /**************************************************************************

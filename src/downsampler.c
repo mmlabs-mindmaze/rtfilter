@@ -19,13 +19,12 @@
 # include <config.h>
 #endif
 
-#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "rtfilter.h"
 #include "filter-internal.h"
 #include "rtf_common.h"
+#include "rtfilter.h"
 
 #define BUFFNS 64
 

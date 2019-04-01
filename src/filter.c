@@ -20,13 +20,13 @@
 #endif
 
 #include <complex.h>
-#include <stdlib.h>
-#include <complex.h>
 #include <math.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
-#include "rtfilter.h"
+
 #include "filter-internal.h"
+#include "rtfilter.h"
 
 LOCAL_FN
 size_t sizeof_data(int type)

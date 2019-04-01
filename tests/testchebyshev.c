@@ -16,11 +16,13 @@
 #if HAVE_CONFIG_H
 # include <config.h>
 #endif
-#include <stdio.h>
+
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
-#include "common-filters.c"
+
 #include "cheby-table.h"
+#include "common-filters.c"
 
 double num[20], den[20];
 

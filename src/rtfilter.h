@@ -21,7 +21,7 @@
 #include <stddef.h>
 
 #ifdef __cplusplus
-	#include <complex>
+#include <complex>
 typedef std::complex < double > rtf_cdouble;
 #else /* __cplusplus */
 #ifdef _MSC_VER

@@ -16,19 +16,21 @@
 #if HAVE_CONFIG_H
 # include <config.h>
 #endif
-#include <stdio.h>
-#include <time.h>
-#include <sys/time.h>
-#include <string.h>
-#include <limits.h>
-#include <float.h>
-#include <unistd.h>
-#include <stdint.h>
+
 #include <complex.h>
-#include <math.h>
-#include <stdlib.h>
-#include <sys/stat.h>
 #include <fcntl.h>
+#include <float.h>
+#include <limits.h>
+#include <math.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <sys/time.h>
+#include <time.h>
+#include <unistd.h>
+
 #include "rtfilter.h"
 
 

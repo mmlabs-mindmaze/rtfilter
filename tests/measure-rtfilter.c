@@ -17,16 +17,16 @@
 # include <config.h>
 #endif
 
-#include "rtf_common.h"
-#include <stdio.h>
 #include <complex.h>
-#include <time.h>
-#include <sys/time.h>
-#include <memory.h>
-#include <stdint.h>
-#include <stdlib.h>
 #include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/time.h>
+#include <time.h>
 #include <unistd.h>
+
+#include "rtfilter.h"
 
 #define NCHANN	64
 #define NSAMPLE	4

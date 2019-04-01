@@ -18,11 +18,12 @@
 #ifndef FILTER_INTERNAL_H
 #define FILTER_INTERNAL_H
 
-#include <stddef.h>
 #include <complex.h>
+#include <stddef.h>
 
 typedef complex float cfloat;
 typedef complex double cdouble;
+struct rtf_filter;
 
 typedef unsigned int (*filter_proc)(struct rtf_filter*, const void*,
                                     void*, unsigned int);
