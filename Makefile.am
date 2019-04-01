@@ -5,7 +5,6 @@ EXTRA_DIST = autogen.sh
 CLEANFILES =
 
 lib_LTLIBRARIES = librtfilter.la
-noinst_LTLIBRARIES = libcommonfilt.la
 
 AM_CPPFLAGS = \
 	-I$(srcdir)/src \
@@ -14,16 +13,12 @@ AM_CPPFLAGS = \
 	$(CHECK_CPPFLAGS) \
 	$(eol)
 
-libcommonfilt_la_SOURCES = \
-	src/common-filters.c \
-	src/rtf_common.h \
-	$(eol)
-
 AM_CFLAGS = \
 	$(WARNFLAGS) \
 	$(eol)
 
 librtfilter_la_SOURCES = \
+	src/common-filters.c \
 	src/downsampler.c \
 	src/filter.c \
 	src/filter-complex-double.c \
@@ -35,6 +30,7 @@ librtfilter_la_SOURCES = \
 	src/filter-real-double.c \
 	src/filter-real-single.c \
 	src/probesimd.h \
+	src/rtf_common.h \
 	src/rtfilter.h \
 	$(eol)
 
@@ -59,10 +55,8 @@ librtfilter_la_CFLAGS = \
 	$(FASTMATH_CFLAG) \
 	$(eol)
 
-librtfilter_la_LIBADD = \
-	libcommonfilt.la \
-	$(eol)
-
+noinst_LTLIBRARIES =
+librtfilter_la_LIBADD =
 if BUILD_SSE_SUPPORT
 libfiltersse_la_SOURCES = \
 	src/filter-funcs.h \
