@@ -189,3 +189,25 @@ TESTS = \
 	tests/test-downsample.sh \
 	tests/test-float.sh \
 	$(eol)
+
+#
+# DEV TARGETS
+#
+
+# rewrite in-place all the source files with correct coding style
+EXTRA_DIST += devtools/uncrustify.cfg
+.PHONY: fixstyle
+fixstyle: devtools/uncrustify.cfg
+	cd $(srcdir) && uncrustify -c devtools/uncrustify.cfg -l C --replace \
+		$(librtfilter_la_SOURCES) $(filter_templates)
+
+# check all the source files for correct coding style
+.PHONY: checkstyle
+checkstyle: devtools/uncrustify.cfg
+	cd $(srcdir) && uncrustify -c devtools/uncrustify.cfg -l C --check \
+		$(librtfilter_la_SOURCES) $(filter_templates)
+
+# primitive syntax check on all the source files
+.PHONY: spelling
+spelling: $(librtfilter_la_SOURCES) $(filter_templates)
+	codespell --ignore-words-list=sinc $^
