@@ -19,10 +19,10 @@
 
 
 /**
- * INIT_DATADEP_FUNC - template for intialization of filter states
+ * INIT_DATADEP_FUNC - template for initialization of filter states
  * @filt:       filter to initialize
  * @data:       pointer to input data to use for initialization (underlying
- *              type must be the fitler input type and the length equal to
+ *              type must be the filter input type and the length equal to
  *              the number of channel)
  *
  * This is the template for the initialization function. It computes the

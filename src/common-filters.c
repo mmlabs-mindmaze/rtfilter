@@ -350,7 +350,7 @@ int compute_bandpass_complex_filter(complex double *num,
 	}
 
 	alpha = M_PI*(fl+fh);   // Rotation angle in radians to produces
-				// the desired analitic filter
+				// the desired analytic filter
 	fc = (fh-fl)/2.0;       // Normalized cutoff frequency
 				// of the low pass filter
 	ripple = 0.01;
