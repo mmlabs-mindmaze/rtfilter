@@ -21,6 +21,14 @@
 #include <complex.h>
 #include <stddef.h>
 
+#ifndef likely
+#define likely(expr)   __builtin_expect(!!(expr), 1)
+#endif
+
+#ifndef unlikely
+#define unlikely(expr) __builtin_expect(!!(expr), 0)
+#endif
+
 typedef complex float cfloat;
 typedef complex double cdouble;
 struct rtf_filter;
@@ -33,6 +41,7 @@ typedef void (*destroy_filter_proc)(struct rtf_filter*);
 
 struct rtf_filter
 {
+	int lazy_init;
 	filter_proc filter_fn;
 	int dispatch_code;
 	unsigned int num_chann;

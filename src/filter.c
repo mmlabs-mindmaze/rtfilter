@@ -326,9 +326,21 @@ hfilter rtf_create_filter(unsigned int nchann, int proctype,
 }
 
 
+API_EXPORTED
+void rtf_filter_set_lazy_init(hfilter filt, int do_lazy_init)
+{
+	filt->lazy_init = do_lazy_init;
+}
+
+
 API_EXPORTED HOTSPOT
 unsigned int rtf_filter(hfilter filt, const void* x, void* y, unsigned int ns)
 {
+	if (unlikely(filt->lazy_init)) {
+		rtf_init_filter(filt, x);
+		filt->lazy_init = 1;
+	}
+
 	return filt->filter_fn(filt, x, y, ns);
 }
 

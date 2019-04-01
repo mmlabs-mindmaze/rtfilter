@@ -56,6 +56,10 @@ hfilter rtf_create_filter(unsigned int nchann, int proctype,
                           unsigned int num_len, const void *num,
                           unsigned int denum_len, const void *denum,
                           int type);
+
+//! set filter lazy-init
+void rtf_filter_set_lazy_init(hfilter filt, int do_lazy_init);
+
 //! filter chunk of data
 unsigned int rtf_filter(hfilter filt, const void* x, void* y,
                         unsigned int ns);

@@ -119,6 +119,7 @@ dist_man_MANS = \
 	doc/rtf_create_fir_lowpass.3 \
 	doc/rtf_destroy_filter.3 \
 	doc/rtf_filter.3 \
+	doc/rtf_filter_set_lazy_init.3 \
 	doc/rtf_get_type.3 \
 	doc/rtf_get_version.3 \
 	doc/rtf_init_filter.3 \
