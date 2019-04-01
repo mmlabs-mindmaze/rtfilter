@@ -150,7 +150,7 @@ static int compare_results(double thres)
 	double matdt = 0.0;
 	int rval = 1;
 
-	sprintf(command, MPROG_CMD"\"addpath('%s');checkfiltres('%s','%s');exit;\"", getenv("srcdir"), infilename, outfilename);
+	sprintf(command, MPROG_CMD"\"addpath('%s');checkfiltres('%s','%s');exit;\"", getenv("TESTSSRCDIR"), infilename, outfilename);
 	pipe = popen(command, "r");
 	while (fgets(line, 127, pipe)) {
 		if (sscanf(line, " time per sample: %lg ns", &matdt) == 1)

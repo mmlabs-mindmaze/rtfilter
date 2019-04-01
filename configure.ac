@@ -87,6 +87,6 @@ AC_SUBST([CURRENT],[lib_current])
 AC_SUBST([REVISION],[lib_revision])
 AC_SUBST([AGE],[lib_age])
 
-AC_CONFIG_FILES([Makefile src/Makefile src/rtfilter.pc tests/Makefile doc/Makefile])
+AC_CONFIG_FILES([Makefile src/rtfilter.pc])
 AC_OUTPUT
 
