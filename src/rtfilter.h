@@ -49,7 +49,7 @@ extern "C" {
 #define RTF_COMPLEX_MASK 2
 
 //! Handle to a filter. Used by all the functions to manipulate a filter.
-typedef const struct rtf_filter* hfilter;
+typedef struct rtf_filter* hfilter;
 
 //! create a digital filter
 hfilter rtf_create_filter(unsigned int nchann, int proctype,
@@ -95,7 +95,7 @@ struct rtf_coeffs {
 
 
 void rtf_coeffs_destroy(struct rtf_coeffs * coeffs);
-struct rtf_coeffs* rtf_get_coeffs(hfilter filt);
+struct rtf_coeffs* rtf_get_coeffs(const struct rtf_filter * filt);
 
 #ifdef __cplusplus
 }

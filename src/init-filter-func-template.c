@@ -32,7 +32,7 @@
  * filter since beginning of the times.
  */
 LOCAL_FN
-void INIT_DATADEP_FUNC(const struct rtf_filter* filt, const void* data)
+void INIT_DATADEP_FUNC(struct rtf_filter* filt, const void* data)
 {
 	const TYPEIN* in = data;
 	TYPEIN* xoff = filt->xoff;

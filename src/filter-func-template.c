@@ -31,7 +31,7 @@
 #define RATIO_INOUT ((int)(NELEM_DATIN/NELEM_DAT))
 
 HOTSPOT LOCAL_FN
-void FILTER_DATADEP_FUNC(const struct rtf_filter* filt,
+void FILTER_DATADEP_FUNC(struct rtf_filter* filt,
                          const void* restrict input, void* restrict output,
                          unsigned int nsamples)
 {

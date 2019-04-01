@@ -21,7 +21,7 @@
 #include "filter-internal.h"
 
 #define DECLARE_FILTFUNC(fnname)\
-	LOCAL_FN void fnname(const struct rtf_filter* filt,\
+	LOCAL_FN void fnname(struct rtf_filter* filt,\
 	                     const void* restrict in, void* restrict out,\
 	                     unsigned int nsamples)
 

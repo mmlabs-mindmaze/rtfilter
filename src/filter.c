@@ -106,7 +106,7 @@ set_filterfn_proc setfiltfnproctab[4][4] = {
 };
 
 
-typedef void (*init_filter_proc)(const struct rtf_filter*, const void*);
+typedef void (*init_filter_proc)(struct rtf_filter*, const void*);
 
 static
 const init_filter_proc init_filter_proc_tab[4][4] = {
@@ -188,7 +188,7 @@ void define_types(int proctp, int paramtp, int* intp, int* outtp)
 
 
 LOCAL_FN
-void default_init_filter(const struct rtf_filter* filt, const void* data)
+void default_init_filter(struct rtf_filter* filt, const void* data)
 {
 	void *dest;
 	int itp = filt->intype, otp = filt->outtype;
@@ -203,20 +203,20 @@ void default_init_filter(const struct rtf_filter* filt, const void* data)
 
 
 LOCAL_FN
-void default_free_filter(const struct rtf_filter* filt)
+void default_free_filter(struct rtf_filter* filt)
 {
-	free((void*) (filt->a));
-	free((void*) (filt->b));
+	free((void*) filt->a);
+	free((void*) filt->b);
 	align_free(filt->xoff);
 	align_free(filt->yoff);
 }
 
 
 static
-void default_destroy_filter(const struct rtf_filter* filt)
+void default_destroy_filter(struct rtf_filter* filt)
 {
 	default_free_filter(filt);
-	free((void*) filt);
+	free(filt);
 }
 
 

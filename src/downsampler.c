@@ -43,7 +43,7 @@ struct sampler {
 
 
 static
-unsigned int downsampler_filter(const struct rtf_filter* filt,
+unsigned int downsampler_filter(struct rtf_filter* filt,
                                 const void* x, void* y, unsigned int ns)
 {
 	unsigned int i, j, nsproc;
@@ -82,7 +82,7 @@ unsigned int downsampler_filter(const struct rtf_filter* filt,
 
 
 static
-void downsampler_init_filter(const struct rtf_filter* filt, const void* in)
+void downsampler_init_filter(struct rtf_filter* filt, const void* in)
 {
 	struct sampler* sampler = get_sampler(filt);
 
@@ -92,7 +92,7 @@ void downsampler_init_filter(const struct rtf_filter* filt, const void* in)
 
 
 static
-void downsampler_destroy_filter(const struct rtf_filter* filt)
+void downsampler_destroy_filter(struct rtf_filter* filt)
 {
 	struct sampler* sampler = get_sampler(filt);
 
@@ -107,7 +107,7 @@ void downsampler_destroy_filter(const struct rtf_filter* filt)
 DEPRECATED API_EXPORTED
 hfilter rtf_create_downsampler(unsigned int nch, int type, unsigned int r)
 {
-	const struct rtf_filter* lowpass;
+	struct rtf_filter* lowpass;
 	struct sampler* sampler;
 	void* buff;
 	double cutoff = 0.8/(double)(2*r);

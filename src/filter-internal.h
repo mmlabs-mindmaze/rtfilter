@@ -24,11 +24,11 @@
 typedef complex float cfloat;
 typedef complex double cdouble;
 
-typedef unsigned int (*filter_proc)(const struct rtf_filter*, const void*,
+typedef unsigned int (*filter_proc)(struct rtf_filter*, const void*,
                                     void*, unsigned int);
 typedef void (*set_filterfn_proc)(struct rtf_filter*);
-typedef void (*init_filter_proc)(const struct rtf_filter*, const void*);
-typedef void (*destroy_filter_proc)(const struct rtf_filter*);
+typedef void (*init_filter_proc)(struct rtf_filter*, const void*);
+typedef void (*destroy_filter_proc)(struct rtf_filter*);
 
 struct rtf_filter
 {
@@ -48,9 +48,9 @@ struct rtf_filter
 };
 
 LOCAL_FN
-void default_init_filter(const struct rtf_filter* filt, const void* data);
+void default_init_filter(struct rtf_filter* filt, const void* data);
 LOCAL_FN
-void default_free_filter(const struct rtf_filter* filt);
+void default_free_filter(struct rtf_filter* filt);
 
 LOCAL_FN size_t sizeof_data(int type);
 LOCAL_FN void* align_alloc(size_t alignment, size_t size);
@@ -63,11 +63,11 @@ LOCAL_FN void set_filterfn_dcd(struct rtf_filter* filt);
 LOCAL_FN void set_filterfn_cf(struct rtf_filter* filt);
 LOCAL_FN void set_filterfn_cd(struct rtf_filter* filt);
 
-LOCAL_FN void init_filter_f(const struct rtf_filter* filt, const void* data);
-LOCAL_FN void init_filter_d(const struct rtf_filter* filt, const void* data);
-LOCAL_FN void init_filter_fcf(const struct rtf_filter* filt, const void* data);
-LOCAL_FN void init_filter_dcd(const struct rtf_filter* filt, const void* data);
-LOCAL_FN void init_filter_cf(const struct rtf_filter* filt, const void* data);
-LOCAL_FN void init_filter_cd(const struct rtf_filter* filt, const void* data);
+LOCAL_FN void init_filter_f(struct rtf_filter* filt, const void* data);
+LOCAL_FN void init_filter_d(struct rtf_filter* filt, const void* data);
+LOCAL_FN void init_filter_fcf(struct rtf_filter* filt, const void* data);
+LOCAL_FN void init_filter_dcd(struct rtf_filter* filt, const void* data);
+LOCAL_FN void init_filter_cf(struct rtf_filter* filt, const void* data);
+LOCAL_FN void init_filter_cd(struct rtf_filter* filt, const void* data);
 
 #endif //FILTER_INTERNAL_H
