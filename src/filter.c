@@ -1,20 +1,20 @@
 /*
-    Copyright (C) 2008-2011 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
-
-    This file is part of the rtfilter library
-
-    The rtfilter library is free software: you can redistribute it and/or
-    modify it under the terms of the version 3 of the GNU Lesser General
-    Public License as published by the Free Software Foundation.
-  
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
-    
-    You should have received a copy of the GNU Lesser General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ *  Copyright (C) 2008-2011 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+ *
+ *  This file is part of the rtfilter library
+ *
+ *  The rtfilter library is free software: you can redistribute it and/or
+ *  modify it under the terms of the version 3 of the GNU Lesser General
+ *  Public License as published by the Free Software Foundation.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 #if HAVE_CONFIG_H
 # include <config.h>
 #endif
@@ -45,21 +45,22 @@ size_t sizeof_data(int type)
 }
 
 
-#define DECLARE_COPY_PARAM_FN(copy_param_fn, in_t, out_t)		\
-static void copy_param_fn(unsigned int len, void* dst, const void* src, const void* factor, int isdenum)	\
-{									\
-	unsigned int i;							\
-	const in_t *tsrc = src;						\
-	out_t *tdst = dst;						\
-	in_t normfactor = (!factor) ? 1.0 : *((const in_t*)factor);	\
-									\
-	if (!isdenum)							\
-		for (i=0; i<len; i++)					\
-			tdst[i] = tsrc[i] / normfactor;			\
-	else								\
-		for (i=0; i<len; i++)					\
-			tdst[i] = -tsrc[i+1] / normfactor;		\
-}		
+#define DECLARE_COPY_PARAM_FN(copy_param_fn, in_t, out_t)\
+	static void copy_param_fn(unsigned int len, void* dst, const void* src,\
+	                          const void* factor, int isdenum)\
+	{\
+		unsigned int i;\
+		const in_t *tsrc = src;\
+		out_t *tdst = dst;\
+		in_t normfactor = (!factor) ? 1.0 : *((const in_t*)factor);\
+		if (!isdenum) {\
+			for (i = 0; i < len; i++)\
+				tdst[i] = tsrc[i] / normfactor;\
+		} else {\
+			for (i = 0; i < len; i++)\
+				tdst[i] = -tsrc[i+1] / normfactor;\
+		}\
+	}
 
 DECLARE_COPY_PARAM_FN(copy_param_ff, float, float)
 DECLARE_COPY_PARAM_FN(copy_param_fd, float, double)
@@ -74,31 +75,32 @@ DECLARE_COPY_PARAM_FN(copy_param_cfcd, complex float, complex double)
 DECLARE_COPY_PARAM_FN(copy_param_cdcf, complex double, complex float)
 DECLARE_COPY_PARAM_FN(copy_param_cdcd, complex double, complex double)
 
-typedef void (*copy_param_proc)(unsigned int, void*, const void*, const void*, int);
+typedef void (*copy_param_proc)(unsigned int, void*, const void*, const void*,
+                                int);
 
 static
 copy_param_proc convtab[4][4] = {
-	[RTF_FLOAT] = {[RTF_FLOAT] = copy_param_ff, 
-	               [RTF_DOUBLE] = copy_param_fd,
-                       [RTF_CFLOAT] = copy_param_fcf,
-                       [RTF_CDOUBLE] = copy_param_fcd},
-	[RTF_DOUBLE] = {[RTF_FLOAT] = copy_param_df, 
-	                [RTF_DOUBLE] = copy_param_dd,
-			[RTF_CFLOAT] = copy_param_dcf, 
-			[RTF_CDOUBLE] = copy_param_dcd},
-	[RTF_CFLOAT] = {[RTF_CFLOAT] = copy_param_cfcf, 
-	                [RTF_CDOUBLE] = copy_param_cfcd},
+	[RTF_FLOAT] = {[RTF_FLOAT] = copy_param_ff,
+		       [RTF_DOUBLE] = copy_param_fd,
+		       [RTF_CFLOAT] = copy_param_fcf,
+		       [RTF_CDOUBLE] = copy_param_fcd},
+	[RTF_DOUBLE] = {[RTF_FLOAT] = copy_param_df,
+		        [RTF_DOUBLE] = copy_param_dd,
+		        [RTF_CFLOAT] = copy_param_dcf,
+		        [RTF_CDOUBLE] = copy_param_dcd},
+	[RTF_CFLOAT] = {[RTF_CFLOAT] = copy_param_cfcf,
+		        [RTF_CDOUBLE] = copy_param_cfcd},
 	[RTF_CDOUBLE] = {[RTF_CFLOAT] = copy_param_cdcf,
-	                 [RTF_CDOUBLE] = copy_param_cdcd},
+		         [RTF_CDOUBLE] = copy_param_cdcd},
 };
 
 
 static
 set_filterfn_proc setfiltfnproctab[4][4] = {
 	[RTF_FLOAT] = {[RTF_FLOAT] = set_filterfn_f,
-	               [RTF_CFLOAT] = set_filterfn_fcf},
+		       [RTF_CFLOAT] = set_filterfn_fcf},
 	[RTF_DOUBLE] = {[RTF_DOUBLE] = set_filterfn_d,
-	                [RTF_CDOUBLE] = set_filterfn_dcd},
+		        [RTF_CDOUBLE] = set_filterfn_dcd},
 	[RTF_CFLOAT] = {[RTF_CFLOAT] = set_filterfn_cf},
 	[RTF_CDOUBLE] = {[RTF_CDOUBLE] = set_filterfn_cd}
 };
@@ -109,9 +111,9 @@ typedef void (*init_filter_proc)(const struct rtf_filter*, const void*);
 static
 const init_filter_proc init_filter_proc_tab[4][4] = {
 	[RTF_FLOAT] = {[RTF_FLOAT] = init_filter_f,
-	               [RTF_CFLOAT] = init_filter_fcf},
+		       [RTF_CFLOAT] = init_filter_fcf},
 	[RTF_DOUBLE] = {[RTF_DOUBLE] = init_filter_d,
-	                [RTF_CDOUBLE] = init_filter_dcd},
+		        [RTF_CDOUBLE] = init_filter_dcd},
 	[RTF_CFLOAT] = {[RTF_CFLOAT] = init_filter_cf},
 	[RTF_CDOUBLE] = {[RTF_CDOUBLE] = init_filter_cd}
 };
@@ -124,11 +126,12 @@ void reset_filter(hfilter filt)
 	if (filt->xoff)
 		memset(filt->xoff, 0,
 		       (filt->a_len -
-			1) * filt->num_chann * sizeof_data(filt->intype));
-	
+		        1) * filt->num_chann * sizeof_data(filt->intype));
+
 	if (filt->yoff)
 		memset(filt->yoff, 0,
-		       (filt->b_len) * filt->num_chann * sizeof_data(filt->outtype));
+		       (filt->b_len) * filt->num_chann * sizeof_data(
+			       filt->outtype));
 }
 
 
@@ -139,16 +142,18 @@ void* align_alloc(size_t alignment, size_t size)
 	void* memptr = NULL;
 	if (posix_memalign(&memptr, alignment, size))
 		return NULL;
+
 	return memptr;
 #else
 	void* origptr = malloc(sizeof(void*) + alignment + size);
 	if (origptr == NULL)
 		return NULL;
+
 	char* ptr = ((char*)origptr) + sizeof(void*);
 	ptr += alignment - ((uintptr_t)ptr)%alignment;
 	*(void**)(ptr-sizeof(origptr)) = origptr;
 	return ptr;
-#endif
+#endif /* if HAVE_POSIX_MEMALIGN */
 }
 
 
@@ -160,6 +165,7 @@ void  align_free(void* memptr)
 #else
 	if (memptr == NULL)
 		return;
+
 	free(*(((void**)memptr)-1));
 #endif
 }
@@ -199,8 +205,8 @@ void default_init_filter(const struct rtf_filter* filt, const void* data)
 LOCAL_FN
 void default_free_filter(const struct rtf_filter* filt)
 {
-	free((void *) (filt->a));
-	free((void *) (filt->b));
+	free((void*) (filt->a));
+	free((void*) (filt->b));
 	align_free(filt->xoff);
 	align_free(filt->yoff);
 }
@@ -232,10 +238,10 @@ void rtf_init_filter(hfilter filt, const void *data)
 
 
 API_EXPORTED
-hfilter rtf_create_filter(unsigned int nchann, int proctype, 
-                      unsigned int numlen, const void *num,
-		      unsigned int denlen, const void *den,
-		      int paramtype)
+hfilter rtf_create_filter(unsigned int nchann, int proctype,
+                          unsigned int numlen, const void *num,
+                          unsigned int denlen, const void *den,
+                          int paramtype)
 {
 	struct rtf_filter *filt = NULL;
 	void *a = NULL;
@@ -249,15 +255,16 @@ hfilter rtf_create_filter(unsigned int nchann, int proctype,
 
 	// Processing complex data with real transfer function is equivalent
 	// (and faster) to process real and imaginary part as 2 channels
-	if ((proctype & RTF_COMPLEX_MASK)
-	 && !(paramtype & RTF_COMPLEX_MASK)) {
-	 	proctype &= ~RTF_COMPLEX_MASK;
+	if (  (proctype & RTF_COMPLEX_MASK)
+	   && !(paramtype & RTF_COMPLEX_MASK)) {
+		proctype &= ~RTF_COMPLEX_MASK;
 		nchann *= 2;
 	}
+
 	define_types(proctype, paramtype, &intype, &outtype);
 
 	// Check if a denominator exists
-	if ((denlen==0) || (den==NULL)) {
+	if ((denlen == 0) || (den == NULL)) {
 		denlen = 0;
 		den = NULL;
 	} else {
@@ -270,14 +277,15 @@ hfilter rtf_create_filter(unsigned int nchann, int proctype,
 	filt = malloc(sizeof(*filt));
 	a = (numlen > 0) ? malloc(numlen * sizeof_data(outtype)) : NULL;
 	b = (denlen > 0) ? malloc(denlen * sizeof_data(outtype)) : NULL;
-	if (xoffsize > 0) 
+	if (xoffsize > 0)
 		xoff = align_alloc(16, xoffsize * sizeof_data(intype));
-	if (yoffsize > 0) 
+
+	if (yoffsize > 0)
 		yoff = align_alloc(16, yoffsize * sizeof_data(outtype));
 
 	// handle memory allocation problem
-	if (!filt || ((numlen > 0) && !a) || ((xoffsize > 0) && !xoff)
-	    || ((denlen > 0) && !b) || ((yoffsize > 0) && !yoff)) {
+	if (  !filt || ((numlen > 0) && !a) || ((xoffsize > 0) && !xoff)
+	   || ((denlen > 0) && !b) || ((yoffsize > 0) && !yoff)) {
 		free(filt);
 		free(a);
 		align_free(xoff);
@@ -286,7 +294,7 @@ hfilter rtf_create_filter(unsigned int nchann, int proctype,
 		return NULL;
 	}
 
-	// copy the numerator and denerator 
+	// copy the numerator and denerator
 	// (and normalize and convert to recursive rule)
 	convtab[paramtype][outtype](numlen, a, num, den, 0);
 	convtab[paramtype][outtype](denlen, b, den, den, 1);
@@ -338,18 +346,18 @@ int rtf_get_type(hfilter filt, int in)
 static
 const char rtf_version_string[] = PACKAGE_STRING
 #if HAVE_CPUID
-" (compiled with cpu detection)";
+                                  " (compiled with cpu detection)";
 #elif __SSE3__
-" (compiled with sse3)";
+                                  " (compiled with sse3)";
 #elif __SSE2__
-" (compiled with sse2)";
+                                  " (compiled with sse2)";
 #elif __SSE__
-" (compiled with sse2)";
+                                  " (compiled with sse2)";
 #elif __ARM_NEON__
-" (compiled with NEON)";
+                                  " (compiled with NEON)";
 #else
-" (compiled with no SIMD)";
-#endif
+                                  " (compiled with no SIMD)";
+#endif /* if HAVE_CPUID */
 
 
 API_EXPORTED
@@ -357,6 +365,7 @@ size_t rtf_get_version(char* string, size_t len, unsigned int line)
 {
 	if (line > 0)
 		return 0;
+
 	strncpy(string, rtf_version_string, len-1);
 	string[len-1] = '\0';
 	return strlen(string);
@@ -377,6 +386,7 @@ void rtf_coeffs_destroy(struct rtf_coeffs * coeffs)
 			free(coeffs->real_coeffs.num);
 			free(coeffs->real_coeffs.denum);
 		}
+
 		free(coeffs);
 	}
 }
@@ -402,7 +412,7 @@ int is_complex_filter(const struct rtf_filter * filt)
  * Return: newly allocated rtf_coeffs structure on success, NULL on error
  */
 API_EXPORTED
-struct rtf_coeffs * rtf_get_coeffs(const struct rtf_filter * filt)
+struct rtf_coeffs* rtf_get_coeffs(const struct rtf_filter * filt)
 {
 	int i;
 	struct rtf_coeffs * coeffs;
@@ -411,25 +421,31 @@ struct rtf_coeffs * rtf_get_coeffs(const struct rtf_filter * filt)
 	coeffs = malloc(sizeof(*coeffs));
 	if (coeffs == NULL)
 		return NULL;
+
 	memset(coeffs, 0, sizeof(*coeffs));
 
 	coeffs->is_complex = is_complex_filter(filt);
 	if (coeffs->is_complex) {
 		coeffs->complex_coeffs.num_len = filt->a_len;
 		coeffs->complex_coeffs.denum_len = filt->b_len + 1;
-		coeffs->complex_coeffs.num = malloc(coeffs->complex_coeffs.denum_len * sizeof(rtf_cdouble));
-		coeffs->complex_coeffs.denum = malloc(coeffs->complex_coeffs.num_len * sizeof(rtf_cdouble));
-		if (coeffs->complex_coeffs.num == NULL
-		    || coeffs->complex_coeffs.denum == NULL)
+		coeffs->complex_coeffs.num = malloc(
+			coeffs->complex_coeffs.denum_len * sizeof(rtf_cdouble));
+		coeffs->complex_coeffs.denum = malloc(
+			coeffs->complex_coeffs.num_len * sizeof(rtf_cdouble));
+		if (  coeffs->complex_coeffs.num == NULL
+		   || coeffs->complex_coeffs.denum == NULL)
 			goto enomem;
 
 		copy_fn = convtab[filt->outtype][RTF_CDOUBLE];
-		copy_fn(filt->a_len, coeffs->complex_coeffs.num, filt->a, NULL, 0);
+		copy_fn(filt->a_len, coeffs->complex_coeffs.num, filt->a, NULL,
+		        0);
 		coeffs->complex_coeffs.denum[0] = (rtf_cdouble) {1.};
-		copy_fn(filt->b_len, coeffs->complex_coeffs.denum + 1, filt->b, NULL, 0);
-		for (i = 1 ; i < coeffs->complex_coeffs.denum_len ; i++) {
+		copy_fn(filt->b_len, coeffs->complex_coeffs.denum + 1, filt->b,
+		        NULL, 0);
+		for (i = 1; i < coeffs->complex_coeffs.denum_len; i++) {
 #ifdef _MSC_VER
-			coeffs->complex_coeffs.denum[i] = cmul_d(coeffs->complex_coeffs.denum[i], -1.);
+			coeffs->complex_coeffs.denum[i] = cmul_d(
+				coeffs->complex_coeffs.denum[i], -1.);
 #else
 			coeffs->complex_coeffs.denum[i] *= -1.;
 #endif
@@ -437,17 +453,20 @@ struct rtf_coeffs * rtf_get_coeffs(const struct rtf_filter * filt)
 	} else {
 		coeffs->real_coeffs.num_len = filt->a_len;
 		coeffs->real_coeffs.denum_len = filt->b_len + 1;
-		coeffs->real_coeffs.num = malloc(coeffs->real_coeffs.num_len * sizeof(double));
-		coeffs->real_coeffs.denum = malloc(coeffs->real_coeffs.denum_len * sizeof(double));
-		if (coeffs->real_coeffs.num == NULL
-				|| coeffs->real_coeffs.denum == NULL)
+		coeffs->real_coeffs.num = malloc(coeffs->real_coeffs.num_len *
+		                                 sizeof(double));
+		coeffs->real_coeffs.denum = malloc(
+			coeffs->real_coeffs.denum_len * sizeof(double));
+		if (  coeffs->real_coeffs.num == NULL
+		   || coeffs->real_coeffs.denum == NULL)
 			goto enomem;
 
 		copy_fn = convtab[filt->outtype][RTF_DOUBLE];
 		copy_fn(filt->a_len, coeffs->real_coeffs.num, filt->a, NULL, 0);
 		coeffs->real_coeffs.denum[0] = 1.;
-		copy_fn(filt->b_len, coeffs->real_coeffs.denum + 1, filt->b, NULL, 0);
-		for (int i = 1 ; i < coeffs->real_coeffs.denum_len ; i++) {
+		copy_fn(filt->b_len, coeffs->real_coeffs.denum + 1, filt->b,
+		        NULL, 0);
+		for (int i = 1; i < coeffs->real_coeffs.denum_len; i++) {
 			coeffs->real_coeffs.denum[i] *= -1.;
 		}
 	}

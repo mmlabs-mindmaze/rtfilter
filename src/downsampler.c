@@ -1,20 +1,20 @@
 /*
-    Copyright (C) 2010-2011 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
-
-    This file is part of the rtfilter library
-
-    The rtfilter library is free software: you can redistribute it and/or
-    modify it under the terms of the version 3 of the GNU Lesser General
-    Public License as published by the Free Software Foundation.
-  
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
-    
-    You should have received a copy of the GNU Lesser General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ *  Copyright (C) 2010-2011 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+ *
+ *  This file is part of the rtfilter library
+ *
+ *  The rtfilter library is free software: you can redistribute it and/or
+ *  modify it under the terms of the version 3 of the GNU Lesser General
+ *  Public License as published by the Free Software Foundation.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 #if HAVE_CONFIG_H
 # include <config.h>
 #endif
@@ -27,7 +27,7 @@
 #include "filter-internal.h"
 #include "rtf_common.h"
 
-#define BUFFNS	64
+#define BUFFNS 64
 
 struct sampler {
 	struct rtf_filter filt;
@@ -38,16 +38,16 @@ struct sampler {
 	void* buff;
 };
 
-#define get_sampler(p) \
+#define get_sampler(p)\
 	((struct sampler*)(((char*)p)-offsetof(struct sampler, filt)))
 
 
 static
-unsigned int downsampler_filter(const struct rtf_filter* filt, 
+unsigned int downsampler_filter(const struct rtf_filter* filt,
                                 const void* x, void* y, unsigned int ns)
 {
 	unsigned int i, j, nsproc;
-	struct sampler*	sampler = get_sampler(filt);
+	struct sampler* sampler = get_sampler(filt);
 	const char* in = x;
 	char* out = y, *tmpbuf = sampler->buff;
 	unsigned int samsize = sampler->samsize, r = sampler->r;
@@ -84,7 +84,7 @@ unsigned int downsampler_filter(const struct rtf_filter* filt,
 static
 void downsampler_init_filter(const struct rtf_filter* filt, const void* in)
 {
-	struct sampler*	sampler = get_sampler(filt);
+	struct sampler* sampler = get_sampler(filt);
 
 	default_init_filter(filt, in);
 	sampler->ci = 0;
@@ -94,7 +94,7 @@ void downsampler_init_filter(const struct rtf_filter* filt, const void* in)
 static
 void downsampler_destroy_filter(const struct rtf_filter* filt)
 {
-	struct sampler*	sampler = get_sampler(filt);
+	struct sampler* sampler = get_sampler(filt);
 
 	default_free_filter(filt);
 	align_free(sampler->buff);
@@ -112,7 +112,7 @@ hfilter rtf_create_downsampler(unsigned int nch, int type, unsigned int r)
 	void* buff;
 	double cutoff = 0.8/(double)(2*r);
 	unsigned int samsize = nch*sizeof_data(type);
-	
+
 	// Allocate resource (+ create lowpass)
 	sampler = malloc(sizeof(*sampler));
 	buff = align_alloc(16, BUFFNS*samsize);
