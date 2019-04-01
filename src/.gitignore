@@ -1,0 +1,4 @@
+# generated files
+config.h
+config.h.in*
+rtfilter.pc
