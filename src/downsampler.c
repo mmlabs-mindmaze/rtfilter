@@ -104,7 +104,7 @@ void downsampler_destroy_filter(const struct rtf_filter* filt)
 
 
 
-API_EXPORTED
+DEPRECATED API_EXPORTED
 hfilter rtf_create_downsampler(unsigned int nch, int type, unsigned int r)
 {
 	const struct rtf_filter* lowpass;
