@@ -19,6 +19,7 @@
 # include <config.h>
 #endif
 
+#include <assert.h>
 #include <complex.h>
 #include <math.h>
 #include <stdint.h>
@@ -323,6 +324,29 @@ hfilter rtf_create_filter(unsigned int nchann, int proctype,
 	rtf_init_filter(filt, NULL);
 
 	return filt;
+}
+
+
+hfilter rtf_create_filter_coeffs(unsigned int nchann, int data_type,
+                                 struct rtf_coeffs * coeffs)
+{
+	assert(nchann > 0 && coeffs != NULL);
+
+	if (coeffs->is_complex) {
+		return rtf_create_filter(nchann, data_type,
+		                         coeffs->complex_coeffs.num_len,
+		                         coeffs->complex_coeffs.num,
+		                         coeffs->complex_coeffs.denum_len,
+		                         coeffs->complex_coeffs.denum,
+		                         RTF_CDOUBLE);
+	} else {
+		return rtf_create_filter(nchann, data_type,
+		                         coeffs->real_coeffs.num_len,
+		                         coeffs->real_coeffs.num,
+		                         coeffs->real_coeffs.denum_len,
+		                         coeffs->real_coeffs.denum,
+		                         RTF_DOUBLE);
+	}
 }
 
 

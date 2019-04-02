@@ -101,6 +101,10 @@ struct rtf_coeffs {
 void rtf_coeffs_destroy(struct rtf_coeffs * coeffs);
 struct rtf_coeffs* rtf_get_coeffs(const struct rtf_filter * filt);
 
+
+hfilter rtf_create_filter_coeffs(unsigned int nchann, int data_type,
+                                 struct rtf_coeffs * coeffs);
+
 /* helpers to create common filters */
 
 /* Enumeration specifying some kernel windows */

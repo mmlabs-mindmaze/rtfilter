@@ -114,6 +114,7 @@ dist_man_MANS = \
 	doc/rtf_create_chebychev.3 \
 	doc/rtf_create_downsampler.3 \
 	doc/rtf_create_filter.3 \
+	doc/rtf_create_filter_coeffs.3 \
 	doc/rtf_create_fir_bandpass.3 \
 	doc/rtf_create_fir_highpass.3 \
 	doc/rtf_create_fir_lowpass.3 \

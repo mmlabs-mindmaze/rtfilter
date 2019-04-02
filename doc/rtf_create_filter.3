@@ -14,6 +14,10 @@ rtf_create_filter - Creates a custom filter
 .br
 .BI "                          int " type ");"
 .br
+.BI "hfilter rtf_create_filter_coeffs(unsigned int " nchann ", int " proctype ","
+.br
+.BI "                                 struct rtf_coeffs * coeffs);"
+.br
 .SH DESCRIPTION
 .LP
 This function creates and initializes a digital linear filter whose the
@@ -28,6 +32,9 @@ elements in each arrays is controlled by \fInum_len\fP and \fdenum_len\fP.
 allowed to be NULL. In such case, the denominator will be set to 1.
 The data type of the values in \fInum\fP and \fIdenum\fP are specified by
 \fItype\fP.
+.LP
+The values \fInum\fP, \fIdenum\fP, \fInum_len\fP, and \fIdenum_len\fP can
+also be passed using the \fIcoeffs\fP structure.
 .LP
 The \fIproctype\fP and \fItype\fP must be one the following constants:
 .IP "" 3
