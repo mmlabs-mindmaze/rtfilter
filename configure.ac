@@ -48,7 +48,7 @@ AM_CONDITIONAL(BUILD_SSE3_SUPPORT, test "x$has_sse3" = "xyes")
 # Test for MATLAB
 AC_ARG_ENABLE([matlab-tests],
               AC_HELP_STRING([--enable-matlab-tests], [Try running matlab tests @<:@default=check@:>@]),
-	      [], [enable_matlab_tests=check])
+              [], [enable_matlab_tests=check])
 
 AC_CHECK_PROGS([mprog], [octave matlab], [none])
 AS_IF([test "x$mprog" = "xmatlab"],
