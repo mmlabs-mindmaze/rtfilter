@@ -191,7 +191,6 @@ void define_types(int proctp, int paramtp, int* intp, int* outtp)
 LOCAL_FN
 void default_init_filter(struct rtf_filter* filt, const void* data)
 {
-	void *dest;
 	int itp = filt->intype, otp = filt->outtype;
 
 	if (data == NULL) {
