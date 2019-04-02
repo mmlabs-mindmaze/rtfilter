@@ -501,7 +501,7 @@ struct rtf_coeffs* rtf_get_coeffs(const struct rtf_filter * filt)
 		coeffs->real_coeffs.denum[0] = 1.;
 		copy_fn(filt->b_len, coeffs->real_coeffs.denum + 1, filt->b,
 		        NULL, 0);
-		for (int i = 1; i < coeffs->real_coeffs.denum_len; i++) {
+		for (i = 1; i < coeffs->real_coeffs.denum_len; i++) {
 			coeffs->real_coeffs.denum[i] *= -1.;
 		}
 	}
