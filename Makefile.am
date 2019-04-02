@@ -218,5 +218,5 @@ checkstyle: devtools/uncrustify.cfg
 
 # primitive syntax check on all the source files
 .PHONY: spelling
-spelling: $(librtfilter_la_SOURCES) $(filter_templates)
+spelling: $(librtfilter_la_SOURCES) $(filter_templates) $(dist_man_MANS)
 	codespell --ignore-words-list=sinc $^
