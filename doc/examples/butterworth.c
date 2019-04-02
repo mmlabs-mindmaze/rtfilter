@@ -21,7 +21,6 @@ The input data in created and processd by chunk of CHUNKNS samples. The
 input and output data are then recorded on 2 files: input.bin and
 output.bin.
 */
-#include <rtf_common.h>
 #include <rtfilter.h>
 #include <stdlib.h>
 #include <stdio.h>

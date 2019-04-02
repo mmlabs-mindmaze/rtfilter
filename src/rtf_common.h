@@ -18,64 +18,9 @@
 #ifndef COMMON_FILTERS_H
 #define COMMON_FILTERS_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#warning "This header has been deprecated, and will be removed in a subsequent\
+        rtfilter release. Please only include <rtfilter.h>."
 
 #include <rtfilter.h>
 
-/**
- * Enumeration specifying some kernel windows
- */
-typedef enum {
-	BLACKMAN_WINDOW,
-	HAMMING_WINDOW,
-	RECT_WINDOW
-} KernelWindow;
-
-//! Create a local mean filter based on a sliding window
-hfilter rtf_create_fir_mean(unsigned int nchann, int proctype,
-                            unsigned int nsamples);
-
-//! Lowpass windowed sinc filter
-hfilter rtf_create_fir_lowpass(unsigned int nchann, int proctype,
-                               double fc, unsigned int half_length,
-                               KernelWindow window);
-//! Highpass windowed sinc filter
-hfilter rtf_create_fir_highpass(unsigned int nchann, int proctype,
-                                double fc, unsigned int half_length,
-                                KernelWindow window);
-
-//! Bandpass windowed sinc filter
-hfilter rtf_create_fir_bandpass(unsigned int nchann, int proctype,
-                                double fc_low, double fc_high,
-                                unsigned int half_length,
-                                KernelWindow window);
-
-//! Butterworth filter (IIR filter)
-hfilter rtf_create_butterworth(unsigned int nchann, int proctype,
-                               double fc, unsigned int num_pole,
-                               int highpass);
-
-//! Chebychev filter (IIR filter)
-hfilter rtf_create_chebychev(unsigned int nchann, int proctype,
-                             double fc, unsigned int num_pole,
-                             int highpass, double ripple);
-
-//! Simple first order integral filter (IIR filter)
-hfilter rtf_create_integral(unsigned int nchann, int proctype, double fs);
-
-
-hfilter rtf_create_bandpass_analytic(unsigned int nchann,
-                                     int proctype,
-                                     double fl, double fh,
-                                     unsigned int num_pole);
-
-
-
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /*COMMON_FILTERS_H*/
+#endif /* COMMON_FILTERS_H */

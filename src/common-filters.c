@@ -24,7 +24,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "rtf_common.h"
 #include "rtfilter.h"
 
 #define PId 3.1415926535897932384626433832795L

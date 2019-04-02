@@ -19,7 +19,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "rtf_common.h"
 #include "rtfilter.h"
 
 

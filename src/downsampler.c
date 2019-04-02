@@ -23,7 +23,6 @@
 #include <string.h>
 
 #include "filter-internal.h"
-#include "rtf_common.h"
 #include "rtfilter.h"
 
 #define BUFFNS 64

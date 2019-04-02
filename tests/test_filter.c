@@ -24,7 +24,7 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "rtf_common.h"
+#include "rtfilter.h"
 
 #define NCHANN	64
 #define NSAMPLE	6
