@@ -52,6 +52,7 @@ librtfilter_la_LDFLAGS = \
 	$(eol)
 
 librtfilter_la_CFLAGS = \
+	$(AM_CFLAGS) \
 	$(FASTMATH_CFLAG) \
 	$(eol)
 
@@ -63,7 +64,7 @@ libfiltersse_la_SOURCES = \
 	src/filter-internal.h \
 	src/filter-sse.c \
 	$(eol)
-libfiltersse_la_CFLAGS = $(FASTMATH_CFLAG) $(SSE_CFLAGS)
+libfiltersse_la_CFLAGS = $(AM_CFLAGS) $(FASTMATH_CFLAG) $(SSE_CFLAGS)
 noinst_LTLIBRARIES += libfiltersse.la
 librtfilter_la_LIBADD += libfiltersse.la
 endif
@@ -74,7 +75,7 @@ libfiltersse2_la_SOURCES = \
 	src/filter-internal.h \
 	src/filter-sse2.c \
 	$(eol)
-libfiltersse2_la_CFLAGS = $(FASTMATH_CFLAG) $(SSE2_CFLAGS)
+libfiltersse2_la_CFLAGS = $(AM_CFLAGS) $(FASTMATH_CFLAG) $(SSE2_CFLAGS)
 noinst_LTLIBRARIES += libfiltersse2.la
 librtfilter_la_LIBADD += libfiltersse2.la
 endif
@@ -85,7 +86,7 @@ libfiltersse3_la_SOURCES = \
 	src/filter-internal.h \
 	src/filter-sse3.c \
 	$(eol)
-libfiltersse3_la_CFLAGS = $(FASTMATH_CFLAG) $(SSE3_CFLAGS)
+libfiltersse3_la_CFLAGS = $(AM_CFLAGS) $(FASTMATH_CFLAG) $(SSE3_CFLAGS)
 noinst_LTLIBRARIES += libfiltersse3.la
 librtfilter_la_LIBADD += libfiltersse3.la
 endif
@@ -180,6 +181,12 @@ downsample_LDADD = librtfilter.la
 
 testchebyshev_SOURCES = tests/testchebyshev.c tests/cheby-table.h
 testchebyshev_LDADD = librtfilter.la
+
+unittests_tap_CFLAGS = \
+	$(AM_CFLAGS) \
+	$(CHECK_CFLAGS) \
+	$(eol)
+
 
 TESTS_ENVIRONMENT = PATH="$(PATH):$(buildir)" TESTSSRCDIR="$(srcdir)/tests"
 
