@@ -46,14 +46,9 @@ build-aux/*
 *.la
 *.lo
 
-butterworth
-cmpwmatlab
-downsample
-measure-rtfilter
-testchebyshev
-
 # generated files
 /unittests.tap
+/butterworth
 
 # nfs tmp files
 *.nfs*

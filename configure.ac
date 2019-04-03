@@ -18,6 +18,7 @@ AC_CONFIG_SRCDIR([src/filter.c])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([src/config.h])
+AC_REQUIRE_AUX_FILE([tap-driver.sh])
 
 # Initialize Automake
 AM_INIT_AUTOMAKE([subdir-objects no-dist-gzip dist-bzip2 color-tests])
@@ -46,28 +47,23 @@ AM_CONDITIONAL(BUILD_SSE_SUPPORT, test "x$has_sse" = "xyes")
 AM_CONDITIONAL(BUILD_SSE2_SUPPORT, test "x$has_sse2" = "xyes")
 AM_CONDITIONAL(BUILD_SSE3_SUPPORT, test "x$has_sse3" = "xyes")
 
-# Test for MATLAB
-AC_ARG_ENABLE([matlab-tests],
-              AC_HELP_STRING([--enable-matlab-tests], [Try running matlab tests @<:@default=check@:>@]),
-              [], [enable_matlab_tests=check])
 
-AC_CHECK_PROGS([mprog], [octave matlab], [none])
-AS_IF([test "x$mprog" = "xmatlab"],
-	[AC_DEFINE(HAVE_MATLAB, [1], [Define to 1 if matlab can be found])],
-	[]
-)
-AS_IF([test "x$mprog" = "xoctave"],
-	[AC_DEFINE(HAVE_OCTAVE, [1], [Define to 1 if octave can be found])],
-	[]
-)
-
-AS_IF([test "x$enable_matlab_tests" = "xcheck"],
-      AS_IF([test "$mprog" != "none"],
-            [enable_matlab_tests="yes"],
-            [enable_matlab_tests="no"]))
-
-AS_IF([test "x$enable_matlab_tests" = "xyes"],
-      [AC_DEFINE(ENABLE_MATLAB_TESTS, [1], [Define to 1 to run matlab tests])])
+# Optional build of 'check' based tests
+PKG_CHECK_MODULES_EXT(CHECK, [check >= 0.9.12],
+                      [has_check=yes; tap_in_check=yes],
+                      [PKG_CHECK_MODULES_EXT(CHECK, [check], [has_check=yes], [has_check=no])])
+AC_ARG_WITH([check], AC_HELP_STRING([--with-check], [Build and run check based tests. @<:@default=detect@:>@]),
+        [], [with_check=detect])
+AS_CASE([$with_check],
+		[yes], [AS_IF([test "$has_check" != no],
+			[build_check_tests=yes],
+			[AC_MSG_FAILURE([check required but not found])])
+		],
+		[no], [build_check_tests=no],
+		[detect], [build_check_tests=$has_check],
+		[AC_MSG_FAILURE([invalid argument for '--with-check' option])])
+AM_CONDITIONAL(BUILD_CHECK_TESTS, [test "$build_check_tests" = yes])
+AM_CONDITIONAL(TAP_SUPPORT_IN_CHECK, [test "x$tap_in_check" = xyes])
 
 
 AC_SEARCH_LIBS([cos], [m], [], AC_MSG_ERROR([The math library cannot be found.]))

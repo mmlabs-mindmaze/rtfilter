@@ -151,53 +151,44 @@ butterworth_LDADD = \
 .PHONY: test
 test: check
 
-EXTRA_DIST += \
-	tests/checkdown.m \
-	tests/checkfiltres.m \
-	tests/test-complex-double.sh \
-	tests/test-complex-float.sh \
-	tests/test-double.sh \
-	tests/test-downsample.sh \
-	tests/test-float.sh \
-	$(eol)
+TEST_EXTENSIONS = .test .tap
 
-if HAVE_CLOCK_FN
-noinst_PROGRAMS = measure-rtfilter
-measure_rtfilter_SOURCES = tests/measure-rtfilter.c
-measure_rtfilter_LDADD = librtfilter.la $(OPTION_LIBS)
-endif
+# if check support TAP output, make use of it
+if TAP_SUPPORT_IN_CHECK
+AM_CPPFLAGS += -DCHECK_SUPPORT_TAP
+TAP_LOG_DRIVER = env AM_TAP_AWK='$(AWK)' $(SHELL) $(srcdir)/build-aux/tap-driver.sh
+else
+TAP_LOG_DRIVER = $(LOG_DRIVER)
+endif  # TAP_SUPPORT_IN_CHECK
+
+TESTS = \
+	unittests.tap \
+	$(eol)
 
 check_PROGRAMS += \
-	cmpwmatlab \
-	downsample \
-	testchebyshev \
+	unittests.tap \
 	$(eol)
 
-cmpwmatlab_SOURCES = tests/cmpwmatlab.c
-cmpwmatlab_LDADD = librtfilter.la
-
-downsample_SOURCES = tests/downsample.c
-downsample_LDADD = librtfilter.la
-
-testchebyshev_SOURCES = tests/testchebyshev.c tests/cheby-table.h
-testchebyshev_LDADD = librtfilter.la
+unittests_tap_SOURCES = \
+	test/rtfilter_test.c \
+	test/testcases.h \
+	test/test-common.c \
+	test/test-common.h \
+	test/unittests.c \
+	$(eol)
 
 unittests_tap_CFLAGS = \
 	$(AM_CFLAGS) \
 	$(CHECK_CFLAGS) \
 	$(eol)
 
+unittests_tap_LDADD = \
+	$(CHECK_LIBS) \
+	.libs/librtfilter.la \
+	$(MATH_LIB) \
+	$(eol)
 
 TESTS_ENVIRONMENT = PATH="$(PATH):$(buildir)" TESTSSRCDIR="$(srcdir)/tests"
-
-TESTS = \
-	testchebyshev \
-	tests/test-complex-double.sh \
-	tests/test-complex-float.sh \
-	tests/test-double.sh \
-	tests/test-downsample.sh \
-	tests/test-float.sh \
-	$(eol)
 
 #
 # DEV TARGETS
@@ -208,15 +199,15 @@ EXTRA_DIST += devtools/uncrustify.cfg
 .PHONY: fixstyle
 fixstyle: devtools/uncrustify.cfg
 	cd $(srcdir) && uncrustify -c devtools/uncrustify.cfg -l C --replace \
-		$(librtfilter_la_SOURCES) $(filter_templates)
+		$(librtfilter_la_SOURCES) $(filter_templates) $(unittests_tap_SOURCES)
 
 # check all the source files for correct coding style
 .PHONY: checkstyle
 checkstyle: devtools/uncrustify.cfg
 	cd $(srcdir) && uncrustify -c devtools/uncrustify.cfg -l C --check \
-		$(librtfilter_la_SOURCES) $(filter_templates)
+		$(librtfilter_la_SOURCES) $(filter_templates) $(unittests_tap_SOURCES)
 
 # primitive syntax check on all the source files
 .PHONY: spelling
-spelling: $(librtfilter_la_SOURCES) $(filter_templates) $(dist_man_MANS)
+spelling: $(librtfilter_la_SOURCES) $(filter_templates) $(dist_man_MANS) $(unittests_tap_SOURCES)
 	codespell --ignore-words-list=sinc $^
