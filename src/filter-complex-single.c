@@ -50,7 +50,7 @@
 #include "init-filter-func-template.c"
 
 static HOTSPOT
-unsigned int filtfunc(hfilter filt, const void* x, void* y, unsigned int ns)
+int filtfunc(hfilter filt, const void* x, void* y, int ns)
 {
 #if SUPPORT_SSE3_SET
 	// Check that sample can be aligned on 16 byte boundaries

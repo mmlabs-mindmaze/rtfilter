@@ -6,9 +6,7 @@ rtf_create_downsampler - Creates downsampling filter
 .LP
 .B #include <rtfilter.h>
 .sp
-.BI "hfilter rtf_create_downsampler(unsigned int " nch ", int " type ","
-.br
-.BI "                               unsigned int " r ");"
+.BI "hfilter rtf_create_downsampler(int " nch ", int " type "," int " r ");"
 .br
 .SH DESCRIPTION
 .LP
@@ -32,6 +30,4 @@ multiple of \fIr\fP.
 .BR rtf_filter (3),
 .BR rtf_create_filter (3),
 .BR rtf_destroy_filter (3)
-
-
 

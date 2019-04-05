@@ -7,23 +7,23 @@ rtf_create_fir_lowpass, rtf_create_fir_highpass, rtf_create_fir_bandpass
 .LP
 .B #include <rtfilter.h>
 .sp
-.BI "hfilter rtf_create_fir_lowpass(unsigned int " nch ", int " proctype ","
+.BI "hfilter rtf_create_fir_lowpass(int " nch ", int " proctype ","
 .br
-.BI "                               double " fc ", unsigned int " hlen ","
-.br
-.BI "                               KernelWindow " wndtype ");"
-.br
-.BI "hfilter rtf_create_fir_highpass(unsigned int " nch ", int " proctype ","
-.br
-.BI "                               double " fc ", unsigned int " hlen ","
+.BI "                               double " fc ", int " hlen ","
 .br
 .BI "                               KernelWindow " wndtype ");"
 .br
-.BI "hfilter rtf_create_fir_bandpass(unsigned int " nchann ", int " proctype ","
+.BI "hfilter rtf_create_fir_highpass(int " nch ", int " proctype ","
+.br
+.BI "                               double " fc ", int " hlen ","
+.br
+.BI "                               KernelWindow " wndtype ");"
+.br
+.BI "hfilter rtf_create_fir_bandpass(int " nchann ", int " proctype ","
 .br
 .BI "                                double " fc_low ", double " fc_high ","
 .br
-.BI "                                unsigned int " hlen ","
+.BI "                                int " hlen ","
 .br
 .BI "                                KernelWindow " wndtype ");"
 .br

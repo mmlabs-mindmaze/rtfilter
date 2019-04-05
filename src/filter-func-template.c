@@ -33,9 +33,9 @@
 HOTSPOT LOCAL_FN
 void FILTER_DATADEP_FUNC(struct rtf_filter* filt,
                          const void* restrict input, void* restrict output,
-                         unsigned int nsamples)
+                         int nsamples)
 {
-	unsigned int i, p;
+	int i, p;
 	int k, ic, ii, len, midlen;
 	const TYPEIN_LOCAL* in = input;
 	TYPEOUT_LOCAL* out = output;

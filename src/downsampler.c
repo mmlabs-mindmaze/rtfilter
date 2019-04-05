@@ -30,9 +30,9 @@
 struct sampler {
 	struct rtf_filter filt;
 	filter_proc lp_filter_fn;
-	unsigned int r;
-	unsigned int ci;
-	unsigned int samsize;
+	int r;
+	int ci;
+	int samsize;
 	void* buff;
 };
 
@@ -41,15 +41,15 @@ struct sampler {
 
 
 static
-unsigned int downsampler_filter(struct rtf_filter* filt,
-                                const void* x, void* y, unsigned int ns)
+int downsampler_filter(struct rtf_filter* filt,
+                       const void* x, void* y, int ns)
 {
-	unsigned int i, j, nsproc;
+	int i, j, nsproc;
 	struct sampler* sampler = get_sampler(filt);
 	const char* in = x;
 	char* out = y, *tmpbuf = sampler->buff;
-	unsigned int samsize = sampler->samsize, r = sampler->r;
-	unsigned int nsret = 0, ci = sampler->ci;
+	int samsize = sampler->samsize, r = sampler->r;
+	int nsret = 0, ci = sampler->ci;
 
 	// Process data by chunk of BUFFNS samples maximum
 	while (ns) {
@@ -103,13 +103,13 @@ void downsampler_destroy_filter(struct rtf_filter* filt)
 
 
 DEPRECATED API_EXPORTED
-hfilter rtf_create_downsampler(unsigned int nch, int type, unsigned int r)
+hfilter rtf_create_downsampler(int nch, int type, int r)
 {
 	struct rtf_filter* lowpass;
 	struct sampler* sampler;
 	void* buff;
 	double cutoff = 0.8/(double)(2*r);
-	unsigned int samsize = nch*sizeof_data(type);
+	int samsize = nch*sizeof_data(type);
 
 	// Allocate resource (+ create lowpass)
 	sampler = malloc(sizeof(*sampler));

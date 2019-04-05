@@ -50,7 +50,7 @@
 
 
 static HOTSPOT
-unsigned int filtfunc(hfilter filt, const void* x, void* y, unsigned int ns)
+int filtfunc(hfilter filt, const void* x, void* y, int ns)
 {
 #if SUPPORT_SSE_SET
 	if (  (filt->dispatch_code == 1)

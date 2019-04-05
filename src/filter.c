@@ -47,10 +47,10 @@ size_t sizeof_data(int type)
 
 
 #define DECLARE_COPY_PARAM_FN(copy_param_fn, in_t, out_t)\
-	static void copy_param_fn(unsigned int len, void* dst, const void* src,\
+	static void copy_param_fn(int len, void* dst, const void* src,\
 	                          const void* factor, int isdenum)\
 	{\
-		unsigned int i;\
+		int i;\
 		const in_t *tsrc = src;\
 		out_t *tdst = dst;\
 		in_t normfactor = (!factor) ? 1.0 : *((const in_t*)factor);\
@@ -76,8 +76,7 @@ DECLARE_COPY_PARAM_FN(copy_param_cfcd, complex float, complex double)
 DECLARE_COPY_PARAM_FN(copy_param_cdcf, complex double, complex float)
 DECLARE_COPY_PARAM_FN(copy_param_cdcd, complex double, complex double)
 
-typedef void (*copy_param_proc)(unsigned int, void*, const void*, const void*,
-                                int);
+typedef void (*copy_param_proc)(int, void*, const void*, const void*, int);
 
 static
 copy_param_proc convtab[4][4] = {
@@ -238,9 +237,9 @@ void rtf_init_filter(hfilter filt, const void *data)
 
 
 API_EXPORTED
-hfilter rtf_create_filter(unsigned int nchann, int proctype,
-                          unsigned int numlen, const void *num,
-                          unsigned int denlen, const void *den,
+hfilter rtf_create_filter(int nchann, int proctype,
+                          int numlen, const void *num,
+                          int denlen, const void *den,
                           int paramtype)
 {
 	struct rtf_filter *filt = NULL;
@@ -326,7 +325,7 @@ hfilter rtf_create_filter(unsigned int nchann, int proctype,
 }
 
 
-hfilter rtf_create_filter_coeffs(unsigned int nchann, int data_type,
+hfilter rtf_create_filter_coeffs(int nchann, int data_type,
                                  struct rtf_coeffs * coeffs)
 {
 	assert(nchann > 0 && coeffs != NULL);
@@ -357,7 +356,7 @@ void rtf_filter_set_lazy_init(hfilter filt, int do_lazy_init)
 
 
 API_EXPORTED HOTSPOT
-unsigned int rtf_filter(hfilter filt, const void* x, void* y, unsigned int ns)
+int rtf_filter(hfilter filt, const void* x, void* y, int ns)
 {
 	if (unlikely(filt->lazy_init)) {
 		rtf_init_filter(filt, x);
@@ -396,7 +395,7 @@ const char rtf_version_string[] = PACKAGE_STRING
 
 
 API_EXPORTED
-size_t rtf_get_version(char* string, size_t len, unsigned int line)
+size_t rtf_get_version(char* string, size_t len, int line)
 {
 	if (line > 0)
 		return 0;

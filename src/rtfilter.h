@@ -52,17 +52,17 @@ extern "C" {
 typedef struct rtf_filter* hfilter;
 
 //! create a digital filter
-hfilter rtf_create_filter(unsigned int nchann, int proctype,
-                          unsigned int num_len, const void *num,
-                          unsigned int denum_len, const void *denum,
+hfilter rtf_create_filter(int nchann, int proctype,
+                          int num_len, const void *num,
+                          int denum_len, const void *denum,
                           int type);
 
 //! set filter lazy-init
 void rtf_filter_set_lazy_init(hfilter filt, int do_lazy_init);
 
 //! filter chunk of data
-unsigned int rtf_filter(hfilter filt, const void* x, void* y,
-                        unsigned int ns);
+int rtf_filter(hfilter filt, const void* x, void* y, int ns);
+
 //! initialize a filter with particular data
 void rtf_init_filter(hfilter filt, const void* data);
 //! destroy a filter
@@ -71,10 +71,10 @@ void rtf_destroy_filter(hfilter filt);
 int rtf_get_type(hfilter filt, int in);
 
 // Creates a filter that downsample signals
-hfilter rtf_create_downsampler(unsigned int nch, int type, unsigned int r);
+hfilter rtf_create_downsampler(int nch, int type, int r);
 
 //! Return the version of the library in a string
-size_t rtf_get_version(char* string, size_t len, unsigned int line);
+size_t rtf_get_version(char* string, size_t len, int line);
 
 struct real_coeffs {
 	int num_len;
@@ -102,7 +102,7 @@ void rtf_coeffs_destroy(struct rtf_coeffs * coeffs);
 struct rtf_coeffs* rtf_get_coeffs(const struct rtf_filter * filt);
 
 
-hfilter rtf_create_filter_coeffs(unsigned int nchann, int data_type,
+hfilter rtf_create_filter_coeffs(int nchann, int data_type,
                                  struct rtf_coeffs * coeffs);
 
 /* helpers to create common filters */
@@ -115,42 +115,42 @@ typedef enum {
 } KernelWindow;
 
 //! Create a local mean filter based on a sliding window
-hfilter rtf_create_fir_mean(unsigned int nchann, int proctype,
-                            unsigned int nsamples);
+hfilter rtf_create_fir_mean(int nchann, int proctype,
+                            int nsamples);
 
 //! Lowpass windowed sinc filter
-hfilter rtf_create_fir_lowpass(unsigned int nchann, int proctype,
-                               double fc, unsigned int half_length,
+hfilter rtf_create_fir_lowpass(int nchann, int proctype,
+                               double fc, int half_length,
                                KernelWindow window);
 //! Highpass windowed sinc filter
-hfilter rtf_create_fir_highpass(unsigned int nchann, int proctype,
-                                double fc, unsigned int half_length,
+hfilter rtf_create_fir_highpass(int nchann, int proctype,
+                                double fc, int half_length,
                                 KernelWindow window);
 
 //! Bandpass windowed sinc filter
-hfilter rtf_create_fir_bandpass(unsigned int nchann, int proctype,
+hfilter rtf_create_fir_bandpass(int nchann, int proctype,
                                 double fc_low, double fc_high,
-                                unsigned int half_length,
+                                int half_length,
                                 KernelWindow window);
 
 //! Butterworth filter (IIR filter)
-hfilter rtf_create_butterworth(unsigned int nchann, int proctype,
-                               double fc, unsigned int num_pole,
+hfilter rtf_create_butterworth(int nchann, int proctype,
+                               double fc, int num_pole,
                                int highpass);
 
 //! Chebychev filter (IIR filter)
-hfilter rtf_create_chebychev(unsigned int nchann, int proctype,
-                             double fc, unsigned int num_pole,
+hfilter rtf_create_chebychev(int nchann, int proctype,
+                             double fc, int num_pole,
                              int highpass, double ripple);
 
 //! Simple first order integral filter (IIR filter)
-hfilter rtf_create_integral(unsigned int nchann, int proctype, double fs);
+hfilter rtf_create_integral(int nchann, int proctype, double fs);
 
 
-hfilter rtf_create_bandpass_analytic(unsigned int nchann,
+hfilter rtf_create_bandpass_analytic(int nchann,
                                      int proctype,
                                      double fl, double fh,
-                                     unsigned int num_pole);
+                                     int num_pole);
 
 
 #ifdef __cplusplus

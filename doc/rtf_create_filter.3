@@ -6,15 +6,15 @@ rtf_create_filter - Creates a custom filter
 .LP
 .B #include <rtfilter.h>
 .sp
-.BI "hfilter rtf_create_filter(unsigned int " nchann ", int " proctype ","
+.BI "hfilter rtf_create_filter(int " nchann ", int " proctype ","
 .br
-.BI "                          unsigned int " num_len ", const void *" num ","
+.BI "                          int " num_len ", const void *" num ","
 .br
-.BI "                          unsigned int " denum_len ", const void *" denum ","
+.BI "                          int " denum_len ", const void *" denum ","
 .br
 .BI "                          int " type ");"
 .br
-.BI "hfilter rtf_create_filter_coeffs(unsigned int " nchann ", int " proctype ","
+.BI "hfilter rtf_create_filter_coeffs(int " nchann ", int " proctype ","
 .br
 .BI "                                 struct rtf_coeffs * coeffs);"
 .br

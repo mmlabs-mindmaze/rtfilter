@@ -33,8 +33,7 @@ typedef complex float cfloat;
 typedef complex double cdouble;
 struct rtf_filter;
 
-typedef unsigned int (*filter_proc)(struct rtf_filter*, const void*,
-                                    void*, unsigned int);
+typedef int (*filter_proc)(struct rtf_filter*, const void*, void*, int);
 typedef void (*set_filterfn_proc)(struct rtf_filter*);
 typedef void (*init_filter_proc)(struct rtf_filter*, const void*);
 typedef void (*destroy_filter_proc)(struct rtf_filter*);
@@ -44,9 +43,9 @@ struct rtf_filter
 	int lazy_init;
 	filter_proc filter_fn;
 	int dispatch_code;
-	unsigned int num_chann;
-	unsigned int a_len;
-	unsigned int b_len;
+	int num_chann;
+	int a_len;
+	int b_len;
 	const void* a;
 	const void* b;
 	void* xoff;

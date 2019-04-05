@@ -35,11 +35,11 @@
 
 /* Create a ramp signal in each channel */
 static
-void create_input(float* data, unsigned int ns, unsigned int cs)
+void create_input(float* data, int ns, int cs)
 {
-	unsigned int j, i, ramplen;
+	int j, i, ramplen;
 
-	ramplen = (unsigned int)(RAMPDUR*FS);
+	ramplen = RAMPDUR * FS;
 
 	for (j = 0; j < NCH; j++) {
 		for (i = 0; i < ns; i++) {
@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
 
 	float input[CHUNKNS * NCH], output[CHUNKNS * NCH];
 	double normfc;
-	unsigned int i;
+	int i;
 	hfilter filt = NULL;
 	FILE *fin = NULL, *fout = NULL;
 	size_t input_ns, output_ns;

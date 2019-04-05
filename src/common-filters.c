@@ -35,9 +35,9 @@
  *                                                             *
  ***************************************************************/
 static
-void apply_window(double *fir, unsigned int length, KernelWindow window)
+void apply_window(double *fir, int length, KernelWindow window)
 {
-	unsigned int i;
+	int i;
 	double M = length - 1;
 
 	switch (window) {
@@ -64,9 +64,9 @@ void apply_window(double *fir, unsigned int length, KernelWindow window)
 
 
 static
-void normalize_fir(double *fir, unsigned int length)
+void normalize_fir(double *fir, int length)
 {
-	unsigned int i;
+	int i;
 	double sum = 0.0;
 
 	for (i = 0; i < length; i++)
@@ -77,10 +77,10 @@ void normalize_fir(double *fir, unsigned int length)
 }
 
 static
-void compute_convolution(double *product, double *sig1, unsigned int len1,
-                         double *sig2, unsigned int len2)
+void compute_convolution(double *product, double *sig1, int len1,
+                         double *sig2, int len2)
 {
-	unsigned int i, j;
+	int i, j;
 
 	memset(product, 0, (len1 + len2 - 1) * sizeof(*product));
 
@@ -92,10 +92,10 @@ void compute_convolution(double *product, double *sig1, unsigned int len1,
 }
 
 static
-void FFT(complex double *X, double *t, unsigned int length)
+void FFT(complex double *X, double *t, int length)
 {
 
-	unsigned int i, j;
+	int i, j;
 
 	for (i = 0; i < length; i++) {
 		X[i] = 0;
@@ -107,10 +107,10 @@ void FFT(complex double *X, double *t, unsigned int length)
 }
 
 static
-void compute_fir_lowpass(double *fir, unsigned int length, double fc)
+void compute_fir_lowpass(double *fir, int length, double fc)
 {
-	unsigned int i;
-	double half_len = (double) ((unsigned int) (length / 2));
+	int i;
+	double half_len = (double) (length / 2);
 
 	for (i = 0; i < length; i++)
 		if (i != length / 2) {
@@ -124,9 +124,9 @@ void compute_fir_lowpass(double *fir, unsigned int length, double fc)
 }
 
 static
-void reverse_fir(double *fir, unsigned int length)
+void reverse_fir(double *fir, int length)
 {
-	unsigned int i;
+	int i;
 
 	// compute delay minus lowpass fir
 	for (i = 0; i < length; i++)
@@ -143,9 +143,9 @@ void reverse_fir(double *fir, unsigned int length)
  */
 static
 double compute_IIR_filter_delay(double *num, double *den,
-                                unsigned int length)
+                                int length)
 {
-	unsigned int i, length_c;
+	int i, length_c;
 	double *a, *b, *c, *cr;
 	complex double *X, *Y;
 	double Delay = 0.0, d = 0.0;
@@ -262,13 +262,13 @@ void get_pole_coefs(double p, double np, double fc, double r, int highpass,
  * inspired by DSP guide ch33 *
  ******************************/
 static
-int compute_cheby_iir(double *num, double *den, unsigned int num_pole,
+int compute_cheby_iir(double *num, double *den, int num_pole,
                       int highpass, double ripple, double cutoff_freq)
 {
 	double *a, *b, *ta, *tb;
 	double ap[3], bp[3];
 	double sa, sb, gain;
-	unsigned int i, p;
+	int i, p;
 	int retval = 1;
 
 	// Allocate temporary arrays
@@ -346,13 +346,13 @@ exit:
 static
 int compute_bandpass_complex_filter(complex double *num,
                                     complex double *den,
-                                    unsigned int num_pole,
+                                    int num_pole,
                                     double fl, double fh)
 {
 	double *a = NULL, *b = NULL;
 	complex double *ac, *bc;
 	double ripple, fc, alpha, Delay;
-	unsigned int i, retval = 1;
+	int i, retval = 1;
 
 	// Allocate temporary arrays
 	a = malloc( (num_pole+1)*sizeof(*a));
@@ -422,10 +422,10 @@ exit:
  * \return	the handle of the newly created filter in case of success, \c NULL otherwise.
  */
 API_EXPORTED
-hfilter rtf_create_fir_mean(unsigned int nchann, int proctype,
-                            unsigned int fir_length)
+hfilter rtf_create_fir_mean(int nchann, int proctype,
+                            int fir_length)
 {
-	unsigned int i;
+	int i;
 	double* fir = NULL;
 	hfilter filt;
 
@@ -455,13 +455,13 @@ hfilter rtf_create_fir_mean(unsigned int nchann, int proctype,
  * \return	the handle of the newly created filter in case of success, \c NULL otherwise.
  */
 API_EXPORTED
-hfilter rtf_create_fir_lowpass(unsigned int nchann, int proctype,
-                               double fc, unsigned int half_length,
+hfilter rtf_create_fir_lowpass(int nchann, int proctype,
+                               double fc, int half_length,
                                KernelWindow window)
 {
 	double *fir = NULL;
 	hfilter filt;
-	unsigned int fir_length = 2 * half_length + 1;
+	int fir_length = 2 * half_length + 1;
 
 	// Alloc temporary fir
 	fir = malloc(fir_length*sizeof(*fir));
@@ -491,13 +491,13 @@ hfilter rtf_create_fir_lowpass(unsigned int nchann, int proctype,
  * \return	the handle of the newly created filter in case of success, \c NULL otherwise.
  */
 API_EXPORTED
-hfilter rtf_create_fir_highpass(unsigned int nchann, int proctype,
-                                double fc, unsigned int half_length,
+hfilter rtf_create_fir_highpass(int nchann, int proctype,
+                                double fc, int half_length,
                                 KernelWindow window)
 {
 	double *fir = NULL;
 	hfilter filt;
-	unsigned int fir_length = 2 * half_length + 1;
+	int fir_length = 2 * half_length + 1;
 
 	// Alloc temporary fir
 	fir = malloc(fir_length*sizeof(*fir));
@@ -529,16 +529,16 @@ hfilter rtf_create_fir_highpass(unsigned int nchann, int proctype,
  * \return	the handle of the newly created filter in case of success, \c null otherwise.
  */
 API_EXPORTED
-hfilter rtf_create_fir_bandpass(unsigned int nchann, int proctype,
+hfilter rtf_create_fir_bandpass(int nchann, int proctype,
                                 double fc_low, double fc_high,
-                                unsigned int half_length,
+                                int half_length,
                                 KernelWindow window)
 {
-	unsigned int len = 2 * (half_length / 2) + 1;
+	int len = 2 * (half_length / 2) + 1;
 	double fir_low[len], fir_high[len];
 	double *fir = NULL;
 	hfilter filt;
-	unsigned int fir_length = 2 * half_length + 1;
+	int fir_length = 2 * half_length + 1;
 
 	// Alloc temporary fir
 	fir = malloc(fir_length*sizeof(*fir));
@@ -578,8 +578,8 @@ hfilter rtf_create_fir_bandpass(unsigned int nchann, int proctype,
  * \return	the handle of the newly created filter in case of success, \c null otherwise.
  */
 API_EXPORTED
-hfilter rtf_create_chebychev(unsigned int nchann, int proctype,
-                             double fc, unsigned int num_pole,
+hfilter rtf_create_chebychev(int nchann, int proctype,
+                             double fc, int num_pole,
                              int highpass, double ripple)
 {
 	double *num = NULL, *den = NULL;
@@ -616,8 +616,8 @@ out:
  * \return	the handle of the newly created filter in case of success, \c null otherwise.
  */
 API_EXPORTED
-hfilter rtf_create_butterworth(unsigned int nchann, int proctype,
-                               double fc, unsigned int num_pole,
+hfilter rtf_create_butterworth(int nchann, int proctype,
+                               double fc, int num_pole,
                                int highpass)
 {
 	return rtf_create_chebychev(nchann, proctype,
@@ -631,7 +631,7 @@ hfilter rtf_create_butterworth(unsigned int nchann, int proctype,
  * \return	the handle of the newly created filter in case of success, \c null otherwise.
  */
 API_EXPORTED
-hfilter rtf_create_integral(unsigned int nchann, int type, double fs)
+hfilter rtf_create_integral(int nchann, int type, double fs)
 {
 	hfilter filt;
 	double a = 1.0/fs, b[2] = {1.0, -1.0};
@@ -655,10 +655,10 @@ hfilter rtf_create_integral(unsigned int nchann, int type, double fs)
  * \return		The handle of the newly created filter in case of success, \c null otherwise.
  */
 API_EXPORTED
-hfilter rtf_create_bandpass_analytic(unsigned int nchann,
+hfilter rtf_create_bandpass_analytic(int nchann,
                                      int proctype,
                                      double fl, double fh,
-                                     unsigned int num_pole)
+                                     int num_pole)
 {
 	complex double *a = NULL, *b = NULL;
 	hfilter filt = NULL;

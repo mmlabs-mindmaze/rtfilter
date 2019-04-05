@@ -23,7 +23,7 @@
 #define DECLARE_FILTFUNC(fnname)\
 	LOCAL_FN void fnname(struct rtf_filter* filt,\
 	                     const void* restrict in, void* restrict out,\
-	                     unsigned int nsamples)
+	                     int nsamples)
 
 
 // Normal version
