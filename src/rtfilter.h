@@ -153,6 +153,10 @@ hfilter rtf_create_bandpass_analytic(int nchann,
                                      int num_pole);
 
 
+//! Combine filters
+struct rtf_filter* rtf_filter_combine(int nfilters,
+                                      struct rtf_filter ** filters);
+
 #ifdef __cplusplus
 }
 #endif

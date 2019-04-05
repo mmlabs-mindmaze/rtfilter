@@ -21,13 +21,14 @@
 
 #include <assert.h>
 #include <complex.h>
-#include <math.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "filter-internal.h"
 #include "rtfilter.h"
+
+#define NS_MAX 8
 
 LOCAL_FN
 size_t sizeof_data(int type)
@@ -219,6 +220,21 @@ void default_destroy_filter(struct rtf_filter* filt)
 }
 
 
+static
+void destroy_filter_seq(struct rtf_filter* filt)
+{
+	int i;
+	struct filter_seq * seq = (struct filter_seq*) filt;
+
+	for (i = 0; i < seq->num_filters; i++)
+		default_destroy_filter(seq->filters[i]);
+
+	free(seq->filters);
+	align_free(seq->buffer);
+	free(seq);
+}
+
+
 API_EXPORTED
 void rtf_destroy_filter(hfilter filt)
 {
@@ -322,6 +338,121 @@ hfilter rtf_create_filter(int nchann, int proctype,
 	rtf_init_filter(filt, NULL);
 
 	return filt;
+}
+
+
+/* typed with char instead of void to prevent compiler warning */
+static inline
+void swap_ptr(char ** ptr1, char ** ptr2)
+{
+	char * tmp = *ptr1;
+	*ptr1 = *ptr2;
+	*ptr2 = tmp;
+}
+
+
+/**
+ * rtf_filter_seq() - apply filter cascade
+ * @filt: initialized rtf_filter structure
+ * @ns: number of samples (up to NS_MAX)
+ * @in: array of (ns * nch) input data
+ * @out: array of (ns * nch) output data
+ */
+static
+int rtf_filter_seq(struct rtf_filter * filt, void const * _in,
+                   void * _out, int ns)
+{
+	int i;
+	int num_samples;
+	char const * in = _in;
+	char * out = _out;
+	char * tmp_in, * tmp_out;
+	struct rtf_filter * f;
+	struct filter_seq * seq = (struct filter_seq*) filt;
+
+	while (ns > 0) {
+		num_samples = MIN(ns, NS_MAX);
+
+		if (seq->num_filters % 2 == 1) {
+			tmp_in = out;
+			tmp_out = seq->buffer;
+		} else {
+			tmp_in = seq->buffer;
+			tmp_out = out;
+		}
+
+		f = seq->filters[0];
+		f->filter_fn(f, in, tmp_out, num_samples);
+
+		for (i = 1; i < seq->num_filters; i++) {
+			f = seq->filters[i];
+			swap_ptr(&tmp_in, &tmp_out);
+			(void) f->filter_fn(f, tmp_in, tmp_out, num_samples);
+		}
+
+		ns -= num_samples;
+		in += num_samples * f->num_chann * sizeof_data(f->intype);
+		out += num_samples * f->num_chann * sizeof_data(f->outtype);
+	}
+
+	return ns;
+}
+
+
+/**
+ * rtf_filter_combine() - combine vector of filters into one
+ * @nfilters: number of filters to combine
+ * @filters: array of pointers to filters to combine
+ *
+ * On success, the combination-filter assumes ownership of all the filters
+ * passed as arguments.
+ *
+ * Returns: a pointer to rtf_filter structure handling the combination,
+ *          NULL on error
+ */
+API_EXPORTED
+struct rtf_filter* rtf_filter_combine(int nfilters, struct
+                                      rtf_filter ** filters)
+{
+	int i;
+	struct filter_seq * seq;
+	struct rtf_filter * last;
+
+	if (nfilters <= 0 || filters == NULL)
+		return NULL;
+
+	/* ensure all the input filters exist */
+	for (i = 0; i < nfilters; i++) {
+		if (filters[i] == NULL)
+			return NULL;
+	}
+
+	if (nfilters == 1)
+		return *filters;
+
+	seq = malloc(sizeof(*seq));
+	if (seq == NULL)
+		return NULL;
+
+	last = filters[nfilters - 1];
+
+	*seq = (struct filter_seq) {0};
+	seq->filters = malloc(sizeof(*seq->filters) * nfilters);
+	seq->buffer = align_alloc(16,
+	                          NS_MAX * last->num_chann *
+	                          sizeof_data(last->outtype));
+	if (seq->filters == NULL || seq->buffer == NULL) {
+		destroy_filter_seq((struct rtf_filter*) seq);
+		return NULL;
+	}
+
+	memcpy(seq->filters, filters, sizeof(*seq->filters) * nfilters);
+	seq->num_filters = nfilters;
+	seq->filter.filter_fn = rtf_filter_seq;
+	seq->filter.destroy_filter_fn = destroy_filter_seq;
+	seq->filter.num_chann = last->num_chann;
+
+	return (struct rtf_filter*) seq;
 }
 
 

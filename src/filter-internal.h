@@ -29,6 +29,14 @@
 #define unlikely(expr) __builtin_expect(!!(expr), 0)
 #endif
 
+#ifndef MIN
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#endif
+
+#ifndef MAX
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#endif
+
 typedef complex float cfloat;
 typedef complex double cdouble;
 struct rtf_filter;
@@ -54,6 +62,16 @@ struct rtf_filter
 	init_filter_proc init_filter_fn;
 	destroy_filter_proc destroy_filter_fn;
 	int advertised_intype, advertised_outtype, intype, outtype;
+
+};
+
+struct filter_seq {
+	/* keep first */
+	struct rtf_filter filter;
+
+	int num_filters;
+	void * buffer;  /* is of type outtype */
+	struct rtf_filter ** filters;
 };
 
 LOCAL_FN

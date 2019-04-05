@@ -4,5 +4,6 @@
 #include <check.h>
 
 TCase* create_rtfilter_tcase(void);
+TCase* create_rtfilter_combine_tcase(void);
 
 #endif /* TESTCASES_H */
