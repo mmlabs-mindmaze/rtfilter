@@ -199,15 +199,18 @@ EXTRA_DIST += devtools/uncrustify.cfg
 .PHONY: fixstyle
 fixstyle: devtools/uncrustify.cfg
 	cd $(srcdir) && uncrustify -c devtools/uncrustify.cfg -l C --replace \
-		$(librtfilter_la_SOURCES) $(filter_templates) $(unittests_tap_SOURCES)
+		$(librtfilter_la_SOURCES) $(filter_templates) $(unittests_tap_SOURCES) \
+		doc/examples/butterworth.c
 
 # check all the source files for correct coding style
 .PHONY: checkstyle
 checkstyle: devtools/uncrustify.cfg
 	cd $(srcdir) && uncrustify -c devtools/uncrustify.cfg -l C --check \
-		$(librtfilter_la_SOURCES) $(filter_templates) $(unittests_tap_SOURCES)
+		$(librtfilter_la_SOURCES) $(filter_templates) $(unittests_tap_SOURCES) \
+		doc/examples/butterworth.c
 
 # primitive syntax check on all the source files
 .PHONY: spelling
-spelling: $(librtfilter_la_SOURCES) $(filter_templates) $(dist_man_MANS) $(unittests_tap_SOURCES)
+spelling: $(librtfilter_la_SOURCES) $(filter_templates) $(dist_man_MANS) \
+		$(unittests_tap_SOURCES) doc/examples/butterworth.c
 	codespell --ignore-words-list=sinc $^
