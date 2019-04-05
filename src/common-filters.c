@@ -26,8 +26,10 @@
 
 #include "rtfilter.h"
 
-#define PId 3.1415926535897932384626433832795L
-#define PIf 3.1415926535897932384626433832795f
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 
 /***************************************************************
  *                                                             *
@@ -42,18 +44,18 @@ void apply_window(double *fir, int length, KernelWindow window)
 
 	switch (window) {
 	case HAMMING_WINDOW:
-		for (i = 0; i < length; i++)
-			fir[i] *= 0.54 + 0.46 * cos(2.0 * PIf * ((double)i / M -
-			                                         0.5));
+		for (i = 0; i < length; i++) {
+			fir[i] *= 0.54 + 0.46 * cos(2. * M_PI * ( i / M - 0.5));
+		}
 
 		break;
 
 	case BLACKMAN_WINDOW:
-		for (i = 0; i < length; i++)
-			fir[i] *=
-				0.42 +
-				0.5 * cos(2.0 * PIf * ((double) i / M - 0.5)) +
-				0.08 * cos(4.0 * PIf * ((double) i / M - 0.5));
+		for (i = 0; i < length; i++) {
+			fir[i] *= (0.42
+			           + 0.5 * cos(2. * M_PI * (i / M - 0.5))
+			           + 0.08 * cos(4. * M_PI * (i / M - 0.5)));
+		}
 
 		break;
 
@@ -114,11 +116,10 @@ void compute_fir_lowpass(double *fir, int length, double fc)
 
 	for (i = 0; i < length; i++)
 		if (i != length / 2) {
-			fir[i] = sin(2.0 * PIf * (double) fc *
-			             ((double) i - half_len)) / ((double) i -
-			                                         half_len);
+			fir[i] = sin(2. * M_PI * fc * ((double) i - half_len))
+			         / ((double) i - half_len);
 		} else {
-			fir[i] = 2.0 * PIf * fc;
+			fir[i] = 2.0 * M_PI * fc;
 		}
 
 }
@@ -204,8 +205,8 @@ void get_pole_coefs(double p, double np, double fc, double r, int highpass,
 	double rp, ip, es, vx, kx, t, w, m, d, x0, x1, x2, y1, y2, k;
 
 	// calculate pole locate on the unit circle
-	rp = -cos(PId / (np * 2.0) + (p - 1.0) * PId / np);
-	ip = sin(PId / (np * 2.0) + (p - 1.0) * PId / np);
+	rp = -cos(M_PI / (np * 2.0) + (p - 1.0) * M_PI / np);
+	ip = sin(M_PI / (np * 2.0) + (p - 1.0) * M_PI / np);
 
 	// Warp from a circle to an ellipse
 	if (r != 0.0) {
@@ -231,7 +232,7 @@ void get_pole_coefs(double p, double np, double fc, double r, int highpass,
 
 	// s to z domains conversion
 	t = 2.0*tan(0.5);
-	w = 2.0*PId*fc;
+	w = 2.0*M_PI*fc;
 	m = rp*rp + ip*ip;
 	d = 4.0 - 4.0*rp*t + m*t*t;
 	x0 = t*t/d;
