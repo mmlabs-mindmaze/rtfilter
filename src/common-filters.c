@@ -437,7 +437,7 @@ hfilter rtf_create_fir_mean(int nchann, int proctype,
 
 	// prepare the finite impulse response
 	for (i = 0; i < fir_length; i++)
-		fir[i] = 1.0f / (double) fir_length;
+		fir[i] = 1. / (double) fir_length;
 
 	filt = rtf_create_filter(nchann, proctype,
 	                         fir_length, fir, 0, NULL,
