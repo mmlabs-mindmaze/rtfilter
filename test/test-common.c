@@ -34,7 +34,7 @@ void smoke_test(struct rtf_filter * f, int nch, int ns)
 	 * - no check on output values.
 	 * - only ensure they are valid numbers */
 	for (i = 0; i < ns * nch; i++)
-		ck_assert(finitef(out[i]));
+		ck_assert(isfinite(out[i]));
 
 	free(out);
 	free(in);

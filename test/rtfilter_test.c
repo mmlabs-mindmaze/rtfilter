@@ -23,13 +23,13 @@
 static int
 finite_cf(complex float x)
 {
-	return finitef(crealf(x)) && finitef(cimagf(x));
+	return isfinite(crealf(x)) && isfinite(cimagf(x));
 }
 
 static int
 finite_cd(complex double x)
 {
-	return finite(creal(x)) && finite(cimag(x));
+	return isfinite(creal(x)) && isfinite(cimag(x));
 }
 
 
@@ -100,7 +100,7 @@ START_TEST(test_rtfilter_smoke_double)
 	 * - no check on output values.
 	 * - only ensure they are valid numbers */
 	for (i = 0; i < NS * NCH; i++)
-		ck_assert(finite(out[i]));
+		ck_assert(isfinite(out[i]));
 
 	rtf_destroy_filter(f);
 	free(out);
