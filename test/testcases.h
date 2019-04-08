@@ -5,5 +5,6 @@
 
 TCase* create_rtfilter_tcase(void);
 TCase* create_rtfilter_combine_tcase(void);
+TCase* create_lowpass_tcase(void);
 
 #endif /* TESTCASES_H */

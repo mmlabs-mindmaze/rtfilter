@@ -11,6 +11,7 @@ api_test_suite(void)
 
 	suite_add_tcase(s, create_rtfilter_tcase());
 	suite_add_tcase(s, create_rtfilter_combine_tcase());
+	suite_add_tcase(s, create_lowpass_tcase());
 
 	return s;
 }

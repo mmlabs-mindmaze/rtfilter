@@ -171,6 +171,9 @@ check_PROGRAMS += \
 	$(eol)
 
 unittests_tap_SOURCES = \
+	test/float-comparison.c \
+	test/float-comparison.h \
+	test/lowpass_test.c \
 	test/rtfilter_combine_test.c \
 	test/rtfilter_test.c \
 	test/testcases.h \
