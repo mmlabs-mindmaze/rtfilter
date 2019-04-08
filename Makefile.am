@@ -228,3 +228,10 @@ checkstyle: devtools/uncrustify.cfg
 spelling: $(librtfilter_la_SOURCES) $(filter_templates) $(dist_man_MANS) \
 		$(unittests_tap_SOURCES) doc/examples/butterworth.c
 	codespell --ignore-words-list=sinc $^
+
+.PHONY: coverage
+coverage:
+	$(srcdir)/devtools/coverage.sh run
+
+clean-local:
+	cd test && $(RM) *.gcno *.gcda
