@@ -33,7 +33,7 @@ finite_cd(complex double x)
 }
 
 
-START_TEST(test_rtfilter_smoke)
+START_TEST(test_rtfilter_smoke_float)
 {
 	struct rtf_filter * f;
 	double num[3] = {0., 1., 2.};
@@ -52,7 +52,7 @@ START_TEST(test_rtfilter_smoke)
 END_TEST
 
 
-START_TEST(test_rtfilter_flat)
+START_TEST(test_rtfilter_flat_float)
 {
 	struct rtf_filter * f;
 	double num[3] = {0., 1., 2.};
@@ -165,7 +165,7 @@ START_TEST(test_rtfilter_smoke_complex_float)
 	out = malloc(NS * NCH * sizeof(*out));
 
 	for (i = 0; i < NS * NCH; i++)
-		in[i] = (complex float) rand();
+		in[i] = rand() + I * rand();
 
 	for (i = 0; i < NS * NCH; i++)
 		out[i] = NANcf;
@@ -194,7 +194,7 @@ START_TEST(test_rtfilter_flat_complex_float)
 	double num[3] = {0., 1., 2.};
 	double denum[4] = {3., 4., 5., 6.};
 
-	f = rtf_create_filter(NCH, RTF_DOUBLE,
+	f = rtf_create_filter(NCH, RTF_CFLOAT,
 	                      arraylen(num), num,
 	                      arraylen(denum), denum,
 	                      RTF_DOUBLE);
@@ -242,7 +242,7 @@ START_TEST(test_rtfilter_smoke_complex_double)
 	out = malloc(NS * NCH * sizeof(*out));
 
 	for (i = 0; i < NS * NCH; i++)
-		in[i] = (complex float) rand();
+		in[i] = rand() + I * rand();
 
 	for (i = 0; i < NS * NCH; i++)
 		out[i] = NANcd;
@@ -266,12 +266,12 @@ END_TEST
 START_TEST(test_rtfilter_flat_complex_double)
 {
 	int i;
-	complex float * in, * out;
+	complex double * in, * out;
 	struct rtf_filter * f;
 	double num[3] = {0., 1., 2.};
 	double denum[4] = {3., 4., 5., 6.};
 
-	f = rtf_create_filter(NCH, RTF_DOUBLE,
+	f = rtf_create_filter(NCH, RTF_CDOUBLE,
 	                      arraylen(num), num,
 	                      arraylen(denum), denum,
 	                      RTF_DOUBLE);
@@ -301,27 +301,189 @@ START_TEST(test_rtfilter_flat_complex_double)
 END_TEST
 
 
+START_TEST(test_complex_rtfilter_smoke_complex_float)
+{
+	int i;
+	complex float * in, * out;
+	struct rtf_filter * f;
+	complex double num[3] = {0., 1., 2.};
+	complex double denum[4] = {3., 4., 5., 6.};
+
+	f = rtf_create_filter(NCH, RTF_CFLOAT,
+	                      arraylen(num), num,
+	                      arraylen(denum), denum,
+	                      RTF_CDOUBLE);
+	ck_assert(f != NULL);
+
+	in = malloc(NS * NCH * sizeof(*in));
+	out = malloc(NS * NCH * sizeof(*out));
+
+	for (i = 0; i < NS * NCH; i++)
+		in[i] = (complex float) rand();
+
+	for (i = 0; i < NS * NCH; i++)
+		out[i] = NANcf;
+
+	rtf_filter(f, in, out, NS);
+
+	/* Smoke test:
+	 * - no check on output values.
+	 * - only ensure they are valid numbers */
+	for (i = 0; i < NS * NCH; i++) {
+		ck_assert(finite_cf(out[i]));
+	}
+
+	rtf_destroy_filter(f);
+	free(out);
+	free(in);
+}
+END_TEST
+
+
+START_TEST(test_complex_rtfilter_flat_complex_float)
+{
+	int i;
+	complex float * in, * out;
+	struct rtf_filter * f;
+	complex double num[3] = {0., 1., 2.};
+	complex double denum[4] = {3., 4., 5., 6.};
+
+	f = rtf_create_filter(NCH, RTF_CFLOAT,
+	                      arraylen(num), num,
+	                      arraylen(denum), denum,
+	                      RTF_CDOUBLE);
+	ck_assert(f != NULL);
+
+	in = malloc(NS * NCH * sizeof(*in));
+	out = malloc(NS * NCH * sizeof(*out));
+
+	for (i = 0; i < NS * NCH; i++)
+		in[i] = 0.;
+
+	for (i = 0; i < NS * NCH; i++)
+		out[i] = NANcf;
+
+	rtf_filter(f, in, out, NS);
+
+	/* Smoke test:
+	 * - no check on output values.
+	 * - only ensure they are valid numbers */
+	for (i = 0; i < NS * NCH; i++)
+		ck_assert(out[i] == 0.);
+
+	rtf_destroy_filter(f);
+	free(out);
+	free(in);
+}
+END_TEST
+
+
+START_TEST(test_complex_rtfilter_smoke_complex_double)
+{
+	int i;
+	complex double * in, * out;
+	struct rtf_filter * f;
+	complex double num[3] = {0., 1., 2.};
+	complex double denum[4] = {3., 4., 5., 6.};
+
+	f = rtf_create_filter(NCH, RTF_CDOUBLE,
+	                      arraylen(num), num,
+	                      arraylen(denum), denum,
+	                      RTF_CDOUBLE);
+	ck_assert(f != NULL);
+
+	in = malloc(NS * NCH * sizeof(*in));
+	out = malloc(NS * NCH * sizeof(*out));
+
+	for (i = 0; i < NS * NCH; i++)
+		in[i] = (complex float) rand();
+
+	for (i = 0; i < NS * NCH; i++)
+		out[i] = NANcd;
+
+	rtf_filter(f, in, out, NS);
+
+	/* Smoke test:
+	 * - no check on output values.
+	 * - only ensure they are valid numbers */
+	for (i = 0; i < NS * NCH; i++) {
+		ck_assert(finite_cd(out[i]));
+	}
+
+	rtf_destroy_filter(f);
+	free(out);
+	free(in);
+}
+END_TEST
+
+
+START_TEST(test_complex_rtfilter_flat_complex_double)
+{
+	int i;
+	complex double * in, * out;
+	struct rtf_filter * f;
+	complex double num[3] = {0., 1., 2.};
+	complex double denum[4] = {3., 4., 5., 6.};
+
+	f = rtf_create_filter(NCH, RTF_CDOUBLE,
+	                      arraylen(num), num,
+	                      arraylen(denum), denum,
+	                      RTF_CDOUBLE);
+	ck_assert(f != NULL);
+
+	in = malloc(NS * NCH * sizeof(*in));
+	out = malloc(NS * NCH * sizeof(*out));
+
+	for (i = 0; i < NS * NCH; i++)
+		in[i] = 0.;
+
+	for (i = 0; i < NS * NCH; i++)
+		out[i] = NANcd;
+
+	rtf_filter(f, in, out, NS);
+
+	/* Smoke test:
+	 * - no check on output values.
+	 * - only ensure they are valid numbers */
+	for (i = 0; i < NS * NCH; i++)
+		ck_assert(out[i] == 0.);
+
+	rtf_destroy_filter(f);
+	free(out);
+	free(in);
+}
+END_TEST
+
+
+
 
 TCase* create_rtfilter_tcase(void)
 {
-	TCase * tc;
+	TCase * tc = tcase_create("rtfilter");
 
-	tc = tcase_create("rtfilter");
-	/* smoke tests on float data */
-	tcase_add_test(tc, test_rtfilter_flat);
-	tcase_add_test(tc, test_rtfilter_smoke);
+	/* smoke tests on float data with real coeffs */
+	tcase_add_test(tc, test_rtfilter_flat_float);
+	tcase_add_test(tc, test_rtfilter_smoke_float);
 
-	/* smoke tests on double data */
+	/* smoke tests on double data with real coeffs */
 	tcase_add_test(tc, test_rtfilter_flat_double);
 	tcase_add_test(tc, test_rtfilter_smoke_double);
 
-	/* smoke tests on complex float data */
+	/* smoke tests on complex float data with real coeffs */
 	tcase_add_test(tc, test_rtfilter_flat_complex_float);
 	tcase_add_test(tc, test_rtfilter_smoke_complex_float);
 
-	/* smoke tests on complex double data */
+	/* smoke tests on complex double data with real coeffs */
 	tcase_add_test(tc, test_rtfilter_flat_complex_double);
 	tcase_add_test(tc, test_rtfilter_smoke_complex_double);
+
+	/* smoke tests on complex float data with complex coeffs */
+	tcase_add_test(tc, test_complex_rtfilter_flat_complex_float);
+	tcase_add_test(tc, test_complex_rtfilter_smoke_complex_float);
+
+	/* smoke tests on complex double data with complex coeffs */
+	tcase_add_test(tc, test_complex_rtfilter_flat_complex_double);
+	tcase_add_test(tc, test_complex_rtfilter_smoke_complex_double);
 
 	return tc;
 }
