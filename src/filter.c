@@ -360,7 +360,7 @@ int rtf_filter(hfilter filt, const void* x, void* y, int ns)
 {
 	if (unlikely(filt->lazy_init)) {
 		rtf_init_filter(filt, x);
-		filt->lazy_init = 1;
+		filt->lazy_init = 0;
 	}
 
 	return filt->filter_fn(filt, x, y, ns);
