@@ -113,6 +113,7 @@ dist_man_MANS = \
 	doc/rtf_create_bandpass_analytic.3 \
 	doc/rtf_create_butterworth.3 \
 	doc/rtf_create_chebychev.3 \
+	doc/rtf_filter_combine.3 \
 	doc/rtf_create_downsampler.3 \
 	doc/rtf_create_filter.3 \
 	doc/rtf_create_filter_coeffs.3 \
@@ -170,6 +171,7 @@ check_PROGRAMS += \
 	$(eol)
 
 unittests_tap_SOURCES = \
+	test/rtfilter_combine_test.c \
 	test/rtfilter_test.c \
 	test/testcases.h \
 	test/test-common.c \
@@ -189,6 +191,15 @@ unittests_tap_LDADD = \
 	$(eol)
 
 TESTS_ENVIRONMENT = PATH="$(PATH):$(buildir)" TESTSSRCDIR="$(srcdir)/tests"
+
+# only test rtfilter.h and not all exported headers: $(include_HEADERS)
+# "rtf_common.h" contains a #warning which would always make the test fail
+# otherwise
+.PHONY: test-api
+test-api: src/rtfilter.h
+	$(srcdir)/devtools/testapigen.sh $(srcdir)/src $^
+
+check: test-api
 
 #
 # DEV TARGETS

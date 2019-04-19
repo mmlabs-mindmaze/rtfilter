@@ -1,4 +1,5 @@
 #include <check.h>
+#include <math.h>
 #include <stdlib.h>
 
 #include "rtfilter.h"
