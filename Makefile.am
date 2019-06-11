@@ -170,6 +170,10 @@ check_PROGRAMS += \
 	unittests.tap \
 	$(eol)
 
+if HAVE_CLOCK_FN
+check_PROGRAMS += perf-test
+endif
+
 unittests_tap_SOURCES = \
 	test/float-comparison.c \
 	test/float-comparison.h \
@@ -189,6 +193,19 @@ unittests_tap_CFLAGS = \
 
 unittests_tap_LDADD = \
 	$(CHECK_LIBS) \
+	.libs/librtfilter.la \
+	$(MATH_LIB) \
+	$(eol)
+
+perf_test_SOURCES = \
+	test/perf-test.c \
+	$(eol)
+
+perf_test_CFLAGS = \
+	$(AM_CFLAGS) \
+	$(eol)
+
+perf_test_LDADD = \
 	.libs/librtfilter.la \
 	$(MATH_LIB) \
 	$(eol)
@@ -214,6 +231,7 @@ EXTRA_DIST += devtools/uncrustify.cfg
 fixstyle: devtools/uncrustify.cfg
 	cd $(srcdir) && uncrustify -c devtools/uncrustify.cfg -l C --replace \
 		$(librtfilter_la_SOURCES) $(filter_templates) $(unittests_tap_SOURCES) \
+		$(perf_test_SOURCES) \
 		doc/examples/butterworth.c
 
 # check all the source files for correct coding style
@@ -221,11 +239,13 @@ fixstyle: devtools/uncrustify.cfg
 checkstyle: devtools/uncrustify.cfg
 	cd $(srcdir) && uncrustify -c devtools/uncrustify.cfg -l C --check \
 		$(librtfilter_la_SOURCES) $(filter_templates) $(unittests_tap_SOURCES) \
+		$(perf_test_SOURCES) \
 		doc/examples/butterworth.c
 
 # primitive syntax check on all the source files
 .PHONY: spelling
 spelling: $(librtfilter_la_SOURCES) $(filter_templates) $(dist_man_MANS) \
+		$(perf_test_SOURCES) \
 		$(unittests_tap_SOURCES) doc/examples/butterworth.c
 	codespell --ignore-words-list=sinc $^
 

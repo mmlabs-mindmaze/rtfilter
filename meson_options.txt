@@ -1,2 +1,4 @@
 option('tests', type: 'boolean', value: true,
         description: 'build unit tests')
+option('perf', type: 'boolean', value: true,
+        description: 'build perf-test')

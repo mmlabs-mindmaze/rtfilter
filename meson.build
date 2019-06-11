@@ -134,6 +134,32 @@ rtfilter = shared_library('rtfilter',
 # TESTS
 #
 
+if get_option('perf')
+    # clock_gettime() may be provided by librt or libc depending
+    # on their versions.
+    clock_gettime_code = ''' #include <time.h>
+                             int clock_gettime();
+                             int main(void){return 0;} '''
+    librt = []
+    if not cc.links(clock_gettime_code)
+        if cc.links(clock_gettime_code, args : '-lrt')
+            librt = cc.find_library('rt', required : true)
+        else
+            error('''clock_gettime() cannot be found, but is required to
+                      build the perf-test tool !''')
+        endif
+    endif
+
+    # test tool to ease performance regression tests
+    # not run as part of unit tests
+    perf_test = executable('perf-test',
+            files('test/perf-test.c'),
+            include_directories : configuration_inc,
+            link_with : rtfilter,
+            dependencies : [libmath, librt],
+    )
+endif
+
 if get_option('tests')
     checklib = dependency('check', required : true)
 
