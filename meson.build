@@ -129,6 +129,7 @@ rtfilter = shared_library('rtfilter',
         link_with : sse_libraries,
         dependencies : [libmath],
 )
+import('pkgconfig').generate(rtfilter)
 
 #
 # TESTS
