@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bbd5498d_8bacc2c1",
+        "filename": "devtools/uncrustify.cfg",
+        "patchSetId": 1
+      },
+      "lineNbr": 867,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2019-10-07T06:54:39Z",
+      "side": 1,
+      "message": "Test comment",
+      "range": {
+        "startLine": 866,
+        "startChar": 0,
+        "endLine": 867,
+        "endChar": 55
+      },
+      "revId": "37e9adf33ef6f9e43672fadc8dd40ddec457bb9b",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
