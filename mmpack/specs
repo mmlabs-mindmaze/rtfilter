@@ -10,3 +10,4 @@ general:
       The core library implements FIR and IIR filtering for float and double
       data type. Additional functions are also provided to design few usual
       filters: Butterworth, Chebyshev, windowed sinc...
+    build-system: meson
