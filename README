@@ -1,16 +1,13 @@
-                               RTFILTER
+# RTFILTER
 
-
-
-Presentation
-============
+## Presentation
 
 This package provides a library written in C implementing realtime digital
 filtering functions for multichannel signals (i.e. filtering multiple
 signals with the same filter). The core library implements FIR and IIR
 filtering for float and double data type. Additional functions are also
 provided to design few usual filters: Butterworth, Chebyshev, windowed
-sinc...
+sinc ...
 
 In addition, the filter functions have been especially optimized for
 multichannel signals. If data allows it (and if possible with the
@@ -19,8 +16,7 @@ compilation flags used), the library automatically switch to optimized SIMD
 spent in processing the data.
 
 
-Supported platforms
-===================
+## Supported platforms
 
 Any POSIX platform and windows. The SIMD code operating on real data is
 possible if the host CPU supports SSE2 instruction sets (Intel pentium4,
@@ -28,15 +24,14 @@ AMD k8 or later processors support SSE2), and SIMD code operating on complex
 data is possible if host CPU supports SSE3.
 
 
-Compilation
-===========
+## Compilation
 
 This library is organized as a GNU package and can be compiled and
 installed in the same way (see INSTALL file for further information).
 
 In order the library to be compiled with SIMD version of the filter
 functions, make sure you specify the correct architecture (add 
--march=target_arch to CFLAGS with gcc) or enable the necessary instruction
+-march=target\_arch to CFLAGS with gcc) or enable the necessary instruction
 set (add -msse2 or -msse3 to CFLAGS with gcc)
 
 On x86 family platform, the 387 floating point coprocessor is well known to
@@ -47,4 +42,3 @@ script will specify the necessary compiler flags if gcc is used. If you use
 another compiler you may need set manually CFLAGS at the invokation of the
 configure script (see your compiler documentation to know which flags should
 be passed).
-
