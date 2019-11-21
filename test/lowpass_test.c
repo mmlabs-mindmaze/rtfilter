@@ -43,7 +43,7 @@ START_TEST(test_lowpass_coeffs)
 	ck_assert(f != NULL);
 
 	struct rtf_coeffs * _coeffs = rtf_get_coeffs(f);
-	struct real_coeffs * coeffs = &_coeffs->real_coeffs;
+	struct real_coeffs * coeffs = &_coeffs->coeffs.real;
 
 	/* compare generated coeffs against values computed by matlab */
 	ck_assert(!_coeffs->is_complex);

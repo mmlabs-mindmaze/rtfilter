@@ -463,17 +463,17 @@ hfilter rtf_create_filter_coeffs(int nchann, int data_type,
 
 	if (coeffs->is_complex) {
 		return rtf_create_filter(nchann, data_type,
-		                         coeffs->complex_coeffs.num_len,
-		                         coeffs->complex_coeffs.num,
-		                         coeffs->complex_coeffs.denum_len,
-		                         coeffs->complex_coeffs.denum,
+		                         coeffs->coeffs.cplx.num_len,
+		                         coeffs->coeffs.cplx.num,
+		                         coeffs->coeffs.cplx.denum_len,
+		                         coeffs->coeffs.cplx.denum,
 		                         RTF_CDOUBLE);
 	} else {
 		return rtf_create_filter(nchann, data_type,
-		                         coeffs->real_coeffs.num_len,
-		                         coeffs->real_coeffs.num,
-		                         coeffs->real_coeffs.denum_len,
-		                         coeffs->real_coeffs.denum,
+		                         coeffs->coeffs.real.num_len,
+		                         coeffs->coeffs.real.num,
+		                         coeffs->coeffs.real.denum_len,
+		                         coeffs->coeffs.real.denum,
 		                         RTF_DOUBLE);
 	}
 }
@@ -545,11 +545,11 @@ void rtf_coeffs_destroy(struct rtf_coeffs * coeffs)
 {
 	if (coeffs != NULL) {
 		if (coeffs->is_complex) {
-			free(coeffs->complex_coeffs.num);
-			free(coeffs->complex_coeffs.denum);
+			free(coeffs->coeffs.cplx.num);
+			free(coeffs->coeffs.cplx.denum);
 		} else {
-			free(coeffs->real_coeffs.num);
-			free(coeffs->real_coeffs.denum);
+			free(coeffs->coeffs.real.num);
+			free(coeffs->coeffs.real.denum);
 		}
 
 		free(coeffs);
@@ -591,48 +591,48 @@ struct rtf_coeffs* rtf_get_coeffs(const struct rtf_filter * filt)
 
 	coeffs->is_complex = is_complex_filter(filt);
 	if (coeffs->is_complex) {
-		coeffs->complex_coeffs.num_len = filt->a_len;
-		coeffs->complex_coeffs.denum_len = filt->b_len + 1;
-		coeffs->complex_coeffs.num = malloc(
-			coeffs->complex_coeffs.denum_len * sizeof(rtf_cdouble));
-		coeffs->complex_coeffs.denum = malloc(
-			coeffs->complex_coeffs.num_len * sizeof(rtf_cdouble));
-		if (  coeffs->complex_coeffs.num == NULL
-		   || coeffs->complex_coeffs.denum == NULL)
+		coeffs->coeffs.cplx.num_len = filt->a_len;
+		coeffs->coeffs.cplx.denum_len = filt->b_len + 1;
+		coeffs->coeffs.cplx.num = malloc(
+			coeffs->coeffs.cplx.denum_len * sizeof(rtf_cdouble));
+		coeffs->coeffs.cplx.denum = malloc(
+			coeffs->coeffs.cplx.num_len * sizeof(rtf_cdouble));
+		if (  coeffs->coeffs.cplx.num == NULL
+		   || coeffs->coeffs.cplx.denum == NULL)
 			goto enomem;
 
 		copy_fn = convtab[filt->outtype][RTF_CDOUBLE];
-		copy_fn(filt->a_len, coeffs->complex_coeffs.num, filt->a, NULL,
+		copy_fn(filt->a_len, coeffs->coeffs.cplx.num, filt->a, NULL,
 		        0);
-		coeffs->complex_coeffs.denum[0] = (rtf_cdouble) {1.};
-		copy_fn(filt->b_len, coeffs->complex_coeffs.denum + 1, filt->b,
+		coeffs->coeffs.cplx.denum[0] = (rtf_cdouble) {1.};
+		copy_fn(filt->b_len, coeffs->coeffs.cplx.denum + 1, filt->b,
 		        NULL, 0);
-		for (i = 1; i < coeffs->complex_coeffs.denum_len; i++) {
+		for (i = 1; i < coeffs->coeffs.cplx.denum_len; i++) {
 #ifdef _MSC_VER
-			coeffs->complex_coeffs.denum[i] = cmul_d(
-				coeffs->complex_coeffs.denum[i], -1.);
+			coeffs->coeffs.cplx.denum[i] = cmul_d(
+				coeffs->coeffs.cplx.denum[i], -1.);
 #else
-			coeffs->complex_coeffs.denum[i] *= -1.;
+			coeffs->coeffs.cplx.denum[i] *= -1.;
 #endif
 		}
 	} else {
-		coeffs->real_coeffs.num_len = filt->a_len;
-		coeffs->real_coeffs.denum_len = filt->b_len + 1;
-		coeffs->real_coeffs.num = malloc(coeffs->real_coeffs.num_len *
+		coeffs->coeffs.real.num_len = filt->a_len;
+		coeffs->coeffs.real.denum_len = filt->b_len + 1;
+		coeffs->coeffs.real.num = malloc(coeffs->coeffs.real.num_len *
 		                                 sizeof(double));
-		coeffs->real_coeffs.denum = malloc(
-			coeffs->real_coeffs.denum_len * sizeof(double));
-		if (  coeffs->real_coeffs.num == NULL
-		   || coeffs->real_coeffs.denum == NULL)
+		coeffs->coeffs.real.denum = malloc(
+			coeffs->coeffs.real.denum_len * sizeof(double));
+		if (  coeffs->coeffs.real.num == NULL
+		   || coeffs->coeffs.real.denum == NULL)
 			goto enomem;
 
 		copy_fn = convtab[filt->outtype][RTF_DOUBLE];
-		copy_fn(filt->a_len, coeffs->real_coeffs.num, filt->a, NULL, 0);
-		coeffs->real_coeffs.denum[0] = 1.;
-		copy_fn(filt->b_len, coeffs->real_coeffs.denum + 1, filt->b,
+		copy_fn(filt->a_len, coeffs->coeffs.real.num, filt->a, NULL, 0);
+		coeffs->coeffs.real.denum[0] = 1.;
+		copy_fn(filt->b_len, coeffs->coeffs.real.denum + 1, filt->b,
 		        NULL, 0);
-		for (i = 1; i < coeffs->real_coeffs.denum_len; i++) {
-			coeffs->real_coeffs.denum[i] *= -1.;
+		for (i = 1; i < coeffs->coeffs.real.denum_len; i++) {
+			coeffs->coeffs.real.denum[i] *= -1.;
 		}
 	}
 

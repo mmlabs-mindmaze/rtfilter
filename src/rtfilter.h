@@ -92,9 +92,9 @@ struct complex_coeffs {
 struct rtf_coeffs {
 	int is_complex;
 	union {
-		struct real_coeffs real_coeffs;
-		struct complex_coeffs complex_coeffs;
-	};
+		struct real_coeffs real;
+		struct complex_coeffs cplx;
+	} coeffs;
 };
 
 
