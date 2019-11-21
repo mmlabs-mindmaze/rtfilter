@@ -254,3 +254,16 @@ if codespell.found()
         ]
     )
 endif # codespell
+
+# test public headers for most warnings and C++ compatibility
+# only test rtfilter.h and not all exported headers: $(include_HEADERS)
+# "rtf_common.h" contains a #warning which would always make the test fail
+# otherwise
+run_target('api-compat-test',
+        command : [
+            'bash',
+            files('devtools/api-compat-test.sh'),
+            meson.current_source_dir() / 'src',
+            files('src/rtfilter.h'),
+        ]
+)

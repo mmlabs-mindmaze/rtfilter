@@ -45,6 +45,7 @@ build-aux/*
 *.o
 *.la
 *.lo
+a.out
 
 # generated files
 /unittests.tap

@@ -215,11 +215,9 @@ TESTS_ENVIRONMENT = PATH="$(PATH):$(buildir)" TESTSSRCDIR="$(srcdir)/tests"
 # only test rtfilter.h and not all exported headers: $(include_HEADERS)
 # "rtf_common.h" contains a #warning which would always make the test fail
 # otherwise
-.PHONY: test-api
-test-api: src/rtfilter.h
-	$(srcdir)/devtools/testapigen.sh $(srcdir)/src $^
-
-check: test-api
+.PHONY: api-compat-test
+api-compat-test: src/rtfilter.h
+	$(srcdir)/devtools/api-compat-test.sh $(srcdir)/src $^
 
 #
 # DEV TARGETS
