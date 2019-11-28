@@ -32,7 +32,7 @@ all_included
 for std in c99 c11 c17 gnu99 gnu11 gnu17
 do
 	echo "Test C language standard : $std"
-	all_included | gcc -std=$std -x c - -I"$includedir" -Werror -Wall -pedantic
+	all_included | gcc -std=$std -x c - -I"$includedir" -Werror -Wall -Wextra -pedantic
 done
 
 # also test with clang if available
@@ -46,5 +46,5 @@ fi
 for std in c++11 c++14 c++17 gnu++11 gnu++14 gnu++17
 do
 	echo "Test C++ language standard : $std"
-	all_included | gcc -std=$std -x c++ - -I"$includedir" -Werror -Wall -pedantic
+	all_included | gcc -std=$std -x c++ - -I"$includedir" -Werror -Wall -Wextra -pedantic
 done
