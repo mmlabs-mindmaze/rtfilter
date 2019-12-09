@@ -1,4 +1,4 @@
-option('tests', type: 'boolean', value: true,
+option('tests', type: 'feature', value: 'auto',
         description: 'build unit tests')
-option('perf', type: 'boolean', value: true,
+option('perf', type: 'feature', value: 'auto',
         description: 'build perf-test')

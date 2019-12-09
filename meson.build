@@ -135,22 +135,27 @@ import('pkgconfig').generate(rtfilter)
 # TESTS
 #
 
-if get_option('perf')
+librt = []
+perf_enabled = true
+if get_option('perf').enabled()
     # clock_gettime() may be provided by librt or libc depending
     # on their versions.
     clock_gettime_code = ''' #include <time.h>
                              int clock_gettime();
                              int main(void){return 0;} '''
-    librt = []
     if not cc.links(clock_gettime_code)
         if cc.links(clock_gettime_code, args : '-lrt')
-            librt = cc.find_library('rt', required : true)
-        else
+            librt = cc.find_library('rt', required : get_option('perf'))
+        elif get_option('perf').enabled()
             error('''clock_gettime() cannot be found, but is required to
                       build the perf-test tool !''')
+        else
+            perf_enabled = false
         endif
     endif
+endif
 
+if perf_enabled
     # test tool to ease performance regression tests
     # not run as part of unit tests
     perf_test = executable('perf-test',
@@ -161,8 +166,8 @@ if get_option('perf')
     )
 endif
 
-if get_option('tests')
-    checklib = dependency('check', required : true)
+if get_option('tests').enabled()
+    checklib = dependency('check', required : get_option('tests'))
 
     test_sources = files(
             'test/float-comparison.c',
