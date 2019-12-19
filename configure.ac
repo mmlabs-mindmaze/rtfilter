@@ -21,7 +21,7 @@ AC_CONFIG_HEADERS([src/config.h])
 AC_REQUIRE_AUX_FILE([tap-driver.sh])
 
 # Initialize Automake
-AM_INIT_AUTOMAKE([subdir-objects no-dist-gzip dist-bzip2 color-tests])
+AM_INIT_AUTOMAKE([subdir-objects no-dist-gzip dist-bzip2 color-tests foreign])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 AC_CANONICAL_HOST

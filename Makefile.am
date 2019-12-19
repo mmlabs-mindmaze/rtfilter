@@ -107,7 +107,7 @@ pkgconfig_DATA = src/rtfilter.pc
 # DOC RULES
 #
 
-doc_DATA = AUTHORS NEWS README COPYING
+doc_DATA = AUTHORS NEWS README.md COPYING
 
 dist_man_MANS = \
 	doc/rtf_create_bandpass_analytic.3 \

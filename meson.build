@@ -216,7 +216,7 @@ example = executable('documentation example',
 install_subdir('doc/examples',
         install_dir :  get_option('datadir') / 'doc' / 'rtfilter')
 
-install_data(files('AUTHORS', 'COPYING', 'NEWS', 'README'),
+install_data(files('AUTHORS', 'COPYING', 'NEWS', 'README.md'),
         install_dir : get_option('datadir') / 'doc' / 'rtfilter')
 
 #
