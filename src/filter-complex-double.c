@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2012 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+ *  Copyright (C) 2010-2012 Nicolas Bourdaud <nicolas.bourdaud@gmail.com>
  *
  *  This file is part of the rtfilter library
  *
