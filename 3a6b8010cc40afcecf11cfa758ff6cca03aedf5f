@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a4d209e_180fbf1e",
+        "filename": "mmpack/specs",
+        "patchSetId": 3
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2020-01-15T14:40:33Z",
+      "side": 1,
+      "message": "gmail.com",
+      "range": {
+        "startLine": 8,
+        "startChar": 65,
+        "endLine": 8,
+        "endChar": 72
+      },
+      "revId": "3a6b8010cc40afcecf11cfa758ff6cca03aedf5f",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
