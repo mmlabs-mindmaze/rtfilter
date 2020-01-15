@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2008-2011 Nicolas Bourdaud <nicolas.bourdaud@gmail.com>
+ *  Copyright (C) 2018-2020 Mindmaze Holdings SA
  *
  *  This file is part of the rtfilter library
  *
