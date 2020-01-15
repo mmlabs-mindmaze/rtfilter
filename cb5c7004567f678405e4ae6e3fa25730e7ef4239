@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7154c5af_3941c8a0",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2020-01-15T14:44:13Z",
+      "side": 1,
+      "message": "please change to gmail.com\n\nAlso please add the Mindmaze copyrights on the files that have been changed by us recently",
+      "range": {
+        "startLine": 7,
+        "startChar": 34,
+        "endLine": 7,
+        "endChar": 46
+      },
+      "revId": "cb5c7004567f678405e4ae6e3fa25730e7ef4239",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
