@@ -3,6 +3,11 @@ general:
     version: 1.1
     maintainer: Nicolas Bourdaud <nicolas.bourdaud@gmail.com>
     url: ssh://intranet.mindmaze.ch:29418/rtfilter
+    licenses: [ LGPL-3 ]
+    Copyright: |
+      Copyright (C) 2008 Nicolas Bourdaud <nicolas.bourdaud@gmail.com>
+      Copyright (C) 2009-2012 EPFL (Ecole Polytechnique Fédérale de Lausanne)
+      Copyright (C) 2015-2019 MindMaze Holdings SA
     description: |
       This package provides a library written in C implementing realtime digital
       filtering functions for multichannel signals (i.e. filtering multiple
