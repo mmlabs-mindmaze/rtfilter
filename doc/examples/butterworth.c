@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2010-2011 Nicolas Bourdaud <nicolas.bourdaud@epfl.ch>
+ *  Copyright (C) 2010-2011 Nicolas Bourdaud <nicolas.bourdaud@mindmaze.com>
  *
  *  The program is free software: you can redistribute it and/or
  *  modify it under the terms of the version 3 of the GNU General
