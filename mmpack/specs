@@ -1,6 +1,6 @@
 general:
     name: rtfilter
-    version: 1.1
+    version: 1.2
     maintainer: Nicolas Bourdaud <nicolas.bourdaud@gmail.com>
     url: ssh://intranet.mindmaze.ch:29418/rtfilter
     description: |
