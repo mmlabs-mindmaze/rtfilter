@@ -49,6 +49,30 @@
     },
     {
       "key": {
+        "uuid": "4cedfccc_807b560d",
+        "filename": "configure.ac",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2020-01-23T20:46:29Z",
+      "side": 1,
+      "message": "Yes, indeed",
+      "parentUuid": "7d1f6d66_ecbba22a",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 74
+      },
+      "revId": "fbc9d3269c24ccc93bc663dde94e061006e6a9e4",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "dd676ecb_64c13eb9",
         "filename": "meson.build",
         "patchSetId": 1
@@ -96,6 +120,30 @@
     },
     {
       "key": {
+        "uuid": "7ed5458e_109b9dac",
+        "filename": "meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2020-01-23T20:46:29Z",
+      "side": 1,
+      "message": "because the project version was 1.0, then 1.1 (version in Debian) and now 1.2\n\nThe naming in meson was not consistent with the previous naming scheme",
+      "parentUuid": "a7f60764_12c12153",
+      "range": {
+        "startLine": 2,
+        "startChar": 19,
+        "endLine": 2,
+        "endChar": 24
+      },
+      "revId": "fbc9d3269c24ccc93bc663dde94e061006e6a9e4",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2aab4f12_9ca2ffe7",
         "filename": "meson.build",
         "patchSetId": 1
@@ -131,6 +179,30 @@
       "side": 1,
       "message": "That was on purpose, since 1.1 we changed the coeff structure, which is an addition-only change to the abi.",
       "parentUuid": "2aab4f12_9ca2ffe7",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 11
+      },
+      "revId": "fbc9d3269c24ccc93bc663dde94e061006e6a9e4",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "6c74f626_5d5fb618",
+        "filename": "meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2020-01-23T20:46:29Z",
+      "side": 1,
+      "message": "It was indeed addition-only, from shared library version 1.0.1, hence the minor number increase from 0 to 1. Why going from 0 to 2?",
+      "parentUuid": "29bb7a76_a83f811a",
       "range": {
         "startLine": 15,
         "startChar": 0,
