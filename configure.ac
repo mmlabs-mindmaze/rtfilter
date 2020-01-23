@@ -7,13 +7,13 @@
 # - If any interfaces have been removed since the last public release, then
 # set age to 0.
 
-m4_define([lib_current],1)
-m4_define([lib_revision],1)
-m4_define([lib_age],0)
+m4_define([lib_current],2)
+m4_define([lib_revision],0)
+m4_define([lib_age],1)
 
 
 # Setup Automake
-AC_INIT(rtfilter, [lib_current.lib_revision],[nicolas.bourdaud@gmail.com])
+AC_INIT(rtfilter, [1.2],[nicolas.bourdaud@gmail.com])
 AC_CONFIG_SRCDIR([src/filter.c])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
