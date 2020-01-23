@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7d1f6d66_ecbba22a",
+        "filename": "configure.ac",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1017136
+      },
+      "writtenOn": "2020-01-23T17:09:14Z",
+      "side": 1,
+      "message": "I do not understand.\nWas lib_current.lib_revision in AC_INIT an error ?",
+      "parentUuid": "16647981_3981b747",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 74
+      },
+      "revId": "fbc9d3269c24ccc93bc663dde94e061006e6a9e4",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "dd676ecb_64c13eb9",
         "filename": "meson.build",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "a7f60764_12c12153",
+        "filename": "meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 1017136
+      },
+      "writtenOn": "2020-01-23T17:09:14Z",
+      "side": 1,
+      "message": "why drop the 3rd digit ?",
+      "parentUuid": "dd676ecb_64c13eb9",
+      "range": {
+        "startLine": 2,
+        "startChar": 19,
+        "endLine": 2,
+        "endChar": 24
+      },
+      "revId": "fbc9d3269c24ccc93bc663dde94e061006e6a9e4",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "2aab4f12_9ca2ffe7",
         "filename": "meson.build",
         "patchSetId": 1
@@ -59,6 +107,30 @@
       "writtenOn": "2020-01-23T16:59:45Z",
       "side": 1,
       "message": "minor \u003d \u00271\u0027\npatch \u003d \u00270\u0027",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 11
+      },
+      "revId": "fbc9d3269c24ccc93bc663dde94e061006e6a9e4",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "29bb7a76_a83f811a",
+        "filename": "meson.build",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1017136
+      },
+      "writtenOn": "2020-01-23T17:09:14Z",
+      "side": 1,
+      "message": "That was on purpose, since 1.1 we changed the coeff structure, which is an addition-only change to the abi.",
+      "parentUuid": "2aab4f12_9ca2ffe7",
       "range": {
         "startLine": 15,
         "startChar": 0,
