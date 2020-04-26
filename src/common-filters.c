@@ -418,10 +418,13 @@ exit:
  *                                                                        *
  **************************************************************************/
 /**
- * \param nchann	number of channels the filter will process
- * \param type		type of data the filter will process (\c RTF_FLOAT or \c RTF_DOUBLE)
- * \param fir_length	number of sample used to compute the mean
- * \return	the handle of the newly created filter in case of success, \c NULL otherwise.
+ * rtf_create_fir_mean() - creates FIR mean filters
+ * @nchann: number of channels the filter will process
+ * @proctype: type of data the filter will process (RTF_FLOAT or RTF_DOUBLE)
+ * @fir_length: number of sample used to compute the mean
+ *
+ * Return:
+ * the handle of the newly created filter in case of success, NULL otherwise.
  */
 API_EXPORTED
 hfilter rtf_create_fir_mean(int nchann, int proctype,
@@ -449,12 +452,31 @@ hfilter rtf_create_fir_mean(int nchann, int proctype,
 }
 
 /**
- * \param nchann	number of channels the filter will process
- * \param proctype	type of data the filter will process (\c RTF_FLOAT or \c RTF_DOUBLE)
- * \param fc		Normalized cutoff frequency (the normal frequency divided by the sampling frequency)
- * \param half_length	the half size of the impulse response (in number of samples)
- * \param window	The type of the kernel wondow to use for designing the filter
- * \return	the handle of the newly created filter in case of success, \c NULL otherwise.
+ * rtf_create_fir_lowpass() - creates FIR lowpass windowed sinc filters
+ * @nchann: number of channels the filter will process
+ * @proctype: type of data the filter will process (RTF_FLOAT or RTF_DOUBLE)
+ * @fc: Normalized cutoff frequency (the normal frequency divided by the
+ *      sampling frequency)
+ * @half_length: the half size of the impulse response (in number of samples)
+ * @window: the type of the kernel wondow to use for designing the filter
+ *
+ * rtf_create_fir_lowpass() creates a lowpass windowed sinc filter
+ * processing @nchann channels of data type specified by @proctype
+ * with @fc as normalized cutoff frequency and @half_length as the half
+ * length of the window.
+ *
+ * A normalized frequency is the ratio between the absolute frequency and the
+ * sampling frequency (i.e. a value of 1.0 refers to the sampling frequency).
+ *
+ * The parameter @proctype has the same meaning as in rtf_create_filter().
+ * Refers to its manpage for more details.
+ *
+ * The parameter @window specifies the type of window applied to the
+ * impulse response and can take the following values: BLACKMAN_WINDOW,
+ * HAMMING_WINDOW or BRECT_WINDOW (see a book on signal processing for details
+ * about their meaning).
+ *
+ * Return: the handle to the created filter in case of success, NULL otherwise.
  */
 API_EXPORTED
 hfilter rtf_create_fir_lowpass(int nchann, int proctype,
@@ -485,12 +507,31 @@ hfilter rtf_create_fir_lowpass(int nchann, int proctype,
 
 
 /**
- * \param nchann	number of channels the filter will process
- * \param proctype	type of data the filter will process (\c RTF_FLOAT or \c RTF_DOUBLE)
- * \param fc		Normalized cutoff frequency (the normal frequency divided by the sampling frequency)
- * \param half_length	the half size of the impulse response (in number of samples)
- * \param window	The type of the kernel wondow to use for designing the filter
- * \return	the handle of the newly created filter in case of success, \c NULL otherwise.
+ * rtf_create_fir_highpass() - creates FIR highpass windowed sinc filters
+ * @nchann: number of channels the filter will process
+ * @proctype: type of data the filter will process (RTF_FLOAT or RTF_DOUBLE)
+ * @fc: Normalized cutoff frequency (the normal frequency divided by the
+ *      sampling frequency)
+ * @half_length: the half size of the impulse response (in number of samples)
+ * @window: the type of the kernel wondow to use for designing the filter
+ *
+ * rtf_create_fir_highpass() creates a highpass windowed sinc filter
+ * processing @nchann channels of data type specified by @proctype
+ * with @fc as normalized cutoff frequency and @half_length as the half
+ * length of the window.
+ *
+ * A normalized frequency is the ratio between the absolute frequency and the
+ * sampling frequency (i.e. a value of 1.0 refers to the sampling frequency).
+ *
+ * The parameter @proctype has the same meaning as in rtf_create_filter().
+ * Refers to its manpage for more details.
+ *
+ * The parameter @window specifies the type of window applied to the
+ * impulse response and can take the following values: BLACKMAN_WINDOW,
+ * HAMMING_WINDOW or BRECT_WINDOW (see a book on signal processing for details
+ * about their meaning).
+ *
+ * Return: the handle to the created filter in case of success, NULL otherwise.
  */
 API_EXPORTED
 hfilter rtf_create_fir_highpass(int nchann, int proctype,
@@ -522,13 +563,35 @@ hfilter rtf_create_fir_highpass(int nchann, int proctype,
 
 
 /**
- * \param nchann	number of channels the filter will process
- * \param proctype	type of data the filter will process (\c datatype_float or \c datatype_double)
- * \param fc_low	normalized cutoff frequency of the lowpass part (the normal frequency divided by the sampling frequency)
- * \param fc_high	normalized cutoff frequency of the highpass part (the normal frequency divided by the sampling frequency)
- * \param half_length	the half size of the impulse response (in number of samples)
- * \param window	the type of the kernel wondow to use for designing the filter
- * \return	the handle of the newly created filter in case of success, \c null otherwise.
+ * rtf_create_fir_bandpass() - creates FIR bandpass windowed sinc filters
+ * @nchann: number of channels the filter will process
+ * @proctype: type of data the filter will process (RTF_FLOAT or
+ *            RTF_DOUBLE)
+ * @fc_low: normalized cutoff frequency of the lowpass part (the normal
+ *          frequency divided by the sampling frequency)
+ * @fc_high: normalized cutoff frequency of the highpass part (the normal
+ *           frequency divided by the sampling frequency)
+ * @half_length: the half size of the impulse response (in number of samples)
+ * @window: the type of the kernel wondow to use for designing the filter
+ *
+ * rtf_create_fir_bandpass() creates a bandpass windowed sinc filter
+ * processing @nchann channels of data type specified by @proctype
+ * with @fc_low and @fc_high as respectively the lowpass and highpass
+ * normalized cutoff frequency and @half_length as the half
+ * length of the window.
+ *
+ * A normalized frequency is the ratio between the absolute frequency and the
+ * sampling frequency (i.e. a value of 1.0 refers to the sampling frequency).
+ *
+ * The parameter @proctype has the same meaning as in rtf_create_filter().
+ * Refers to its manpage for more details.
+ *
+ * The parameter @window specifies the type of window applied to the
+ * impulse response and can take the following values: BLACKMAN_WINDOW,
+ * HAMMING_WINDOW or BRECT_WINDOW (see a book on signal processing for details
+ * about their meaning).
+ *
+ * Return: the handle to the created filter in case of success, NULL otherwise.
  */
 API_EXPORTED
 hfilter rtf_create_fir_bandpass(int nchann, int proctype,
@@ -571,13 +634,32 @@ hfilter rtf_create_fir_bandpass(int nchann, int proctype,
 
 
 /**
- * \param nchann	number of channels the filter will process
- * \param proctype	type of data the filter will process (\c datatype_float or \c datatype_double)
- * \param fc		normalized cutoff frequency (the normal frequency divided by the sampling frequency)
- * \param num_pole	The number of pole the z-transform of the filter should possess
- * \param highpass	flag to specify the type of filter (0 for a lowpass, 1 for a highpass)
- * \param ripple	ripple
- * \return	the handle of the newly created filter in case of success, \c null otherwise.
+ * rtf_create_chebychev() - creates IIR Chebychev filter
+ * @nchann: number of channels the filter will process
+ * @proctype: type of data the filter will process (RTF_FLOAT or
+ *            RTF_DOUBLE)
+ * @fc: normalized cutoff frequency (the normal frequency divided by the
+ *      sampling frequency)
+ * @num_pole: the number of pole the z-transform of the filter should possess
+ * @highpass: flag to specify the type of filter (0 for a lowpass, 1 for
+ *            a highpass)
+ * @ripple: ripple
+ *
+ * rtf_create_chebychev() creates a IIR chebychev filter processing
+ * @nchann channels of data type specified by @proctype with
+ * @fc as normalized cutoff frequency, whose the Z-transform has
+ * @num_pole poles and whose the impulse response has a ripple of @ripple.
+ * This latter is expressed as the ratio between the overshoot (difference
+ * between the max value of the response to a unit step and the unit length)
+ * and the unit length (ratio not expressed in decibels).
+ *
+ * A normalized frequency is the ratio between the absolute frequency and the
+ * sampling frequency (i.e. a value of 1.0 refers to the sampling frequency).
+ *
+ * If @highpass is 0, it specifies the filter should be a lowpass. If
+ * @highpass is non-zero, the should be a highpass.
+ *
+ * Return: the handle to the created filter in case of success, NULL otherwise.
  */
 API_EXPORTED
 hfilter rtf_create_chebychev(int nchann, int proctype,
@@ -610,12 +692,27 @@ out:
 }
 
 /**
- * \param nchann	number of channels the filter will process
- * \param proctype	type of data the filter will process (\c datatype_float or \c datatype_double)
- * \param fc		normalized cutoff frequency (the normal frequency divided by the sampling frequency)
- * \param num_pole	The number of pole the z-transform of the filter should possess
- * \param highpass	flag to specify the type of filter (0 for a lowpass, 1 for a highpass)
- * \return	the handle of the newly created filter in case of success, \c null otherwise.
+ * rtf_create_butterworth - creates Butterwoth filter
+ * @nchann: number of channels the filter will process
+ * @proctype: type of data the filter will process (RTF_FLOAT
+ *            or RTF_DOUBLE)
+ * @fc: normalized cutoff frequency (the normal frequency divided
+ *      by the sampling frequency)
+ * @num_pole: the number of pole the z-transform of the filter should possess
+ * @highpass: flag to specify the type of filter (0 for a lowpass, 1 for a
+ *            highpass)
+ *
+ * rtf_create_butterworth() is the same as rtf_create_chebychev()
+ * but creates a butterworth filter (which a special case of a chebychev filter
+ * with a ripple of 0).
+ *
+ * A normalized frequency is the ratio between the absolute frequency and the
+ * sampling frequency (i.e. a value of 1.0 refers to the sampling frequency).
+ *
+ * If @highpass is 0, it specifies the filter should be a lowpass. If
+ * @highpass is non-zero, the should be a highpass.
+ *
+ * Return: the handle to the created filter in case of success, NULL otherwise.
  */
 API_EXPORTED
 hfilter rtf_create_butterworth(int nchann, int proctype,
@@ -627,10 +724,14 @@ hfilter rtf_create_butterworth(int nchann, int proctype,
 }
 
 /**
- * \param nchann	number of channels the filter will process
- * \param type		type of data the filter will process (\c datatype_float or \c datatype_double)
- * \param fs		sampling frequency in Hz
- * \return	the handle of the newly created filter in case of success, \c null otherwise.
+ * rtf_create_integral() - creates integral filters
+ * @nchann: number of channels the filter will process
+ * @type: type of data the filter will process (RTF_FLOAT or
+ *        RTF_DOUBLE)
+ * @fs: sampling frequency in Hz
+ *
+ * Return:
+ * the handle of the newly created filter in case of success, null otherwise.
  */
 API_EXPORTED
 hfilter rtf_create_integral(int nchann, int type, double fs)
@@ -644,17 +745,37 @@ hfilter rtf_create_integral(int nchann, int type, double fs)
 }
 
 /**
- *      rtf_create_bandpass_analytic:
+ * rtf_create_bandpass_analytic() - creates an IIR filter estimating the
+ *                                  analytic signal in a bandpass
+ * @nchann: number of channels the filter will process
+ * @proctype: type of data the filter will process (RTF_FLOAT or
+ *            RTF_DOUBLE)
+ * @fl: normalized low bandpass cutoff frequency (the normal
+ *      frequency divided by the sampling frequency)
+ * @fh: normalized hihg bandpass cutoff frequency (the normal
+ *      frequency divided by the sampling frequency)
+ * @num_pole: the number of pole the z-transform of the filter should possess
  *
- *      Analytic filter: Is a complex filter generating a signal whose spectrum equals the positive spectrum from a (real)              input signal. The resulting signal is said to be “analytic".
- *      The technique relies on the rotation of the pole-zero plot of a low pass filter.
+ * rtf_create_bandpass_analytic() creates a complex bandpass filter from a
+ * Chebychev low pass filter processing
+ * @nchann channels of data type specified by @proctype. The output of
+ * the filter is the analytic signal of the bandpassed data between the
+ * normalized frequencies @fl and @fh. The @um_pole parameter
+ * specifies the number of poles of the Chebychev filter used as the basis of
+ * the analytic filter.
  *
- * \param nchann	number of channels the filter will process.
- * \param proctype	type of data the filter will process (\c datatype_float or \c datatype_double).
- * \param fl		normalized low bandpass cutoff frequency (the normal frequency divided by the sampling frequency).
- * \param fh		normalized hihg bandpass cutoff frequency (the normal frequency divided by the sampling frequency).
- * \param num_pole	The number of pole the z-transform of the filter should possess.
- * \return		The handle of the newly created filter in case of success, \c null otherwise.
+ * A normalized frequency is the ratio between the absolute frequency and the
+ * sampling frequency (i.e. a value of 1.0 refers to the sampling frequency).
+ *
+ * The Z-transform of this filter has complex coefficients. So like
+ * rtf_create_filter() the created filter will output complex values
+ * keeping the precision specified by @proctype.
+ *
+ * It is important to note that this filter can quickly become unstable as the
+ * number of pole specified increased. Please refers to the authors of the
+ * library to know the stability domain.
+ *
+ * Return: the handle to the created filter in case of success, NULL otherwise.
  */
 API_EXPORTED
 hfilter rtf_create_bandpass_analytic(int nchann,

@@ -109,25 +109,6 @@ pkgconfig_DATA = src/rtfilter.pc
 
 doc_DATA = AUTHORS NEWS README.md COPYING
 
-dist_man_MANS = \
-	doc/rtf_create_bandpass_analytic.3 \
-	doc/rtf_create_butterworth.3 \
-	doc/rtf_create_chebychev.3 \
-	doc/rtf_filter_combine.3 \
-	doc/rtf_create_downsampler.3 \
-	doc/rtf_create_filter.3 \
-	doc/rtf_create_filter_coeffs.3 \
-	doc/rtf_create_fir_bandpass.3 \
-	doc/rtf_create_fir_highpass.3 \
-	doc/rtf_create_fir_lowpass.3 \
-	doc/rtf_destroy_filter.3 \
-	doc/rtf_filter.3 \
-	doc/rtf_filter_set_lazy_init.3 \
-	doc/rtf_get_type.3 \
-	doc/rtf_get_version.3 \
-	doc/rtf_init_filter.3 \
-	$(eol)
-
 nobase_dist_doc_DATA = \
 	doc/examples/butterworth.c \
 	doc/examples/Makefile \
