@@ -235,6 +235,15 @@ void destroy_filter_seq(struct rtf_filter* filt)
 }
 
 
+/**
+ * rtf_destroy_filter() - destroys a filter
+ * @filt: handle of the filter to destroy
+ *
+ * This function destroys the filter referenced by the handle @filt and
+ * free all the associated resources. After destruction, no reference to
+ * @filt should be made. If @filt is NULL, the function returns
+ * without doing anything.
+ */
 API_EXPORTED
 void rtf_destroy_filter(hfilter filt)
 {
@@ -245,6 +254,22 @@ void rtf_destroy_filter(hfilter filt)
 }
 
 
+/**
+ * rtf_init_filter() - reinitializes the filter with given data
+ * @filt: the filter to reinitialize
+ * @data: data with which the filter is reinitialized
+ *
+ * rtf_init_filter() initializes the internal states of the filter with
+ * one sample of data as if the filter has been applied indefinitely to
+ * constant data consisting by this only sample.
+ *
+ * @data is allowed to be NULL. In such case, the filter is initialized
+ * with null signals (i.e. initialized with an input full of 0.0 values).
+ *
+ * If @data is not NULL, the array pointed by @data should be
+ * organized the same way as it would be if used in a call to
+ * rtf_filter() with one sample.
+ */
 API_EXPORTED
 void rtf_init_filter(hfilter filt, const void *data)
 {
@@ -252,6 +277,66 @@ void rtf_init_filter(hfilter filt, const void *data)
 }
 
 
+/**
+ * rtf_create_filter() - creates a custom filter
+ * @nchann: number of channels the filter will process
+ * @proctype: type of data the filter will process
+ * @numlen: number of elements in @num
+ * @num: array representing a numerator
+ * @denlen: number of element in @den
+ * @den: array representing a denominator
+ * @paramtype: type of data in @num and in @den
+ *
+ * This function creates and initializes a digital linear filter whose the
+ * Z-transform is rational and processing @nchann channels of a data type
+ * specified by @proctype.
+ *
+ * The numerator and denominator of the rational expression are specified by
+ * respectively two arrays @num and @denum containing the
+ * coefficients in the ascending order of the 2 polynoms. The number of
+ * elements in each arrays is controlled by @numlen and @denlen.
+ * @denlen is allowed to be equal to zero as well as @den is
+ * allowed to be NULL. In such case, the denominator will be set to 1.
+ * The data type of the values in @num and @den are specified by
+ * @paramtype.
+ *
+ * The values @num, @den, @numlen, and @denlen can
+ * also be passed using the coeffs structure while using the function
+ * rtf_create_filter_coeffs().
+ *
+ * The @proctype and @paramtype must be one the following constants:
+ *
+ * RTF_FLOAT
+ *   specifies real single precision (float)
+ *
+ * RTF_DOUBLE
+ *   specifies real double precision (double)
+ *
+ * RTF_CFLOAT
+ *   specifies complex single precision (complex float)
+ *
+ * RTF_CDOUBLE
+ *   specifies complex double precision (complex double)
+ *
+ * The expected data type of the output of the filter has the same precision as
+ * the one specified by @proctype and is complex @proctype or @paramtype
+ * specifies a complex type. Said otherwise:
+ *
+ * If @proctype is RTF_FLOAT or RTF_CFLOAT then the output
+ * data type will have single precision. Otherwise it will have double
+ * precision.
+ *
+ * If @proctype or @paramtype specifies a complex type, then the output
+ * will be complex as well. Otherwise, it will be real.
+ *
+ * rtf_create_filter() can be used to use a filter that has been
+ * designed somewhere else. In particular, this function can be used directly
+ * with the output of filter design function of MATLAB. In such case, the usual
+ * B and A arrays returned by the filter design functions corresponds exactly
+ * to respectively @num and @denum.
+ *
+ * Return: the handle to the created filter in case of success, NULL otherwise.
+ */
 API_EXPORTED
 hfilter rtf_create_filter(int nchann, int proctype,
                           int numlen, const void *num,
@@ -355,8 +440,10 @@ void swap_ptr(char ** ptr1, char ** ptr2)
  * rtf_filter_seq() - apply filter cascade
  * @filt: initialized rtf_filter structure
  * @ns: number of samples (up to NS_MAX)
- * @in: array of (ns * nch) input data
- * @out: array of (ns * nch) output data
+ * @_in: array of (ns * nch) input data
+ * @_out: array of (ns * nch) output data
+ *
+ * Return: 0
  */
 static
 int rtf_filter_seq(struct rtf_filter * filt, void const * _in,
@@ -400,15 +487,18 @@ int rtf_filter_seq(struct rtf_filter * filt, void const * _in,
 
 
 /**
- * rtf_filter_combine() - combine vector of filters into one
+ * rtf_filter_combine() - combines vector of filters into one
  * @nfilters: number of filters to combine
  * @filters: array of pointers to filters to combine
+ *
+ * Combines the @nfilters rtf_filters structures into a single one. This is
+ * so that a sequence of filters can be manipulated more easily.
  *
  * On success, the combination-filter assumes ownership of all the filters
  * passed as arguments.
  *
- * Returns: a pointer to rtf_filter structure handling the combination,
- *          NULL on error
+ * Return:
+ * a pointer to rtf_filter structure handling the combination, NULL on error
  */
 API_EXPORTED
 struct rtf_filter* rtf_filter_combine(int nfilters, struct
@@ -456,6 +546,24 @@ struct rtf_filter* rtf_filter_combine(int nfilters, struct
 }
 
 
+/**
+ * rtf_create_filter_coeffs() - creates a custom filter
+ * @nchann: number of channels the filter will process
+ * @data_type: type of data the filter will process
+ * @coeffs: structure giving information
+ *
+ * This function creates and initializes a digital linear filter whose the
+ * Z-transform is rational and processing @nchann channels of a data type
+ * specified by @proctype.
+ *
+ * This function is identical to rtf_create_filter() except that the
+ * arguments num, denum, numlen, and denlen of rtf_create_filter() are
+ * given thanks to the coeffs structure.
+ *
+ * See rtf_create_filter() for more information.
+ *
+ * Return: the handle to the created filter in case of success, NULL otherwise.
+ */
 hfilter rtf_create_filter_coeffs(int nchann, int data_type,
                                  struct rtf_coeffs * coeffs)
 {
@@ -479,6 +587,16 @@ hfilter rtf_create_filter_coeffs(int nchann, int data_type,
 }
 
 
+/**
+ * rtf_filter_set_lazy_init() - sets the filter lazy-init flag
+ * @filt: the filter whose lazy-init flag is set
+ * @do_lazy_init: the value with which the lazy-init flag is set
+ *
+ * Sets the lazy-init state of the hfilter @filt to given value
+ * @do_lazy_init.
+ * If the filter lazy-inits, then on its first call, the first data is used
+ * to initialize the filter by calling rtf_init_filter().
+ */
 API_EXPORTED
 void rtf_filter_set_lazy_init(hfilter filt, int do_lazy_init)
 {
@@ -486,6 +604,61 @@ void rtf_filter_set_lazy_init(hfilter filt, int do_lazy_init)
 }
 
 
+/**
+ * rtf_filter() - filters a chunk of data
+ * @filt: the filter to apply on the data
+ * @x: array of samples on which to apply the filter
+ * @y: array to fill with the filtered data
+ * @ns: number of samples on which to apply the filter
+ *
+ * This function applies the filter referenced by @filt on @ns
+ * samples specified by the pointer @x and writes the filtered data into
+ * the array pointed by @y. The arrays pointed by @x and @y must be
+ * made of values whose correspond to the type specified at the creation of
+ * the filter. In addition, the two arrays MUST NOT overlap (failing to
+ * comply will lead to undefined results).
+ *
+ * Their number of elements have to be equal to @ns multiplied by the
+ * number of channels processed (specified at the creation of the filter). The
+ * arrays should be packed by channels with the following pattern
+ *
+ * +----+----+---+----+----+----+---+----+---+-----+
+ * |S1C1|S1C2|...|S1Ck|S2C1|S2C2|...|S2Ck|...|SnsCk|
+ * +----+----+---+----+----+----+---+----+---+-----+
+ * 
+ * where SiCj refers to the data value of the i-th sample and the j-th
+ * channel and k refers to the number of channel specified at the creation
+ * of the filter.
+ *
+ * Return:
+ * the number of samples written in the array pointer by @y. For
+ * most of the filters, this value will always be equal to @ns. This is
+ * however not the case of a downsampling filter whose the number of samples
+ * returned may vary from one call to another.
+ *
+ * Performances:
+ * On platforms that support SIMD instructions, rtf_filter() is
+ * implemented in 2 different versions: one normal and one using SIMD
+ * instruction set which performs nearly 4x faster than the normal one when
+ * processing float data types. The SIMD version is automatically
+ * selected at runtime if the following conditions are met (otherwise, the
+ * implementation falls back to the normal version):
+ *
+ *   - The input @x and output @y are aligned on 16 bytes boundary (128 bits)
+ *
+ *   - The sample strides (the size of the data type multiplied by the number
+ *   of channel) of the input and output are multiples of 16 bytes.
+ *
+ * The first condition is easily met by allocating @x and @y using
+ * memory allocation function mandating a certain alignment (for example,
+ * posix_memalign() on POSIX platform).
+ *
+ * The second condition is met if the number of channels is carefully chosen.
+ * Given the boost obtained with the SIMD version, it is often interesting to
+ * add unused channels into the input and output (when possible) just to make
+ * the strides multiple of 16 bytes (for example using always a multiple of 4
+ * channels when dealing with float and real values).
+ */
 API_EXPORTED HOTSPOT
 int rtf_filter(hfilter filt, const void* x, void* y, int ns)
 {
@@ -498,6 +671,23 @@ int rtf_filter(hfilter filt, const void* x, void* y, int ns)
 }
 
 
+/**
+ * rtf_get_type() - gets the input or output data type of a filter
+ * @filt: filter whose input or output data type is requested
+ * @in: indicates whether it is the input or the output data type that is
+ *      requested
+ *
+ * This function returns the data type of the input or output of the filter
+ * @filt depending on @in. If @in is zero, then the returned
+ * type is the output data type. If @in is non-zero, the function
+ * returns the input data type of the filter.
+ *
+ * In case of the success, the returned type will be one of the constants
+ * (RTF_FLOAT, RTF_DOUBLE, RTF_CFLOAT or RTF_CDOUBLE) defined in the man page
+ * of rtf_create_filter().
+ *
+ * Return: the requested data type in case of success, -1 otherwise.
+ */
 API_EXPORTED
 int rtf_get_type(hfilter filt, int in)
 {
@@ -525,6 +715,22 @@ const char rtf_version_string[] = PACKAGE_STRING
 #endif /* if HAVE_CPUID */
 
 
+/**
+ * rtf_get_version() - returns the version of the library
+ * @string: string to fill with the version
+ * @len: maximal size of the string put in @string
+ * @line: indicates whether only the version of the library is requested
+ *        or if the versions of the dependencies as well are requested
+ *
+ * This function fills in @string the version of the library if @line
+ * is 0. It fills at most @len character in @string including the
+ * terminating null byte ('\0'). If the implementation of library depends on
+ * other non-standard libraries, it will return the version of them in
+ * subsequent lines (@line > 0). If there is no more dependency, nothing
+ * is copied on @string and 0 is returned by the function.
+ *
+ * Return: the number of characters copied on @string.
+ */
 API_EXPORTED
 size_t rtf_get_version(char* string, size_t len, int line)
 {
