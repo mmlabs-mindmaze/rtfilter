@@ -102,6 +102,27 @@ void downsampler_destroy_filter(struct rtf_filter* filt)
 
 
 
+/**
+ * rtf_create_downsampler() - creates downsampling filter
+ * @nch: number of channels the filter will process
+ * @type: type of data the filter will process
+ * @r: decimation factor
+ *
+ * rtf_create_downsampler() creates a filter that downsamples signals
+ * coming from @nch channels of type @type (see rtf_create_filter()) by a
+ * decimation factor of @r (i.e. the sampling frequency of the input will be
+ * @r times the sampling frequency of the output). This is achieved internally
+ * by applying a lowpass 4-order Chebychev filter to the input data using a
+ * normalized cutoff frequency of 0.8 / (2 * @r) and decimating the result
+ * every @r samples.
+ *
+ * Return: 
+ * the handle to the created filter in case of success, NULL otherwise.
+ * On the contrary of most other filters, the number of samples returned by
+ * rtf_create_downsampler() is different than the input (as expected) but also may
+ * vary at each call if the number of sample supplied in input is not a
+ * multiple of @r.
+ */
 DEPRECATED API_EXPORTED
 hfilter rtf_create_downsampler(int nch, int type, int r)
 {
