@@ -193,24 +193,6 @@ endif
 # DOC
 #
 
-install_man(files('doc/rtf_create_bandpass_analytic.3',
-        'doc/rtf_create_butterworth.3',
-        'doc/rtf_create_chebychev.3',
-        'doc/rtf_create_downsampler.3',
-        'doc/rtf_create_filter.3',
-        'doc/rtf_create_filter_coeffs.3',
-        'doc/rtf_create_fir_bandpass.3',
-        'doc/rtf_create_fir_highpass.3',
-        'doc/rtf_create_fir_lowpass.3',
-        'doc/rtf_destroy_filter.3',
-        'doc/rtf_filter.3',
-        'doc/rtf_filter_combine.3',
-        'doc/rtf_filter_set_lazy_init.3',
-        'doc/rtf_get_type.3',
-        'doc/rtf_get_version.3',
-        'doc/rtf_init_filter.3',
-))
-
 # compile example as a test, only install the sources
 example = executable('documentation example',
         files('doc/examples/butterworth.c'),
