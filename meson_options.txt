@@ -2,3 +2,5 @@ option('tests', type: 'feature', value: 'auto',
         description: 'build unit tests')
 option('perf', type: 'feature', value: 'auto',
         description: 'build perf-test')
+option('docs', type : 'feature', value: 'auto',
+        description: 'build documentation')
