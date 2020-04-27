@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5621b384_6b91aa4c",
+        "filename": "src/common-filters.c",
+        "patchSetId": 6
+      },
+      "lineNbr": 576,
+      "author": {
+        "id": 1017136
+      },
+      "writtenOn": "2020-04-27T13:08:15Z",
+      "side": 1,
+      "message": "typo: and",
+      "range": {
+        "startLine": 576,
+        "startChar": 57,
+        "endLine": 576,
+        "endChar": 61
+      },
+      "revId": "547f54848dcea01af10f7c854f537510b9a74ffc",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
