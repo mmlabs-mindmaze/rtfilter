@@ -224,6 +224,63 @@ install_subdir('doc/examples',
 install_data(files('AUTHORS', 'COPYING', 'NEWS', 'README.md'),
         install_dir : get_option('datadir') / 'doc' / 'rtfilter')
 
+docs_state = 'disabled'
+sphinxbuild = find_program('sphinx-build', required : get_option('docs'))
+if sphinxbuild.found() and not get_option('docs').disabled()
+    python3 = import('python').find_installation('python3', required : true)
+    check_linuxdoc = run_command(python3, '-c', '"import linuxdoc"')
+
+    if check_linuxdoc.returncode() != 0 and get_option('docs').enabled()
+        error('python3 module "linuxdoc" is required to build documentation')
+    elif check_linuxdoc.returncode() == 0
+        docs_state = 'enabled'
+    endif
+endif
+
+if docs_state == 'enabled'
+
+    doc_sources = files(
+        'doc/index.rst',
+    )
+
+    sphinxbuild_wrapper = files('doc/sphinx-build-wrapper.sh')
+    gen_man_pages = custom_target('man3',
+            output : 'man3',
+            command : [
+                'sh',
+                sphinxbuild_wrapper,
+                sphinxbuild,
+                meson.source_root(),
+                'kernel-doc-man',
+                meson.source_root() / 'doc',
+                'man3',
+            ],
+            build_by_default : true,
+            depend_files : [sources, doc_sources],
+            install : true,
+            install_dir : get_option('mandir'),
+    )
+
+    custom_target('html',
+            output : 'html',
+            command : [
+                'sh',
+                sphinxbuild_wrapper,
+                sphinxbuild,
+                meson.source_root(),
+                'html',
+                meson.source_root() / 'doc',
+                'html',
+            ],
+            build_by_default : true,
+            depend_files : [sources, doc_sources],
+            depends : gen_man_pages,  # re-use .doctree from man
+            install : true,
+            install_dir : get_option('datadir') / 'doc/rtfilter',
+    )
+
+endif
+
 #
 # DEVTOOLS
 #
