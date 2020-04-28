@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "452c6135_24da2532",
+        "filename": "src/filter.c",
+        "patchSetId": 9
+      },
+      "lineNbr": 623,
+      "author": {
+        "id": 1017136
+      },
+      "writtenOn": "2020-04-28T07:43:13Z",
+      "side": 1,
+      "message": "This is detected by sphinx as a section title.\nProbably because of the \u0027:\u0027 in the end.\n\nHave a look, the result is not good",
+      "range": {
+        "startLine": 623,
+        "startChar": 3,
+        "endLine": 623,
+        "endChar": 66
+      },
+      "revId": "f82f3b82119c28764b254f641d46bd8304abce49",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
