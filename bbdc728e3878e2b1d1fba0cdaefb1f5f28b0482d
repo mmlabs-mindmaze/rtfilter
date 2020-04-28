@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4d4d059b_c42aa355",
+        "filename": "doc/conf.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1017136
+      },
+      "writtenOn": "2020-04-28T13:28:11Z",
+      "side": 1,
+      "message": "version is 1.2\n\nIt\u0027s a duplicate from meson\u0027s project directive. We don\u0027t generate this file (yet)",
+      "range": {
+        "startLine": 49,
+        "startChar": 12,
+        "endLine": 49,
+        "endChar": 16
+      },
+      "revId": "bbdc728e3878e2b1d1fba0cdaefb1f5f28b0482d",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
