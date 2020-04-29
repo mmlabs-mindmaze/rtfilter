@@ -1,0 +1,234 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6e447d97_897a94e3",
+        "filename": "src/common-filters.c",
+        "patchSetId": 12
+      },
+      "lineNbr": 569,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2020-04-29T12:34:56Z",
+      "side": 1,
+      "message": "RTF_FLOAT or RTF_DOUBLE",
+      "range": {
+        "startLine": 568,
+        "startChar": 52,
+        "endLine": 569,
+        "endChar": 29
+      },
+      "revId": "0b669e978815a5ba2462c6bbc0828c368f11b399",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "af75c2ac_2b395e6f",
+        "filename": "src/common-filters.c",
+        "patchSetId": 12
+      },
+      "lineNbr": 640,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2020-04-29T12:34:56Z",
+      "side": 1,
+      "message": "RTF_FLOAT or RTF_DOUBLE",
+      "range": {
+        "startLine": 639,
+        "startChar": 52,
+        "endLine": 640,
+        "endChar": 29
+      },
+      "revId": "0b669e978815a5ba2462c6bbc0828c368f11b399",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "96242e74_019a1fc7",
+        "filename": "src/common-filters.c",
+        "patchSetId": 12
+      },
+      "lineNbr": 698,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2020-04-29T12:34:56Z",
+      "side": 1,
+      "message": "RTF_FLOAT or RTF_DOUBLE",
+      "range": {
+        "startLine": 697,
+        "startChar": 52,
+        "endLine": 698,
+        "endChar": 32
+      },
+      "revId": "0b669e978815a5ba2462c6bbc0828c368f11b399",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "3be7af04_9e8b7497",
+        "filename": "src/common-filters.c",
+        "patchSetId": 12
+      },
+      "lineNbr": 730,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2020-04-29T12:34:56Z",
+      "side": 1,
+      "message": "RTF_FLOAT or RTF_DOUBLE",
+      "range": {
+        "startLine": 729,
+        "startChar": 48,
+        "endLine": 730,
+        "endChar": 25
+      },
+      "revId": "0b669e978815a5ba2462c6bbc0828c368f11b399",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5ef94ae7_24e28677",
+        "filename": "src/common-filters.c",
+        "patchSetId": 12
+      },
+      "lineNbr": 752,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2020-04-29T12:34:56Z",
+      "side": 1,
+      "message": "RTF_FLOAT or RTF_DOUBLE",
+      "range": {
+        "startLine": 751,
+        "startChar": 52,
+        "endLine": 752,
+        "endChar": 29
+      },
+      "revId": "0b669e978815a5ba2462c6bbc0828c368f11b399",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "95f20d54_80462f79",
+        "filename": "src/common-filters.c",
+        "patchSetId": 12
+      },
+      "lineNbr": 759,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2020-04-29T12:34:56Z",
+      "side": 1,
+      "message": "creates a complex bandpass filter from a Chebyshev low pass filter",
+      "range": {
+        "startLine": 759,
+        "startChar": 34,
+        "endLine": 759,
+        "endChar": 64
+      },
+      "revId": "0b669e978815a5ba2462c6bbc0828c368f11b399",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9153973d_2c44ad4d",
+        "filename": "src/filter.c",
+        "patchSetId": 12
+      },
+      "lineNbr": 446,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2020-04-29T12:34:56Z",
+      "side": 1,
+      "message": "the number of processed samples, ie @ns",
+      "range": {
+        "startLine": 446,
+        "startChar": 11,
+        "endLine": 446,
+        "endChar": 12
+      },
+      "revId": "0b669e978815a5ba2462c6bbc0828c368f11b399",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ecb25df6_edc56a21",
+        "filename": "src/filter.c",
+        "patchSetId": 12
+      },
+      "lineNbr": 625,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2020-04-29T12:34:56Z",
+      "side": 1,
+      "message": "Please format the table as such:\n\n * +----+----+---+----+----+----+---+----+---+-----+\n * |S1C1|S1C2|...|S1Ck|S2C1|S2C2|...|S2Ck|...|SnsCk|\n * +----+----+---+----+----+----+---+----+---+-----+\n\nThis will generate a nice table (even in manpage)",
+      "range": {
+        "startLine": 625,
+        "startChar": 1,
+        "endLine": 625,
+        "endChar": 53
+      },
+      "revId": "0b669e978815a5ba2462c6bbc0828c368f11b399",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "43600649_853d0424",
+        "filename": "src/filter.c",
+        "patchSetId": 12
+      },
+      "lineNbr": 629,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2020-04-29T12:34:56Z",
+      "side": 1,
+      "message": "Remove indentation",
+      "range": {
+        "startLine": 627,
+        "startChar": 0,
+        "endLine": 629,
+        "endChar": 19
+      },
+      "revId": "0b669e978815a5ba2462c6bbc0828c368f11b399",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9e881775_aa23a77a",
+        "filename": "src/filter.c",
+        "patchSetId": 12
+      },
+      "lineNbr": 648,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2020-04-29T12:34:56Z",
+      "side": 1,
+      "message": "Add preceding dash in front of each item",
+      "range": {
+        "startLine": 645,
+        "startChar": 1,
+        "endLine": 648,
+        "endChar": 64
+      },
+      "revId": "0b669e978815a5ba2462c6bbc0828c368f11b399",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
