@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "93c523c7_7b87ef6d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2020-04-29T11:56:03Z",
+      "side": 1,
+      "message": "autotools is missing... Please add it either in this commit or in another commit",
+      "revId": "22a65b6d3431de21a24f5c01c01012373a0ccf8c",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "a55c93a6_71d6ec4c",
+        "filename": "doc/conf.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2020-04-29T11:56:03Z",
+      "side": 1,
+      "message": "2008-2011, Nicolas Bourdaud",
+      "range": {
+        "startLine": 41,
+        "startChar": 14,
+        "endLine": 41,
+        "endChar": 24
+      },
+      "revId": "22a65b6d3431de21a24f5c01c01012373a0ccf8c",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
