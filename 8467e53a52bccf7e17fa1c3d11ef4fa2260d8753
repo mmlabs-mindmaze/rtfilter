@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "17bd5608_8ad47eb2",
+        "filename": "Makefile.am",
+        "patchSetId": 3
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1017136
+      },
+      "writtenOn": "2020-04-30T08:45:40Z",
+      "side": 1,
+      "message": "those are in the doc folder",
+      "revId": "8467e53a52bccf7e17fa1c3d11ef4fa2260d8753",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
