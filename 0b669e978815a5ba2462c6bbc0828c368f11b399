@@ -338,6 +338,30 @@
     },
     {
       "key": {
+        "uuid": "f7d43ca4_eab33e0a",
+        "filename": "src/filter.c",
+        "patchSetId": 12
+      },
+      "lineNbr": 446,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2020-05-04T08:37:41Z",
+      "side": 1,
+      "message": "This is a bug from rtf_filter_seq() part. It should have returned the number of sample written to output buffer (most likely \u003d\u003d ns in input). Otherwise this function cannot be used as virtual method for rtf_filter().\n\nFix is in https://review.gerrithub.io/c/mmlabs-mindmaze/rtfilter/+/491512",
+      "parentUuid": "582ea7f2_ad07c3c6",
+      "range": {
+        "startLine": 446,
+        "startChar": 11,
+        "endLine": 446,
+        "endChar": 12
+      },
+      "revId": "0b669e978815a5ba2462c6bbc0828c368f11b399",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "ecb25df6_edc56a21",
         "filename": "src/filter.c",
         "patchSetId": 12
@@ -358,6 +382,30 @@
       "revId": "0b669e978815a5ba2462c6bbc0828c368f11b399",
       "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "f44d6abd_cca07136",
+        "filename": "src/filter.c",
+        "patchSetId": 12
+      },
+      "lineNbr": 625,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2020-05-04T08:37:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ecb25df6_edc56a21",
+      "range": {
+        "startLine": 625,
+        "startChar": 1,
+        "endLine": 625,
+        "endChar": 53
+      },
+      "revId": "0b669e978815a5ba2462c6bbc0828c368f11b399",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
     },
     {
       "key": {
