@@ -362,6 +362,30 @@
     },
     {
       "key": {
+        "uuid": "c6b5a693_1719e99b",
+        "filename": "src/filter.c",
+        "patchSetId": 12
+      },
+      "lineNbr": 446,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2020-05-04T12:39:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f7d43ca4_eab33e0a",
+      "range": {
+        "startLine": 446,
+        "startChar": 11,
+        "endLine": 446,
+        "endChar": 12
+      },
+      "revId": "0b669e978815a5ba2462c6bbc0828c368f11b399",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ecb25df6_edc56a21",
         "filename": "src/filter.c",
         "patchSetId": 12
