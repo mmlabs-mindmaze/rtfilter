@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "57b1487d_8d512385",
+        "filename": "src/filter.c",
+        "patchSetId": 1
+      },
+      "lineNbr": 393,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2020-05-04T09:29:23Z",
+      "side": 1,
+      "message": "@Ganne: Please note that not only I have taken the ns in output, I have adjusted the number of sample in input...",
+      "range": {
+        "startLine": 393,
+        "startChar": 47,
+        "endLine": 393,
+        "endChar": 55
+      },
+      "revId": "b7972d34528982753b63b125dccdf487b4926f9b",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
