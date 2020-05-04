@@ -354,22 +354,25 @@ void swap_ptr(char ** ptr1, char ** ptr2)
 /**
  * rtf_filter_seq() - apply filter cascade
  * @filt: initialized rtf_filter structure
- * @ns: number of samples (up to NS_MAX)
- * @in: array of (ns * nch) input data
- * @out: array of (ns * nch) output data
+ * @ns: number of samples
+ * @_in: array of (ns * nch) input data
+ * @_out: array of (ns * nch) output data
+ *
+ * Return: the number of samples written in @_out
  */
 static
 int rtf_filter_seq(struct rtf_filter * filt, void const * _in,
                    void * _out, int ns)
 {
 	int i;
-	int num_samples;
+	int num_samples, ns_chunk, ns_out;
 	char const * in = _in;
 	char * out = _out;
 	char * tmp_in, * tmp_out;
 	struct rtf_filter * f;
 	struct filter_seq * seq = (struct filter_seq*) filt;
 
+	ns_out = 0;
 	while (ns > 0) {
 		num_samples = MIN(ns, NS_MAX);
 
@@ -382,20 +385,21 @@ int rtf_filter_seq(struct rtf_filter * filt, void const * _in,
 		}
 
 		f = seq->filters[0];
-		f->filter_fn(f, in, tmp_out, num_samples);
+		ns_chunk = f->filter_fn(f, in, tmp_out, num_samples);
 
 		for (i = 1; i < seq->num_filters; i++) {
 			f = seq->filters[i];
 			swap_ptr(&tmp_in, &tmp_out);
-			(void) f->filter_fn(f, tmp_in, tmp_out, num_samples);
+			ns_chunk = f->filter_fn(f, tmp_in, tmp_out, ns_chunk);
 		}
 
 		ns -= num_samples;
 		in += num_samples * f->num_chann * sizeof_data(f->intype);
-		out += num_samples * f->num_chann * sizeof_data(f->outtype);
+		out += ns_chunk * f->num_chann * sizeof_data(f->outtype);
+		ns_out += ns_chunk;
 	}
 
-	return ns;
+	return ns_out;
 }
 
 
