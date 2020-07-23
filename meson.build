@@ -1,5 +1,5 @@
 project('rtfilter', 'c',
-        version : '1.2',
+        version : '1.3',
         default_options : [
             'warning_level=3',
         ],
@@ -13,7 +13,7 @@ project('rtfilter', 'c',
 # * PATCH version when you make backwards-compatible bug fixes.
 major = '1'
 minor = '1'
-patch = '0'
+patch = '1'
 version = major + '.' + minor + '.' + patch
 
 cc = meson.get_compiler('c')
