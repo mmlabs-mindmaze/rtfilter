@@ -144,6 +144,10 @@ hfilter rtf_create_chebychev(int nchann, int proctype,
                              double fc, int num_pole,
                              int highpass, double ripple);
 
+//! Notch filter (IIR filter)
+hfilter rtf_create_notch(int nchann, int proctype,
+                         double fc, double bandwidth);
+
 //! Simple first order integral filter (IIR filter)
 hfilter rtf_create_integral(int nchann, int proctype, double fs);
 

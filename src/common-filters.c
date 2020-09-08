@@ -724,6 +724,49 @@ hfilter rtf_create_butterworth(int nchann, int proctype,
 }
 
 /**
+ * rtf_create_notch() - creates IIR Notch filter
+ * This function is based on: http://www.dspguide.com/ch19/3.htm
+ * @nchann: number of channels the filter will process
+ * @proctype: type of data the filter will process (RTF_FLOAT or
+ *            RTF_DOUBLE)
+ * @fc: normalized stop frequency (the normal frequency divided by the
+ *      sampling frequency)
+ * @bandwidth: normalized width of the rejected frequency band
+ *
+ * A normalized frequency is the ratio between the absolute frequency and the
+ * sampling frequency (i.e. a value of 1.0 refers to the sampling frequency).
+ *
+ *
+ * Return: the handle to the created filter in case of success, NULL otherwise.
+ */
+API_EXPORTED
+hfilter rtf_create_notch(int nchann, int proctype,
+                         double fc, double bandwidth)
+{
+	double num[3], den[3];
+	hfilter filt = NULL;
+
+	float R = 1 - 3 * bandwidth;
+	float numerator = 1 - 2 * R * cos(2 * M_PI * fc) + R * R;
+	float denumerator = 2 - 2 * cos(2 * M_PI * fc);
+	float K = numerator / denumerator;
+
+	num[0] = K;
+	num[1] = -2 * K * cos(2 * M_PI * fc);
+	num[2] = K;
+
+	den[0] = 1;
+	den[1] = -2 * R * cos(2 * M_PI * fc);
+	den[2] = R * R;
+
+	filt = rtf_create_filter(nchann, proctype,
+	                         3, num, 3, den,
+	                         RTF_DOUBLE);
+
+	return filt;
+}
+
+/**
  * rtf_create_integral() - creates integral filters
  * @nchann: number of channels the filter will process
  * @type: type of data the filter will process (RTF_FLOAT or
