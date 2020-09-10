@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7055f0ee_d6b4966d",
+        "filename": "src/common-filters.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 728,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2020-09-10T09:10:51Z",
+      "side": 1,
+      "message": "move this line in the description body",
+      "range": {
+        "startLine": 728,
+        "startChar": 0,
+        "endLine": 728,
+        "endChar": 64
+      },
+      "revId": "6b7d61de4e202b8073025ac1bc7228d76c96ad11",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "8389809d_eefd720f",
+        "filename": "src/common-filters.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 737,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2020-09-10T09:10:51Z",
+      "side": 1,
+      "message": "I don\u0027t think this bring much more info than there is in argument description. Either remove this from the description body, either reduce the the explanation in the argument (I suggest the former).",
+      "range": {
+        "startLine": 736,
+        "startChar": 0,
+        "endLine": 737,
+        "endChar": 77
+      },
+      "revId": "6b7d61de4e202b8073025ac1bc7228d76c96ad11",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9b7048eb_11dace76",
+        "filename": "src/common-filters.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 739,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2020-09-10T09:10:51Z",
+      "side": 1,
+      "message": "Extra line to be removed",
+      "range": {
+        "startLine": 739,
+        "startChar": 0,
+        "endLine": 739,
+        "endChar": 2
+      },
+      "revId": "6b7d61de4e202b8073025ac1bc7228d76c96ad11",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ad5131c8_4b146b20",
+        "filename": "src/common-filters.c",
+        "patchSetId": 2
+      },
+      "lineNbr": 752,
+      "author": {
+        "id": 1017133
+      },
+      "writtenOn": "2020-09-10T09:10:51Z",
+      "side": 1,
+      "message": "Since you use double to compute for computing the weight (num and den), I suggest you use double here.",
+      "range": {
+        "startLine": 749,
+        "startChar": 1,
+        "endLine": 752,
+        "endChar": 35
+      },
+      "revId": "6b7d61de4e202b8073025ac1bc7228d76c96ad11",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
